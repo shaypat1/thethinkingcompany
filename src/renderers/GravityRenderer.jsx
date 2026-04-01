@@ -84,7 +84,7 @@ export default function GravityRenderer({ questions }) {
     g.spawnQueue = questions.slice(start, end).map((q) => ({ ...q }))
     g.asteroids = []
     g.particles = []
-    g.spawnTimer = 0
+    g.spawnTimer = SPAWN_INTERVAL_BASE // first asteroid drops immediately
   }, [questions])
 
   const startGame = useCallback(() => {
