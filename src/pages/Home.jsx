@@ -1,15 +1,6 @@
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
-
-const trackTopics = [
-  ['Bias', 'Logic', 'Evidence', 'Fallacies', 'Synthesis'],
-  ['Framing', 'Assumptions', 'Deduction', 'Correlation', 'Clarity'],
-  ['Sources', 'Context', 'Inference', 'Analogy', 'Judgment'],
-  ['Rhetoric', 'Causation', 'Nuance', 'Probability', 'Argument'],
-  ['Empathy', 'Precision', 'Skepticism', 'Systems', 'Reflection'],
-  ['Perspective', 'Data', 'Reasoning', 'Tradeoffs', 'Conclusion'],
-  ['Observation', 'Hypothesis', 'Testing', 'Revision', 'Insight'],
-]
+import { Link, useNavigate } from 'react-router-dom'
+import { getDay, getDayCount } from '../content'
 
 function pseudo(seed, i) {
   return Math.abs(Math.sin(seed * 13 + i * 47) * 10000) % 1
@@ -17,6 +8,14 @@ function pseudo(seed, i) {
 
 function generateTrack(dateOffset) {
   const seed = dateOffset * 7 + 3
+
+  // Map dateOffset to a day number (cycle through available days)
+  const dayCount = getDayCount()
+  const dayNumber = dayCount > 0
+    ? ((((dateOffset % dayCount) + dayCount) % dayCount) + 1)
+    : 0
+  const day = getDay(dayNumber)
+  const nodeLabels = day ? day.nodes.map((n) => n.label) : ['?', '?', '?', '?', '?']
 
   const shapes = [
     (i) => ({ x: 100 + i * 160, y: 220 + Math.sin((i + seed) * 1.2) * 100 }),
@@ -29,31 +28,25 @@ function generateTrack(dateOffset) {
   ]
 
   const shapeIdx = Math.abs(seed) % shapes.length
-  const topicIdx = Math.abs(seed) % trackTopics.length
   const shapeFn = shapes[shapeIdx]
-  const topics = trackTopics[topicIdx]
 
   // Determine unlocked state based on date offset
   let unlockedCount
   if (dateOffset < 0) {
-    // Past: all completed (all dark/locked)
     unlockedCount = 0
   } else if (dateOffset === 0) {
-    // Today: some unlocked
     unlockedCount = Math.floor(pseudo(seed, 0) * 3) + 2
   } else {
-    // Future: only first node unlocked
     unlockedCount = 1
   }
 
-  const rawNodes = topics.map((label, i) => ({
-    id: i + 1,
+  const rawNodes = nodeLabels.map((label, i) => ({
+    id: i,
     ...shapeFn(i),
     unlocked: i < unlockedCount,
     label,
   }))
 
-  // Compute viewBox with padding so no dots get clipped
   const pad = 60
   const minX = Math.min(...rawNodes.map((n) => n.x)) - pad
   const maxX = Math.max(...rawNodes.map((n) => n.x)) + pad
@@ -61,6 +54,7 @@ function generateTrack(dateOffset) {
   const maxY = Math.max(...rawNodes.map((n) => n.y)) + pad
 
   return {
+    dayNumber,
     nodes: rawNodes,
     viewBox: `${minX} ${minY} ${maxX - minX} ${maxY - minY}`,
   }
@@ -86,12 +80,18 @@ function formatDate(offset) {
 }
 
 export default function Home() {
+  const navigate = useNavigate()
   const [dateOffset, setDateOffset] = useState(0)
-  const { nodes, viewBox } = useMemo(() => generateTrack(dateOffset), [dateOffset])
+  const { dayNumber, nodes, viewBox } = useMemo(() => generateTrack(dateOffset), [dateOffset])
 
-  const isToday = dateOffset === 0
   const isPast = dateOffset < 0
   const isFuture = dateOffset > 0
+
+  function handleNodeClick(node) {
+    if (node.unlocked) {
+      navigate(`/activity/${dayNumber}/${node.id}`)
+    }
+  }
 
   return (
     <div className="app">
@@ -148,7 +148,11 @@ export default function Home() {
           <svg className="track-svg" viewBox={viewBox} preserveAspectRatio="xMidYMid meet">
             <path className="track-path" d={buildPath(nodes)} />
             {nodes.map((node) => (
-              <g key={node.id} className={`track-node ${node.unlocked ? 'unlocked' : 'locked'}`}>
+              <g
+                key={node.id}
+                className={`track-node ${node.unlocked ? 'unlocked' : 'locked'}`}
+                onClick={() => handleNodeClick(node)}
+              >
                 <circle cx={node.x} cy={node.y} r={30} fill="transparent" />
                 <circle
                   className={`node-circle ${node.unlocked ? 'unlocked' : 'locked'}`}

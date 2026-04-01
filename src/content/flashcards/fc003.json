@@ -1,0 +1,14 @@
+{
+  "id": "fc003",
+  "timeLimit": 20,
+  "questions": [
+    { "q": "How many seconds in an hour?", "a": "3600" },
+    { "q": "Approx. how many km in a mile?", "a": "1.6" },
+    { "q": "10^6", "a": "1,000,000" },
+    { "q": "How many weeks in a year?", "a": "52" },
+    { "q": "2^10", "a": "1024" },
+    { "q": "What is 1/7 as a decimal (2 dp)?", "a": "0.14" },
+    { "q": "How many degrees in a triangle?", "a": "180" },
+    { "q": "Speed of light (km/s, approx)?", "a": "300,000" }
+  ]
+}
