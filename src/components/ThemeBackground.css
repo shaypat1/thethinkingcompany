@@ -1,0 +1,418 @@
+/* Shared */
+.tb {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.full-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===================== COSMIC DUNES ===================== */
+.tb-cosmic {
+  background: radial-gradient(ellipse at 30% 20%, #1a0050 0%, #0b0020 60%, #050010 100%);
+}
+
+.cosmic-nebula {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140,60,255,0.2) 0%, transparent 70%);
+  top: -20%;
+  right: -10%;
+  filter: blur(100px);
+  animation: cosmic-drift 14s ease-in-out infinite alternate;
+}
+
+.cosmic-nebula-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(60,120,255,0.18) 0%, transparent 70%);
+  top: auto;
+  bottom: -15%;
+  left: -10%;
+  right: auto;
+  animation-delay: -7s;
+  animation-direction: alternate-reverse;
+}
+
+.cosmic-nebula-3 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(200,60,180,0.12) 0%, transparent 70%);
+  top: 30%;
+  left: 40%;
+  right: auto;
+  animation-duration: 18s;
+  animation-delay: -3s;
+}
+
+@keyframes cosmic-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(80px, 60px) scale(1.3); }
+}
+
+.cosmic-star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: star-pulse ease-in-out infinite;
+}
+
+@keyframes star-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 1; transform: scale(2); }
+}
+
+.cosmic-dunes-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+}
+
+.cosmic-dune-1 { animation: dune-sway-1 8s ease-in-out infinite alternate; }
+.cosmic-dune-2 { animation: dune-sway-2 12s ease-in-out infinite alternate; }
+.cosmic-dune-3 { animation: dune-sway-3 10s ease-in-out infinite alternate-reverse; }
+
+@keyframes dune-sway-1 { 0% { transform: translateX(0); } 100% { transform: translateX(50px); } }
+@keyframes dune-sway-2 { 0% { transform: translateX(0); } 100% { transform: translateX(-40px); } }
+@keyframes dune-sway-3 { 0% { transform: translateX(0) translateY(0); } 100% { transform: translateX(30px) translateY(-10px); } }
+
+/* ===================== POST-APOCALYPTIC ===================== */
+.tb-postapoc {
+  background: linear-gradient(180deg, #3a2010 0%, #1a1008 40%, #0e0804 100%);
+}
+
+.postapoc-haze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,120,20,0.15) 0%, transparent 60%);
+  animation: haze-pulse 5s ease-in-out infinite alternate;
+}
+
+.postapoc-haze-2 {
+  background: radial-gradient(ellipse at 30% 60%, rgba(255,80,20,0.08) 0%, transparent 50%);
+  animation-delay: -2.5s;
+  animation-duration: 7s;
+}
+
+@keyframes haze-pulse {
+  0% { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+.postapoc-terrain {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+}
+
+.postapoc-dune-1 { animation: postapoc-drift-1 10s ease-in-out infinite alternate; }
+.postapoc-dune-2 { animation: postapoc-drift-2 14s ease-in-out infinite alternate-reverse; }
+
+@keyframes postapoc-drift-1 { 0% { transform: translateX(0); } 100% { transform: translateX(40px); } }
+@keyframes postapoc-drift-2 { 0% { transform: translateX(0); } 100% { transform: translateX(-30px); } }
+
+/* ===================== ICE DUNES ===================== */
+.tb-ice {
+  background: linear-gradient(180deg, #c8e4f0 0%, #e0f0f8 50%, #eef6fc 100%);
+}
+
+.ice-aurora {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 50%;
+  background: linear-gradient(135deg,
+    rgba(42,200,180,0.15) 0%,
+    rgba(80,160,220,0.12) 25%,
+    rgba(100,200,150,0.1) 50%,
+    rgba(42,122,154,0.08) 75%,
+    transparent 100%
+  );
+  animation: aurora-shimmer 8s ease-in-out infinite alternate;
+  filter: blur(40px);
+}
+
+.ice-aurora-2 {
+  background: linear-gradient(225deg,
+    rgba(120,200,255,0.1) 0%,
+    rgba(60,180,200,0.08) 40%,
+    transparent 100%
+  );
+  animation-delay: -4s;
+  animation-duration: 12s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes aurora-shimmer {
+  0% { transform: translateX(-40px) scaleY(1) skewX(-2deg); opacity: 0.5; }
+  100% { transform: translateX(40px) scaleY(1.3) skewX(2deg); opacity: 1; }
+}
+
+.ice-ridges {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+}
+
+.ice-ridge-1 { animation: ice-drift-1 12s ease-in-out infinite alternate; }
+.ice-ridge-2 { animation: ice-drift-2 16s ease-in-out infinite alternate-reverse; }
+
+@keyframes ice-drift-1 { 0% { transform: translateX(0); } 100% { transform: translateX(30px); } }
+@keyframes ice-drift-2 { 0% { transform: translateX(0); } 100% { transform: translateX(-25px); } }
+
+.ice-frost-edge {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 60px;
+}
+
+.ice-frost-top {
+  top: 0;
+  background: linear-gradient(180deg, rgba(200,230,240,0.6) 0%, transparent 100%);
+}
+
+.ice-frost-bottom {
+  bottom: 0;
+  background: linear-gradient(0deg, rgba(200,230,240,0.6) 0%, transparent 100%);
+}
+
+/* ===================== RHYTHM DUNES ===================== */
+.tb-rhythm {
+  background: #0a0a14;
+}
+
+.rhythm-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255,45,149,0.12) 0%, transparent 70%);
+  animation: rhythm-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes rhythm-pulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.1); }
+}
+
+.rhythm-scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.06) 2px,
+    rgba(0,0,0,0.06) 4px
+  );
+}
+
+/* ===================== MINDSCAPE ===================== */
+.tb-mindscape {
+  background: linear-gradient(135deg, #f5f0ff 0%, #ece0ff 50%, #f0eaff 100%);
+}
+
+.mindscape-thought {
+  position: absolute;
+  background: rgba(106,64,176,0.25);
+  border-radius: 50%;
+  animation: thought-float ease-in-out infinite;
+  filter: blur(1px);
+}
+
+@keyframes thought-float {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+  50% { transform: translateY(-40px) scale(1.5); opacity: 0.8; }
+}
+
+/* ===================== FANTASY CREATURE ===================== */
+.tb-fantasy {
+  background: linear-gradient(180deg, #081a0e 0%, #0d2218 40%, #061510 100%);
+}
+
+.fantasy-fog {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 25% 70%, rgba(64,192,96,0.1) 0%, transparent 50%);
+  animation: fog-drift 12s ease-in-out infinite alternate;
+  filter: blur(30px);
+}
+
+.fantasy-fog-2 {
+  background: radial-gradient(ellipse at 75% 30%, rgba(255,215,0,0.06) 0%, transparent 50%);
+  animation-delay: -6s;
+  animation-direction: alternate-reverse;
+}
+
+.fantasy-fog-3 {
+  background: radial-gradient(ellipse at 50% 50%, rgba(100,255,150,0.05) 0%, transparent 40%);
+  animation-duration: 16s;
+  animation-delay: -3s;
+}
+
+@keyframes fog-drift {
+  0% { transform: translateX(-60px) scale(1); }
+  100% { transform: translateX(60px) scale(1.15); }
+}
+
+.fantasy-sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  animation: sparkle-twinkle ease-in-out infinite;
+}
+
+.fantasy-sparkle::before,
+.fantasy-sparkle::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,215,0,0.9);
+}
+
+.fantasy-sparkle::before {
+  width: 4px;
+  height: 1px;
+  top: 1.5px;
+  left: 0;
+}
+
+.fantasy-sparkle::after {
+  width: 1px;
+  height: 4px;
+  top: 0;
+  left: 1.5px;
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.8) rotate(90deg); }
+}
+
+.fantasy-vines {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+}
+
+.fantasy-vine-sway {
+  animation: vine-sway 8s ease-in-out infinite alternate;
+}
+
+@keyframes vine-sway {
+  0% { transform: translateX(-20px); }
+  100% { transform: translateX(20px); }
+}
+
+/* ===================== URBAN SANDSTORM ===================== */
+.tb-urban {
+  background: #1c1c1e;
+}
+
+.urban-haze {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(200,184,144,0.08) 0%, transparent 60%);
+  animation: urban-haze-shift 4s ease-in-out infinite alternate;
+}
+
+.urban-haze-2 {
+  background: radial-gradient(ellipse at 30% 70%, rgba(200,184,144,0.05) 0%, transparent 50%);
+  animation-delay: -2s;
+  animation-duration: 6s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes urban-haze-shift {
+  0% { transform: translateX(-40px) scale(1); opacity: 0.5; }
+  100% { transform: translateX(40px) scale(1.1); opacity: 1; }
+}
+
+.urban-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(200,184,144,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,184,144,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-scroll 20s linear infinite;
+}
+
+@keyframes grid-scroll {
+  0% { transform: translateX(0) translateY(0); }
+  100% { transform: translateX(50px) translateY(50px); }
+}
+
+/* ===================== LAVA LAMP ===================== */
+.tb-lava {
+  background: linear-gradient(180deg, #1a0505 0%, #100000 50%, #0a0000 100%);
+}
+
+/* ===================== GLITCH MATRIX ===================== */
+.tb-glitch {
+  background: #050f05;
+}
+
+.glitch-scanline {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0,255,65,0.015) 1px,
+    rgba(0,255,65,0.015) 2px
+  );
+  animation: glitch-flicker 0.1s steps(2) infinite;
+}
+
+@keyframes glitch-flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.97; }
+}
+
+/* ===================== DEEP OCEAN ===================== */
+.tb-ocean {
+  background: linear-gradient(180deg, #020a18 0%, #041225 40%, #061830 100%);
+}
+
+.ocean-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,5,15,0.4) 100%);
+}
+
+/* ===================== VAPORWAVE ===================== */
+.tb-vapor {
+  background: linear-gradient(180deg, #1a0530 0%, #200840 45%, #120225 100%);
+}
+
+.vapor-chrome {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    transparent 50%,
+    rgba(20,5,40,0.3) 55%,
+    transparent 100%
+  );
+}
