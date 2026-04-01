@@ -1,0 +1,311 @@
+.pr-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: #1a1a2e;
+}
+
+.pr-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.pr-canvas canvas {
+  display: block;
+}
+
+.pr-exit {
+  position: fixed;
+  top: 1rem;
+  left: 1.5rem;
+  z-index: 15;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.pr-exit:hover {
+  color: #fff;
+}
+
+.pr-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  pointer-events: none;
+}
+
+.pr-overlay > * {
+  pointer-events: auto;
+}
+
+.pr-level {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+/* Narration */
+
+.pr-narration {
+  background: rgba(10, 10, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  max-width: 520px;
+  text-align: center;
+}
+
+.pr-narration-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+/* Buttons */
+
+.pr-btn {
+  padding: 0.6rem 2rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: none;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.pr-btn:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pr-btn-secondary {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.pr-btn-secondary:hover {
+  color: #fff;
+}
+
+/* Proposal input */
+
+.pr-propose {
+  background: rgba(10, 10, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  max-width: 520px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pr-freeplay-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.pr-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+.pr-count-input {
+  width: 50px;
+  padding: 0.3rem 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: center;
+  outline: none;
+}
+
+.pr-proposal-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.pr-proposal-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pr-pirate-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.pr-gold-input::-webkit-inner-spin-button,
+.pr-gold-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.pr-gold-input {
+  -moz-appearance: textfield;
+  width: 56px;
+  padding: 0.4rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.pr-gold-input:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.pr-total {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+}
+
+.pr-feedback {
+  color: #e06050;
+  font-size: 0.8rem;
+}
+
+.pr-hint-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.pr-hint-btn:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pr-hint {
+  color: rgba(218, 165, 32, 0.8);
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Voting results */
+
+.pr-votes {
+  background: rgba(10, 10, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  max-width: 520px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pr-vote-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.pr-vote-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 48px;
+}
+
+.pr-vote-icon {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.pr-vote-item.yes .pr-vote-icon {
+  color: #4ade80;
+}
+
+.pr-vote-item.no .pr-vote-icon {
+  color: #ef4444;
+}
+
+.pr-vote-gold {
+  color: rgba(218, 165, 32, 0.7);
+  font-size: 0.75rem;
+}
+
+.pr-result-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pr-result-text {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pr-result-text.pass {
+  color: #4ade80;
+}
+
+.pr-result-text.fail {
+  color: #ef4444;
+}
+
+.pr-insight {
+  color: rgba(218, 165, 32, 0.8);
+  font-size: 0.85rem;
+  text-align: center;
+  font-style: italic;
+  max-width: 400px;
+}
+
+.pr-result-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}

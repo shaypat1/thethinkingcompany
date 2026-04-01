@@ -3,9 +3,9 @@
   "title": "First Steps",
   "nodes": [
     { "type": "flashcard", "id": "fc001", "label": "Quick Math" },
-    { "type": "placeholder", "id": "ph001", "label": "Spot the Flaw" },
+    { "type": "pirate", "id": "pirate001", "label": "Screwy Pirates" },
     { "type": "placeholder", "id": "ph004", "label": "Number Sense" },
     { "type": "gravity", "id": "gv001", "label": "Gravity" },
-    { "type": "placeholder", "id": "ph003", "label": "Wrap Up" }
+    { "type": "placeholder", "id": "ph001", "label": "Spot the Flaw" }
   ]
 }

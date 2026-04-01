@@ -6,6 +6,7 @@ import fc001 from './flashcards/fc001.json'
 import fc002 from './flashcards/fc002.json'
 import fc003 from './flashcards/fc003.json'
 import gv001 from './flashcards/gv001.json'
+import pirate001 from './flashcards/pirate001.json'
 
 const days = [day001, day002, day003]
 
@@ -17,6 +18,9 @@ const content = {
   },
   gravity: {
     gv001,
+  },
+  pirate: {
+    pirate001,
   },
 }
 
