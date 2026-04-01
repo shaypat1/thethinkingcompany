@@ -51,6 +51,7 @@ export default function GravityRenderer({ questions }) {
       stars: [],
       spawnQueue: [],
       spawnTimer: 0,
+      zoomStart: 0,
       level,
       lives,
       score,
@@ -85,6 +86,7 @@ export default function GravityRenderer({ questions }) {
     g.asteroids = []
     g.particles = []
     g.spawnTimer = SPAWN_INTERVAL_BASE // first asteroid drops immediately
+    g.zoomStart = 0
   }, [questions])
 
   const startGame = useCallback(() => {
@@ -143,6 +145,28 @@ export default function GravityRenderer({ questions }) {
       // Clear
       ctx.clearRect(0, 0, W, H)
 
+      // Zoom transition
+      const zooming = g.zoomStart > 0
+      let zoomProgress = 0
+      if (zooming) {
+        zoomProgress = Math.min((t - g.zoomStart) / 60, 1) // 60 frames = ~1s
+        const ease = zoomProgress * zoomProgress * (3 - 2 * zoomProgress)
+        const scale = 1 + ease * 4
+        const nextPlanetX = W * 0.82
+        const nextPlanetY = H * 0.15
+        ctx.save()
+        ctx.translate(
+          nextPlanetX - (nextPlanetX - W / 2) * (1 - ease),
+          nextPlanetY - (nextPlanetY - H / 2) * (1 - ease)
+        )
+        ctx.scale(scale, scale)
+        ctx.translate(-nextPlanetX, -nextPlanetY)
+        if (zoomProgress >= 1 && g.zoomStart > 0) {
+          g.zoomStart = 0
+          setGameState('levelComplete')
+        }
+      }
+
       // Stars
       g.stars.forEach((s) => {
         const twinkle = 0.5 + Math.sin(t * 0.02 + s.x * 100) * 0.5
@@ -151,6 +175,30 @@ export default function GravityRenderer({ questions }) {
         ctx.arc(s.x * W, s.y * H * 0.85, s.size, 0, Math.PI * 2)
         ctx.fill()
       })
+
+      // Next planet in background (small sphere in sky)
+      if (g.level + 1 < totalLevels) {
+        const nextP = PLANETS[(g.level + 1) % PLANETS.length]
+        const npX = W * 0.82
+        const npY = H * 0.15
+        const npR = 25
+        const npGrad = ctx.createRadialGradient(npX - 5, npY - 5, 2, npX, npY, npR)
+        npGrad.addColorStop(0, nextP.light)
+        npGrad.addColorStop(0.6, nextP.base)
+        npGrad.addColorStop(1, nextP.dark)
+        ctx.fillStyle = npGrad
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR, 0, Math.PI * 2)
+        ctx.fill()
+        // Atmosphere glow
+        ctx.strokeStyle = nextP.glow
+        ctx.lineWidth = 1.5
+        ctx.globalAlpha = 0.3
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR + 3, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.globalAlpha = 1
+      }
 
       // Planet — massive sphere, curved surface spans full width
       const pRadius = W * 1.2
@@ -302,11 +350,11 @@ export default function GravityRenderer({ questions }) {
 
         // Check level complete
         const allDone = g.spawnQueue.length === 0 && g.asteroids.every((a) => !a.alive)
-        if (allDone && g.gameState === 'playing' && g.lives > 0) {
+        if (allDone && g.gameState === 'playing' && g.lives > 0 && !g.zoomStart) {
           if (g.level + 1 >= totalLevels) {
             setGameState('won')
           } else {
-            setGameState('levelComplete')
+            g.zoomStart = t // start zoom transition
           }
         }
       }
@@ -427,6 +475,8 @@ export default function GravityRenderer({ questions }) {
         ctx.textAlign = 'right'
         ctx.fillText(`${g.score}`, W - 20, 28)
       }
+
+      if (zooming) ctx.restore()
 
       t++
       frame = requestAnimationFrame(draw)
