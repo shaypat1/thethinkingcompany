@@ -1,9 +1,9 @@
 {
-  "day": 1,
-  "title": "First Steps",
+  "day": 4,
+  "title": "Memory Lab I",
   "nodes": [
-    { "type": "flashcard", "id": "fc001", "label": "Quick Math" },
-    { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" },
+    { "type": "missingitem", "id": "mi001", "label": "Missing Item" },
+    { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
     { "type": "sequencememory", "id": "sm001", "label": "Sequence" },
     { "type": "visualmemory", "id": "vm001", "label": "Visual Memory" },
     { "type": "cardmatching", "id": "cm001", "label": "Card Match" }

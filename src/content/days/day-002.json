@@ -3,9 +3,9 @@
   "title": "Sharp Eyes",
   "nodes": [
     { "type": "flashcard", "id": "fc003", "label": "Estimation" },
-    { "type": "placeholder", "id": "ph004", "label": "Deepfake or Real?" },
-    { "type": "placeholder", "id": "ph005", "label": "Devil's Advocate" },
+    { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
+    { "type": "missingitem", "id": "mi001", "label": "Missing Item" },
     { "type": "flashcard", "id": "fc001", "label": "Speed Drill" },
-    { "type": "placeholder", "id": "ph006", "label": "Reflect" }
+    { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" }
   ]
 }
