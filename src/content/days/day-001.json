@@ -5,7 +5,7 @@
     { "type": "flashcard", "id": "fc001", "label": "Quick Math" },
     { "type": "placeholder", "id": "ph001", "label": "Spot the Flaw" },
     { "type": "placeholder", "id": "ph004", "label": "Number Sense" },
-    { "type": "placeholder", "id": "ph002", "label": "Think Again" },
+    { "type": "gravity", "id": "gv001", "label": "Gravity" },
     { "type": "placeholder", "id": "ph003", "label": "Wrap Up" }
   ]
 }
