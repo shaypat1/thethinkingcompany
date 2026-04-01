@@ -334,12 +334,6 @@ export default function GravityRenderer({ questions }) {
           verts.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r })
         }
 
-        // Shadow/glow behind asteroid
-        ctx.fillStyle = c.accent + '15'
-        ctx.beginPath()
-        ctx.arc(0, 0, sz * 1.3, 0, Math.PI * 2)
-        ctx.fill()
-
         // Main body — dark faceted shape
         ctx.beginPath()
         ctx.moveTo(verts[0].x, verts[0].y)
@@ -347,9 +341,6 @@ export default function GravityRenderer({ questions }) {
         ctx.closePath()
         ctx.fillStyle = c.border
         ctx.fill()
-        ctx.strokeStyle = c.muted
-        ctx.lineWidth = 1.5
-        ctx.stroke()
 
         // Facet lines from center to create crystal look
         for (let i = 0; i < verts.length; i++) {
