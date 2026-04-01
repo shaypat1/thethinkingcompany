@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Leaderboard from './pages/Leaderboard'
 import Activity from './pages/Activity'
+import CMS from './pages/CMS'
 import './App.css'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/activity/:dayId/:nodeIndex" element={<Activity />} />
+            <Route path="/cms" element={<CMS />} />
           </Routes>
         </div>
       </BrowserRouter>

@@ -36,3 +36,11 @@ export function getDayNodes(dayNumber) {
   const day = getDay(dayNumber)
   return day ? day.nodes : []
 }
+
+export function getAllContent() {
+  return content
+}
+
+export function getAllDays() {
+  return days
+}
