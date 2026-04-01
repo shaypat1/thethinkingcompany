@@ -2,18 +2,20 @@
   "id": "ld001",
   "title": "The Mystery of the Missing Mascot",
   "narrative": {
-    "intro": "The school mascot costume has vanished from the gym storage room — right before the big pep rally! Principal Reeves has called in the Logic Bureau (that's you) to interview witnesses and figure out what happened. But watch out: everyone's got a theory, and not all of them make sense...",
-    "outro": "Thanks to your sharp eye for bad reasoning, the costume was found stuffed behind the bleachers — right where the janitor said he saw someone heading. The real story? A student borrowed it for a TikTok and forgot to return it. Case closed, detective."
+    "intro": "The school mascot costume has vanished from the gym storage room — right before the big pep rally! Principal Reeves has called in the Logic Bureau (that's you) to investigate. You'll review interviews, texts, emails, and social media posts. But watch out: everyone's got a theory, and not all of them make sense...",
+    "outro": "Thanks to your sharp eye for bad reasoning, the costume was found stuffed behind the bleachers. The real story? A student borrowed it for a TikTok and forgot to return it. Case closed, detective."
   },
   "cases": [
     {
       "id": "c1",
       "tier": 1,
+      "format": "interview",
       "briefing": "Your first interview. Tommy saw something at lunch — but is his logic as solid as he thinks?",
       "context": "Witness Interview #1",
       "speaker": "Tommy Chen",
       "speakerRole": "6th grader, basketball team",
       "emoji": "🏀",
+      "interviewMeta": { "location": "Principal's Office", "time": "1:15 PM", "recorded": true },
       "claims": [
         "I was shooting hoops near the gym at lunch.",
         "I saw Jake come out of the storage room around 12:10.",
@@ -33,16 +35,18 @@
     {
       "id": "c2",
       "tier": 1,
-      "briefing": "The class president has a theory too. She seems confident — but is she reasoning correctly?",
-      "context": "Witness Interview #2",
+      "format": "texts",
+      "briefing": "Mia sent these texts to the student council group chat. She's convinced she knows who did it...",
+      "context": "Text Messages",
       "speaker": "Mia Park",
       "speakerRole": "7th grade class president",
       "emoji": "🎓",
+      "textsMeta": { "groupName": "Student Council 🏫", "time": "12:45 PM" },
       "claims": [
-        "I organized the pep rally, so I know exactly who had access.",
-        "Only the drama club and the cheer squad had gym keys.",
-        "I asked around and literally every single student thinks the drama club did it.",
-        "We should just search their lockers."
+        "OMG the mascot costume is gone!! I organized the pep rally so I know exactly who had access",
+        "Only the drama club and cheer squad had gym keys",
+        "I asked around and literally EVERY student thinks the drama club did it 💀",
+        "we should just search their lockers tbh"
       ],
       "flawedIndex": 2,
       "fallacyType": "Bandwagon",
@@ -57,16 +61,18 @@
     {
       "id": "c3",
       "tier": 2,
-      "briefing": "Coach Davis is frustrated and wants this solved fast. A little too fast, maybe?",
-      "context": "Staff Interview",
+      "format": "email",
+      "briefing": "Coach Davis fired off this email to the principal. He wants answers fast — maybe too fast.",
+      "context": "Email Evidence",
       "speaker": "Coach Davis",
       "speakerRole": "PE teacher, gym supervisor",
       "emoji": "🏋️",
+      "emailMeta": { "from": "coach.davis@lincolnms.edu", "to": "principal.reeves@lincolnms.edu", "subject": "RE: Missing Mascot Costume - URGENT", "time": "12:55 PM" },
       "claims": [
-        "Look, I've coached here for 15 years and nothing like this has happened.",
-        "The storage room lock wasn't broken, so someone had a key.",
+        "I've coached here for 15 years and nothing like this has ever happened.",
+        "The storage room lock wasn't broken, so someone with a key did this.",
         "Either it was a student who stole a key, or we cancel the pep rally entirely.",
-        "Those are the only options I see."
+        "Those are the only options I see. Please advise ASAP."
       ],
       "flawedIndex": 2,
       "fallacyType": "False Dilemma",
@@ -77,21 +83,23 @@
         "15 years of experience doesn't make the coach's theory correct."
       ],
       "correctOption": 0,
-      "explanation": "Coach Davis presents only two options: stolen key or cancel everything. But there could be other explanations — maybe someone borrowed the costume with permission, maybe a teacher left the door open, maybe there's a spare key. This is a False Dilemma — pretending there are only two choices when more exist."
+      "explanation": "Coach Davis presents only two choices: stolen key or cancel everything. But there could be other explanations — maybe someone borrowed the costume with permission, maybe a teacher left the door open. This is a False Dilemma — pretending there are only two choices when more exist."
     },
     {
       "id": "c4",
       "tier": 2,
-      "briefing": "A popular student posts a 'theory' online. Social media detective work can be tricky...",
-      "context": "Social Media Evidence",
+      "format": "social",
+      "briefing": "Vince posted his 'investigation' online. His followers are eating it up, but is his logic solid?",
+      "context": "Social Media Post",
       "speaker": "ViralVince",
-      "speakerRole": "school influencer, 2k followers",
+      "speakerRole": "school influencer, 2.1k followers",
       "emoji": "📱",
+      "socialMeta": { "platform": "InstaChat", "handle": "@ViralVince", "likes": 847, "time": "1:02 PM" },
       "claims": [
-        "Ok so I just found out the mascot costume is missing.",
-        "The drama club had rehearsal yesterday and the costume was still there.",
-        "Drama club rehearsal ended, and THEN the costume disappeared.",
-        "So obviously rehearsal caused the costume to go missing lol. Case closed."
+        "ok so I just found out the mascot costume is MISSING 😱",
+        "the drama club had rehearsal yesterday and the costume was still there after",
+        "drama club rehearsal ended, and THEN the costume disappeared",
+        "so obviously rehearsal caused the costume to go missing lol. case closed 🔒"
       ],
       "flawedIndex": 3,
       "fallacyType": "False Cause",
@@ -102,21 +110,22 @@
         "The drama club should have locked up after rehearsal."
       ],
       "correctOption": 0,
-      "explanation": "Vince assumes that because the costume vanished AFTER drama rehearsal, the rehearsal must have CAUSED it to vanish. But timing isn't proof of cause! Maybe someone else came in later. This is called False Cause — assuming that because B happened after A, A must have caused B."
+      "explanation": "Vince assumes the costume vanished BECAUSE of drama rehearsal just because it vanished AFTER. But timing isn't causation! Maybe someone else came in later. This is False Cause — assuming that because B happened after A, A must have caused B."
     },
     {
       "id": "c5",
       "tier": 2,
-      "briefing": "The janitor has a new lead. But does one clue really prove the whole theory?",
-      "context": "Staff Interview #2",
+      "format": "sticky",
+      "briefing": "Mr. Gonzalez left these sticky notes on Principal Reeves' desk with his observations.",
+      "context": "Janitor's Notes",
       "speaker": "Mr. Gonzalez",
       "speakerRole": "school janitor, 8 years",
       "emoji": "🧹",
       "claims": [
-        "I clean the gym every evening after activities end.",
-        "Yesterday I noticed muddy footprints leading toward the bleachers.",
-        "Last month, a 5th grader tracked mud into the library and got in trouble for it.",
-        "So a 5th grader definitely took the costume and hid it behind the bleachers."
+        "I clean the gym every evening after activities end",
+        "Yesterday I noticed muddy footprints leading toward the bleachers",
+        "Last month, a 5th grader tracked mud into the library and got in trouble",
+        "So a 5th grader DEFINITELY took the costume and hid it behind the bleachers"
       ],
       "flawedIndex": 3,
       "fallacyType": "Hasty Generalization",
@@ -132,29 +141,30 @@
     {
       "id": "c6",
       "tier": 3,
-      "briefing": "Final interview. The vice principal has a 'comprehensive' theory — but something's off...",
-      "context": "Admin Interview",
+      "format": "memo",
+      "briefing": "The vice principal sent this official memo. She has security footage — but where does her logic actually lead?",
+      "context": "Official Memo",
       "speaker": "VP Rodriguez",
       "speakerRole": "vice principal",
       "emoji": "👔",
+      "memoMeta": { "to": "All Staff", "from": "VP Rodriguez", "re": "Mascot Costume Incident — Update", "priority": "HIGH" },
       "claims": [
-        "We've been reviewing the security camera footage from the hallway.",
-        "Three students were seen near the gym between 12:00 and 12:30.",
-        "I think the real issue here is that our school doesn't have enough funding for proper security cameras inside the gym.",
-        "If we had better cameras, this never would have happened.",
-        "I'll be presenting a budget proposal to the school board next week."
+        "We've reviewed the hallway security camera footage from 11:45 AM to 12:45 PM.",
+        "Three students were seen near the gym entrance during that window.",
+        "The real issue here is that our school doesn't have enough funding for proper security cameras inside the gym.",
+        "If we had interior cameras, this never would have happened. I'll be presenting a budget proposal to the school board next week."
       ],
       "flawedIndex": 2,
       "fallacyType": "Red Herring",
       "fallacyNickname": "Changing the Subject",
       "options": [
-        "The VP is switching from 'who took the costume' to 'we need more budget' — a completely different topic.",
+        "The VP switches from 'who took the costume' to 'we need more budget' — a completely different topic.",
         "Security cameras wouldn't necessarily prevent theft.",
-        "Three students near the gym isn't enough evidence to identify the thief.",
-        "The VP should focus on interviewing those three students first."
+        "Three students near the gym isn't enough to identify the thief.",
+        "The VP should interview those three students first."
       ],
       "correctOption": 0,
-      "explanation": "VP Rodriguez starts with useful evidence (camera footage, three students), then suddenly pivots to school funding — a totally different issue! The budget has nothing to do with solving this case. This is a Red Herring — introducing an irrelevant topic to distract from the real question."
+      "explanation": "VP Rodriguez starts with useful evidence (camera footage, three students) then pivots to school funding — a totally different issue! The budget has nothing to do with solving this case. This is a Red Herring — introducing an irrelevant topic to distract from the real question."
     }
   ]
 }
