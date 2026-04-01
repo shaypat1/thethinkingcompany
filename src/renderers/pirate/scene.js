@@ -194,6 +194,7 @@ export function createScene(container) {
   chestGroup.add(coinLight)
 
   chestGroup.position.set(0, 0.04, 1.5)
+  chestGroup.rotation.y = Math.PI
   scene.add(chestGroup)
 
   // === FLOATING COINS for animation (hidden initially) ===
