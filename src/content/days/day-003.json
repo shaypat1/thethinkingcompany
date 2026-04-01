@@ -2,10 +2,10 @@
   "day": 3,
   "title": "Dig Deeper",
   "nodes": [
-    { "type": "placeholder", "id": "ph007", "label": "Read & Analyze" },
+    { "type": "backwardsspan", "id": "bs001", "label": "Backwards Span" },
     { "type": "flashcard", "id": "fc002", "label": "Mental Math" },
-    { "type": "placeholder", "id": "ph008", "label": "Memory Game" },
-    { "type": "placeholder", "id": "ph009", "label": "Argue This" },
+    { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
+    { "type": "cardmatching", "id": "cm001", "label": "Card Match" },
     { "type": "flashcard", "id": "fc003", "label": "Quick Fire" }
   ]
 }

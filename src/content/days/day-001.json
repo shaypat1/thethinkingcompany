@@ -4,8 +4,8 @@
   "nodes": [
     { "type": "flashcard", "id": "fc001", "label": "Quick Math" },
     { "type": "pirate", "id": "pirate001", "label": "Screwy Pirates" },
-    { "type": "placeholder", "id": "ph004", "label": "Number Sense" },
+    { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" },
     { "type": "gravity", "id": "gv001", "label": "Gravity" },
-    { "type": "placeholder", "id": "ph001", "label": "Spot the Flaw" }
+    { "type": "sequencememory", "id": "sm001", "label": "Sequence" }
   ]
 }

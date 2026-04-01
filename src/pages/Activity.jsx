@@ -10,21 +10,27 @@ export default function Activity() {
 
   if (!day || !node) {
     return (
-      <div className="subpage">
-        <Link to="/" className="back-link">Back</Link>
-        <p style={{ color: 'var(--text-muted)' }}>Activity not found.</p>
+      <div className="activity-page">
+        <div className="activity-topbar">
+          <Link to="/" className="activity-back">&larr; Back</Link>
+        </div>
+        <div className="activity-body">
+          <p style={{ color: 'var(--text-muted)' }}>Activity not found.</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="subpage">
-      <Link to="/" className="back-link">Back</Link>
-      <div className="activity-header">
-        <span className="activity-day">{day.title}</span>
-        <h1 className="activity-title">{node.label}</h1>
+    <div className="activity-page">
+      <div className="activity-topbar">
+        <Link to="/" className="activity-back">&larr; Back</Link>
+        <span className="activity-topbar-title">{node.label}</span>
+        <span className="activity-topbar-day">{day.title}</span>
       </div>
-      <ActivityDispatcher type={node.type} content={content} label={node.label} />
+      <div className="activity-body">
+        <ActivityDispatcher type={node.type} content={content} label={node.label} />
+      </div>
     </div>
   )
 }
