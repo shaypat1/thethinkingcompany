@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 import './GravityRenderer.css'
 
 const PLANETS = [
-  { name: 'Mercury', color: '#a0a0a0', glow: '#c0c0c0' },
-  { name: 'Venus', color: '#e8c060', glow: '#f0d880' },
-  { name: 'Earth', color: '#4090d0', glow: '#60b0f0' },
-  { name: 'Mars', color: '#d06030', glow: '#e08050' },
-  { name: 'Jupiter', color: '#d0a060', glow: '#e0c080' },
-  { name: 'Saturn', color: '#c8b080', glow: '#e0d0a0' },
+  { name: 'Mercury', base: '#a0a0a0', light: '#c8c8c8', dark: '#707070', glow: '#c0c0c0', detail: 'craters' },
+  { name: 'Venus', base: '#e8c060', light: '#f0d880', dark: '#c09830', glow: '#f0d880', detail: 'clouds' },
+  { name: 'Earth', base: '#4090d0', light: '#60b0f0', dark: '#2060a0', glow: '#60b0f0', detail: 'earth' },
+  { name: 'Mars', base: '#d06030', light: '#e08050', dark: '#a04020', glow: '#e08050', detail: 'craters' },
+  { name: 'Jupiter', base: '#d0a060', light: '#e0c080', dark: '#a07830', glow: '#e0c080', detail: 'bands' },
+  { name: 'Saturn', base: '#c8b080', light: '#e0d0a0', dark: '#a08850', glow: '#e0d0a0', detail: 'rings' },
 ]
 
 const QUESTIONS_PER_LEVEL = 4
@@ -137,7 +137,7 @@ export default function GravityRenderer({ questions }) {
       const W = canvas.width / dpr
       const H = canvas.height / dpr
       const c = g.colors
-      const planetY = H - 60
+      const planetY = H - 100
       const planet = PLANETS[g.level % PLANETS.length]
 
       // Clear
@@ -152,24 +152,102 @@ export default function GravityRenderer({ questions }) {
         ctx.fill()
       })
 
-      // Planet surface
-      const planetGrad = ctx.createRadialGradient(W / 2, H + 80, 10, W / 2, H + 80, 300)
-      planetGrad.addColorStop(0, planet.glow)
-      planetGrad.addColorStop(0.5, planet.color)
-      planetGrad.addColorStop(1, 'transparent')
-      ctx.fillStyle = planetGrad
-      ctx.beginPath()
-      ctx.ellipse(W / 2, H + 80, W * 0.7, 180, 0, 0, Math.PI * 2)
-      ctx.fill()
+      // Planet — massive sphere, curved surface spans full width
+      const pRadius = W * 1.2
+      const pCenterY = H + pRadius - 80
 
-      // Planet surface line
-      ctx.strokeStyle = planet.glow
-      ctx.lineWidth = 2
-      ctx.globalAlpha = 0.4
+      ctx.save()
       ctx.beginPath()
-      ctx.ellipse(W / 2, H + 80, W * 0.65, 160, 0, Math.PI, Math.PI * 2)
-      ctx.stroke()
+      ctx.arc(W / 2, pCenterY, pRadius, 0, Math.PI * 2)
+      ctx.clip()
+
+      // Base gradient (lit from top-left)
+      const baseGrad = ctx.createRadialGradient(
+        W / 2 - pRadius * 0.3, pCenterY - pRadius * 0.3, pRadius * 0.1,
+        W / 2, pCenterY, pRadius
+      )
+      baseGrad.addColorStop(0, planet.light)
+      baseGrad.addColorStop(0.6, planet.base)
+      baseGrad.addColorStop(1, planet.dark)
+      ctx.fillStyle = baseGrad
+      ctx.fillRect(W / 2 - pRadius, pCenterY - pRadius, pRadius * 2, pRadius * 2)
+
+      // Surface detail (positioned in visible strip near top of sphere)
+      const surfaceTop = pCenterY - pRadius // top of sphere circle
+      if (planet.detail === 'craters') {
+        const craterSeeds = [0.1, 0.3, 0.55, 0.75, 0.9, 0.2, 0.65, 0.45, 0.85]
+        for (let i = 0; i < craterSeeds.length; i++) {
+          const cx = craterSeeds[i] * W
+          const cy = surfaceTop + 15 + (craterSeeds[(i + 3) % 9]) * 60
+          const cr = 8 + craterSeeds[(i + 1) % 9] * 18
+          ctx.fillStyle = planet.dark
+          ctx.globalAlpha = 0.25
+          ctx.beginPath()
+          ctx.arc(cx, cy, cr, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.globalAlpha = 1
+        }
+      } else if (planet.detail === 'bands') {
+        for (let i = 0; i < 5; i++) {
+          const by = surfaceTop + i * 18
+          ctx.fillStyle = i % 2 === 0 ? planet.dark : planet.light
+          ctx.globalAlpha = 0.15
+          ctx.fillRect(0, by, W, 10)
+          ctx.globalAlpha = 1
+        }
+      } else if (planet.detail === 'clouds') {
+        for (let i = 0; i < 6; i++) {
+          const cx = (i / 6) * W + Math.sin(i * 2.1 + t * 0.003) * 40
+          const cy = surfaceTop + 10 + i * 12
+          ctx.fillStyle = planet.light
+          ctx.globalAlpha = 0.2
+          ctx.beginPath()
+          ctx.ellipse(cx, cy, W * 0.12, 8, 0.2, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.globalAlpha = 1
+        }
+      } else if (planet.detail === 'earth') {
+        ctx.fillStyle = '#3a8a3a'
+        ctx.globalAlpha = 0.35
+        const landX = Math.sin(t * 0.002) * 20
+        ctx.beginPath()
+        ctx.ellipse(W * 0.3 + landX, surfaceTop + 25, W * 0.15, 30, 0.3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.beginPath()
+        ctx.ellipse(W * 0.7 + landX, surfaceTop + 40, W * 0.1, 25, -0.2, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.globalAlpha = 1
+      }
+
+      // Atmosphere rim
+      ctx.restore()
+      const rimGrad = ctx.createRadialGradient(W / 2, pCenterY, pRadius * 0.85, W / 2, pCenterY, pRadius * 1.08)
+      rimGrad.addColorStop(0, 'transparent')
+      rimGrad.addColorStop(0.7, 'transparent')
+      rimGrad.addColorStop(1, planet.glow)
+      ctx.fillStyle = rimGrad
+      ctx.globalAlpha = 0.3
+      ctx.beginPath()
+      ctx.arc(W / 2, pCenterY, pRadius * 1.08, 0, Math.PI * 2)
+      ctx.fill()
       ctx.globalAlpha = 1
+
+      // Saturn rings (visible as arcs above the surface)
+      if (planet.detail === 'rings') {
+        ctx.strokeStyle = planet.light
+        ctx.lineWidth = 4
+        ctx.globalAlpha = 0.25
+        ctx.beginPath()
+        ctx.ellipse(W / 2, pCenterY, pRadius * 1.15, pRadius * 0.04, 0, Math.PI + 0.3, Math.PI * 2 - 0.3)
+        ctx.stroke()
+        ctx.strokeStyle = planet.base
+        ctx.lineWidth = 6
+        ctx.globalAlpha = 0.15
+        ctx.beginPath()
+        ctx.ellipse(W / 2, pCenterY, pRadius * 1.08, pRadius * 0.03, 0, Math.PI + 0.4, Math.PI * 2 - 0.4)
+        ctx.stroke()
+        ctx.globalAlpha = 1
+      }
 
       // Game logic (only when playing)
       if (g.gameState === 'playing') {
@@ -233,30 +311,63 @@ export default function GravityRenderer({ questions }) {
         }
       }
 
-      // Draw asteroids
-      ctx.font = '600 14px Inter, system-ui, sans-serif'
+      // Draw comets
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       for (const a of g.asteroids) {
         if (!a.alive) continue
         const wobbleX = Math.sin(a.wobble) * 2
+        const cx = a.x + wobbleX
+        const headR = 16
 
-        // Asteroid body
-        ctx.fillStyle = c.border
+        // Tail (flame trailing upward)
+        const tailLen = 50 + Math.sin(a.wobble * 3) * 8
+        const tailGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen)
+        tailGrad.addColorStop(0, c.accent)
+        tailGrad.addColorStop(0.4, c.accent + '60')
+        tailGrad.addColorStop(1, 'transparent')
+        ctx.fillStyle = tailGrad
         ctx.beginPath()
-        ctx.roundRect(a.x - a.width / 2 + wobbleX, a.y - 18, a.width, 36, 18)
+        ctx.moveTo(cx - headR * 0.7, a.y - headR * 0.3)
+        ctx.quadraticCurveTo(cx - 4 + Math.sin(a.wobble * 5) * 3, a.y - tailLen * 0.6, cx, a.y - tailLen)
+        ctx.quadraticCurveTo(cx + 4 + Math.sin(a.wobble * 5 + 1) * 3, a.y - tailLen * 0.6, cx + headR * 0.7, a.y - headR * 0.3)
         ctx.fill()
 
-        // Asteroid border
-        ctx.strokeStyle = c.muted
-        ctx.lineWidth = 1.5
+        // Inner tail glow
+        const innerGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen * 0.6)
+        innerGrad.addColorStop(0, c.accent)
+        innerGrad.addColorStop(1, 'transparent')
+        ctx.fillStyle = innerGrad
+        ctx.globalAlpha = 0.5
         ctx.beginPath()
-        ctx.roundRect(a.x - a.width / 2 + wobbleX, a.y - 18, a.width, 36, 18)
-        ctx.stroke()
+        ctx.moveTo(cx - headR * 0.3, a.y - headR * 0.2)
+        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx, a.y - tailLen * 0.5)
+        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx + headR * 0.3, a.y - headR * 0.2)
+        ctx.fill()
+        ctx.globalAlpha = 1
 
-        // Question text
+        // Comet head (rocky sphere)
+        const headGrad = ctx.createRadialGradient(cx - 3, a.y - 3, 2, cx, a.y, headR)
+        headGrad.addColorStop(0, c.muted)
+        headGrad.addColorStop(0.5, c.border)
+        headGrad.addColorStop(1, planet.dark || '#333')
+        ctx.fillStyle = headGrad
+        ctx.beginPath()
+        ctx.arc(cx, a.y, headR, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Head highlight
         ctx.fillStyle = c.text
-        ctx.fillText(a.q, a.x + wobbleX, a.y)
+        ctx.globalAlpha = 0.15
+        ctx.beginPath()
+        ctx.arc(cx - 4, a.y - 4, headR * 0.5, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.globalAlpha = 1
+
+        // Question text below comet
+        ctx.font = '600 13px Inter, system-ui, sans-serif'
+        ctx.fillStyle = c.accent
+        ctx.fillText(a.q, cx, a.y + headR + 16)
       }
 
       // Update & draw particles
