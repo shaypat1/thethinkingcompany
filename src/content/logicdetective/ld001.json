@@ -1,0 +1,144 @@
+{
+  "id": "ld001",
+  "title": "The Case of the Suspicious Sandwich",
+  "cases": [
+    {
+      "id": "c1",
+      "tier": 1,
+      "context": "Witness Testimony",
+      "speaker": "Tommy",
+      "speakerRole": "playground witness",
+      "claims": [
+        "I saw Jake near the cafeteria at lunch today.",
+        "Jake was wearing a red shirt.",
+        "Everyone knows Jake is a troublemaker, so he definitely stole the sandwich.",
+        "The sandwich was gone by 12:15."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Ad Hominem",
+      "fallacyNickname": "Attacking the Person",
+      "options": [
+        "Tommy is attacking Jake's character instead of giving real evidence.",
+        "Tommy didn't actually see anything happen."
+      ],
+      "correctOption": 0,
+      "explanation": "Just because someone has a bad reputation doesn't mean they did something wrong. Tommy is attacking Jake as a person instead of providing actual evidence that Jake took the sandwich. This is called Ad Hominem — attacking the person instead of the argument."
+    },
+    {
+      "id": "c2",
+      "tier": 1,
+      "context": "School Debate",
+      "speaker": "Mia",
+      "speakerRole": "class president candidate",
+      "claims": [
+        "I think we should have longer recess because exercise helps us focus better in class.",
+        "Studies show that kids who move more do better on tests.",
+        "Plus, literally everyone in the whole school wants longer recess.",
+        "We could add 10 extra minutes after lunch."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Bandwagon",
+      "fallacyNickname": "Everyone's Doing It",
+      "options": [
+        "Mia can't know that every single student wants longer recess.",
+        "Recess doesn't actually help with focus."
+      ],
+      "correctOption": 0,
+      "explanation": "Mia claims 'literally everyone' wants longer recess, but she can't possibly know what every student thinks. Using 'everyone agrees' to make an argument stronger is called the Bandwagon fallacy — just because many people believe something doesn't make it true."
+    },
+    {
+      "id": "c3",
+      "tier": 2,
+      "context": "Family Argument",
+      "speaker": "Dad",
+      "speakerRole": "parent",
+      "claims": [
+        "I understand you want a pet snake.",
+        "Snakes can actually be low-maintenance pets compared to dogs.",
+        "But either we get a normal pet like a dog, or we get no pet at all.",
+        "There's really no middle ground here."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Dilemma",
+      "fallacyNickname": "Only Two Choices",
+      "options": [
+        "Dad is pretending there are only two options when there are actually many pet choices.",
+        "Dad is wrong that snakes are low-maintenance.",
+        "Dad is attacking snakes instead of considering the argument."
+      ],
+      "correctOption": 0,
+      "explanation": "Dad presents only two choices — dog or nothing — when there are actually lots of options (cat, fish, hamster, or even the snake!). This is called a False Dilemma — making it seem like there are only two choices when more options exist."
+    },
+    {
+      "id": "c4",
+      "tier": 2,
+      "context": "Social Media Post",
+      "speaker": "InfluencerKid99",
+      "speakerRole": "popular vlogger",
+      "claims": [
+        "I just tried this new energy drink and aced my math test!",
+        "I drank it right before the test started.",
+        "So this drink obviously makes you smarter!",
+        "You should all buy it — link in bio!"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Cause",
+      "fallacyNickname": "After ≠ Because",
+      "options": [
+        "Just because two things happened in order doesn't mean one caused the other.",
+        "The influencer is using their popularity to sell products.",
+        "Energy drinks are unhealthy for kids."
+      ],
+      "correctOption": 0,
+      "explanation": "The influencer assumes the drink caused the good grade just because they drank it before the test. But maybe they studied hard, or the test was easy! This is called False Cause (or Post Hoc) — assuming that because B happened after A, A must have caused B."
+    },
+    {
+      "id": "c5",
+      "tier": 2,
+      "context": "Classroom Discussion",
+      "speaker": "Alex",
+      "speakerRole": "classmate",
+      "claims": [
+        "I think we should use tablets in class for learning.",
+        "They have lots of educational apps and make research easier.",
+        "My friend tried a tablet once and couldn't stop playing games on it.",
+        "So tablets are terrible for learning and we should ban them completely."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Hasty Generalization",
+      "fallacyNickname": "Jumping to Conclusions",
+      "options": [
+        "Alex is using one friend's experience to make a claim about all tablets.",
+        "Alex is contradicting himself by first supporting then opposing tablets.",
+        "Alex doesn't have the authority to make decisions about classroom tools."
+      ],
+      "correctOption": 0,
+      "explanation": "Alex takes one example — his friend getting distracted — and concludes ALL tablets are terrible for learning. One person's experience doesn't prove what's true for everyone. This is called Hasty Generalization — jumping to a big conclusion from too little evidence."
+    },
+    {
+      "id": "c6",
+      "tier": 3,
+      "context": "School Newspaper Editorial",
+      "speaker": "Editor Sarah",
+      "speakerRole": "school paper editor",
+      "claims": [
+        "Our school's recycling program has reduced waste by 30% this year.",
+        "The program costs about $500 per semester to run.",
+        "Some students say recycling is pointless because other countries pollute way more than we do.",
+        "However, the janitor reports our trash bins are lighter than last year.",
+        "I believe we should expand the program to include composting."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Red Herring",
+      "fallacyNickname": "Changing the Subject",
+      "options": [
+        "The claim about other countries' pollution is irrelevant to whether our school should recycle.",
+        "The recycling program is too expensive at $500 per semester.",
+        "The editor doesn't provide enough evidence for composting.",
+        "The 30% waste reduction statistic might not be accurate."
+      ],
+      "correctOption": 0,
+      "explanation": "What other countries do has nothing to do with whether our school's recycling program works. Bringing up other countries' pollution is a Red Herring — introducing an irrelevant topic to distract from the actual argument about the school's program."
+    }
+  ]
+}

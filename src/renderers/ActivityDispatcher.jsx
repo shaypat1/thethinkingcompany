@@ -9,6 +9,7 @@ import CardMatchingRenderer from './CardMatchingRenderer'
 import MissingItemRenderer from './MissingItemRenderer'
 import VerbalMemoryRenderer from './VerbalMemoryRenderer'
 import BackwardsSpanRenderer from './BackwardsSpanRenderer'
+import LogicDetectiveRenderer from './LogicDetectiveRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -32,6 +33,8 @@ export default function ActivityDispatcher({ type, content, label }) {
       return <VerbalMemoryRenderer />
     case 'backwardsspan':
       return <BackwardsSpanRenderer />
+    case 'logicdetective':
+      return <LogicDetectiveRenderer cases={content.cases} />
     default:
       return <PlaceholderRenderer label={label} />
   }
