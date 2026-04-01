@@ -33,8 +33,14 @@ export default function ActivityDispatcher({ type, content, label }) {
       return <VerbalMemoryRenderer />
     case 'backwardsspan':
       return <BackwardsSpanRenderer />
-    case 'logicdetective':
-      return <LogicDetectiveRenderer cases={content.cases} />
+    case 'logicdetective': {
+      const cases = content?.cases || []
+      if (content?.narrative && cases[0]) {
+        cases[0].__narrative = content.narrative
+        cases[0].__title = content.title
+      }
+      return <LogicDetectiveRenderer cases={cases} />
+    }
     default:
       return <PlaceholderRenderer label={label} />
   }
