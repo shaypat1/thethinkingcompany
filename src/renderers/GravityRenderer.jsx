@@ -256,9 +256,9 @@ export default function GravityRenderer({ questions }) {
         const spawnInterval = Math.max(40, SPAWN_INTERVAL_BASE - g.level * 15)
         if (g.spawnQueue.length > 0 && g.spawnTimer >= spawnInterval) {
           const q = g.spawnQueue.shift()
-          const asteroidW = Math.max(80, ctx.measureText(q.q).width + 40)
+          const asteroidW = 90
           g.asteroids.push({
-            x: Math.random() * (W - asteroidW - 40) + 20 + asteroidW / 2,
+            x: Math.random() * (W - 120) + 60,
             y: -30,
             vy: BASE_SPEED * (1 + g.level * 0.18),
             q: q.q,
@@ -311,63 +311,85 @@ export default function GravityRenderer({ questions }) {
         }
       }
 
-      // Draw comets
+      // Draw chunky faceted asteroids
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       for (const a of g.asteroids) {
         if (!a.alive) continue
         const wobbleX = Math.sin(a.wobble) * 2
         const cx = a.x + wobbleX
-        const headR = 16
+        const sz = 38 // asteroid half-size
+        const rot = a.wobble * 0.3 // slow rotation
 
-        // Tail (flame trailing upward)
-        const tailLen = 50 + Math.sin(a.wobble * 3) * 8
-        const tailGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen)
-        tailGrad.addColorStop(0, c.accent)
-        tailGrad.addColorStop(0.4, c.accent + '60')
-        tailGrad.addColorStop(1, 'transparent')
-        ctx.fillStyle = tailGrad
+        ctx.save()
+        ctx.translate(cx, a.y)
+        ctx.rotate(rot)
+
+        // Generate faceted polygon vertices (irregular pentagon/hexagon)
+        const sides = 6
+        const verts = []
+        for (let i = 0; i < sides; i++) {
+          const angle = (Math.PI * 2 * i) / sides - Math.PI / 2
+          const r = sz * (0.8 + ((Math.sin(i * 137.5 + a.x) * 0.5 + 0.5) * 0.4))
+          verts.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r })
+        }
+
+        // Shadow/glow behind asteroid
+        ctx.fillStyle = c.accent + '15'
         ctx.beginPath()
-        ctx.moveTo(cx - headR * 0.7, a.y - headR * 0.3)
-        ctx.quadraticCurveTo(cx - 4 + Math.sin(a.wobble * 5) * 3, a.y - tailLen * 0.6, cx, a.y - tailLen)
-        ctx.quadraticCurveTo(cx + 4 + Math.sin(a.wobble * 5 + 1) * 3, a.y - tailLen * 0.6, cx + headR * 0.7, a.y - headR * 0.3)
+        ctx.arc(0, 0, sz * 1.3, 0, Math.PI * 2)
         ctx.fill()
 
-        // Inner tail glow
-        const innerGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen * 0.6)
-        innerGrad.addColorStop(0, c.accent)
-        innerGrad.addColorStop(1, 'transparent')
-        ctx.fillStyle = innerGrad
-        ctx.globalAlpha = 0.5
+        // Main body — dark faceted shape
         ctx.beginPath()
-        ctx.moveTo(cx - headR * 0.3, a.y - headR * 0.2)
-        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx, a.y - tailLen * 0.5)
-        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx + headR * 0.3, a.y - headR * 0.2)
+        ctx.moveTo(verts[0].x, verts[0].y)
+        for (let i = 1; i < verts.length; i++) ctx.lineTo(verts[i].x, verts[i].y)
+        ctx.closePath()
+        ctx.fillStyle = c.border
         ctx.fill()
-        ctx.globalAlpha = 1
+        ctx.strokeStyle = c.muted
+        ctx.lineWidth = 1.5
+        ctx.stroke()
 
-        // Comet head (rocky sphere)
-        const headGrad = ctx.createRadialGradient(cx - 3, a.y - 3, 2, cx, a.y, headR)
-        headGrad.addColorStop(0, c.muted)
-        headGrad.addColorStop(0.5, c.border)
-        headGrad.addColorStop(1, planet.dark || '#333')
-        ctx.fillStyle = headGrad
+        // Facet lines from center to create crystal look
+        for (let i = 0; i < verts.length; i++) {
+          const next = verts[(i + 1) % verts.length]
+          const midX = (verts[i].x + next.x) / 2
+          const midY = (verts[i].y + next.y) / 2
+          ctx.beginPath()
+          ctx.moveTo(0, 0)
+          ctx.lineTo(midX * 0.6, midY * 0.6)
+          ctx.strokeStyle = c.muted + '40'
+          ctx.lineWidth = 1
+          ctx.stroke()
+        }
+
+        // Light facets (top-left faces brighter)
+        for (let i = 0; i < verts.length; i++) {
+          const next = verts[(i + 1) % verts.length]
+          if (verts[i].y < 0 && verts[i].x < 0) {
+            ctx.beginPath()
+            ctx.moveTo(0, 0)
+            ctx.lineTo(verts[i].x, verts[i].y)
+            ctx.lineTo(next.x, next.y)
+            ctx.closePath()
+            ctx.fillStyle = c.text + '12'
+            ctx.fill()
+          }
+        }
+
+        // Highlight edge (top-left shine)
         ctx.beginPath()
-        ctx.arc(cx, a.y, headR, 0, Math.PI * 2)
+        ctx.arc(-sz * 0.25, -sz * 0.25, sz * 0.35, 0, Math.PI * 2)
+        ctx.fillStyle = c.text + '08'
         ctx.fill()
 
-        // Head highlight
+        ctx.restore()
+
+        // Question text on the asteroid (not rotated)
+        ctx.font = '700 16px Inter, system-ui, sans-serif'
         ctx.fillStyle = c.text
-        ctx.globalAlpha = 0.15
-        ctx.beginPath()
-        ctx.arc(cx - 4, a.y - 4, headR * 0.5, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.globalAlpha = 1
-
-        // Question text below comet
-        ctx.font = '600 13px Inter, system-ui, sans-serif'
-        ctx.fillStyle = c.accent
-        ctx.fillText(a.q, cx, a.y + headR + 16)
+        ctx.fillText(a.q, cx, a.y)
       }
 
       // Update & draw particles
