@@ -159,7 +159,7 @@ export function createScene(container) {
   chestBase.position.y = 0.225
   chestBase.castShadow = true
   chestGroup.add(chestBase)
-  const lidGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.82, 8, 1, false, 0, Math.PI)
+  const lidGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.82, 12, 1, false, 0, Math.PI)
   const lid = new THREE.Mesh(lidGeo, new THREE.MeshStandardMaterial({ color: WOOD_COLOR, roughness: 0.5 }))
   lid.rotation.z = Math.PI / 2
   lid.rotation.y = Math.PI / 2
@@ -194,7 +194,7 @@ export function createScene(container) {
   chestGroup.add(coinLight)
 
   chestGroup.position.set(0, 0.04, 1.5)
-  chestGroup.rotation.y = Math.PI
+  chestGroup.rotation.y = Math.PI / 2
   scene.add(chestGroup)
 
   // === FLOATING COINS for animation (hidden initially) ===
