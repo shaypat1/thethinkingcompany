@@ -18,6 +18,8 @@ import mi001 from './missingitem/mi001.json'
 import vb001 from './verbalmemory/vb001.json'
 import bs001 from './backwardsspan/bs001.json'
 import rb001 from './robot/rb001.json'
+import rb002 from './robot/rb002.json'
+import rb003 from './robot/rb003.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -32,7 +34,7 @@ const content = {
   missingitem: { mi001 },
   verbalmemory: { vb001 },
   backwardsspan: { bs001 },
-  robot: { rb001 },
+  robot: { rb001, rb002, rb003 },
 }
 
 export function getDay(dayNumber) {

@@ -6,6 +6,6 @@
     { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" },
     { "type": "backwardsspan", "id": "bs001", "label": "Backwards Span" },
     { "type": "sequencememory", "id": "sm001", "label": "Sequence" },
-    { "type": "chimptest", "id": "ct001", "label": "Chimp Test II" }
+    { "type": "robot", "id": "rb003", "label": "Sensor Lab" }
   ]
 }

@@ -8,255 +8,81 @@
       "id": "1-1",
       "name": "First Steps",
       "hint": "The robot needs to reach the green tile. Try placing Forward cards!",
-      "width": 3,
-      "height": 3,
-      "grid": [
-        [".", ".", "."],
-        [".", ".", "."],
-        [".", ".", "."]
-      ],
-      "start": [1, 2],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [1, 0],
-      "cards": ["forward"],
-      "par": 2
+      "width": 3, "height": 3,
+      "grid": [[".", ".", "."], [".", ".", "."], [".", ".", "."]],
+      "start": [1, 2], "startDir": "up",
+      "goal": "reach", "target": [1, 0],
+      "cards": ["forward"], "par": 2
     },
     {
       "id": "1-2",
       "name": "Left Turn",
       "hint": "You need to turn before moving. Try Turn Left, then Forward!",
-      "width": 3,
-      "height": 3,
-      "grid": [
-        [".", ".", "."],
-        [".", ".", "."],
-        [".", ".", "."]
-      ],
-      "start": [2, 1],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [0, 1],
-      "cards": ["forward", "left"],
-      "par": 3
+      "width": 3, "height": 3,
+      "grid": [[".", ".", "."], [".", ".", "."], [".", ".", "."]],
+      "start": [2, 1], "startDir": "up",
+      "goal": "reach", "target": [0, 1],
+      "cards": ["forward", "left"], "par": 3
     },
     {
       "id": "1-3",
       "name": "Around the Corner",
       "hint": "Navigate around the wall. You'll need to turn and move carefully!",
-      "width": 4,
-      "height": 4,
-      "grid": [
-        [".", ".", ".", "."],
-        [".", "W", "W", "."],
-        [".", ".", ".", "."],
-        [".", ".", ".", "."]
-      ],
-      "start": [0, 3],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [3, 0],
-      "cards": ["forward", "left", "right"],
-      "par": 6
+      "width": 4, "height": 4,
+      "grid": [[".", ".", ".", "."], [".", "W", "W", "."], [".", ".", ".", "."], [".", ".", ".", "."]],
+      "start": [0, 3], "startDir": "up",
+      "goal": "reach", "target": [3, 0],
+      "cards": ["forward", "left", "right"], "par": 6
     },
     {
       "id": "1-4",
       "name": "The Zigzag",
       "hint": "This path twists back and forth. Plan your turns carefully!",
-      "width": 5,
-      "height": 3,
-      "grid": [
-        [".", ".", "W", ".", "."],
-        [".", ".", "W", ".", "."],
-        [".", ".", ".", ".", "."]
-      ],
-      "start": [0, 2],
-      "startDir": "right",
-      "goal": "reach",
-      "target": [4, 0],
-      "cards": ["forward", "left", "right"],
-      "par": 8
+      "width": 5, "height": 3,
+      "grid": [[".", ".", "W", ".", "."], [".", ".", "W", ".", "."], [".", ".", ".", ".", "."]],
+      "start": [0, 2], "startDir": "right",
+      "goal": "reach", "target": [4, 0],
+      "cards": ["forward", "left", "right"], "par": 8
     },
     {
       "id": "1-5",
       "name": "Collect the Gears",
       "hint": "Move to each gear and use Pick Up to collect it!",
-      "width": 3,
-      "height": 3,
-      "grid": [
-        ["G", ".", "."],
-        [".", ".", "."],
-        [".", ".", "G"]
-      ],
-      "start": [1, 1],
-      "startDir": "up",
+      "width": 3, "height": 3,
+      "grid": [["G", ".", "."], [".", ".", "."], [".", ".", "G"]],
+      "start": [1, 1], "startDir": "up",
       "goal": "collect",
-      "cards": ["forward", "left", "right", "pickup"],
-      "par": 8
+      "cards": ["forward", "left", "right", "pickup"], "par": 8
     },
     {
       "id": "1-6",
       "name": "Light the Way",
       "hint": "Stand on each dark tile and use Light Up to activate it!",
-      "width": 4,
-      "height": 3,
-      "grid": [
-        [".", "L", ".", "."],
-        [".", ".", ".", "."],
-        [".", ".", "L", "."]
-      ],
-      "start": [0, 1],
-      "startDir": "right",
+      "width": 4, "height": 3,
+      "grid": [[".", "L", ".", "."], [".", ".", ".", "."], [".", ".", "L", "."]],
+      "start": [0, 1], "startDir": "right",
       "goal": "light",
-      "cards": ["forward", "left", "right", "light"],
-      "par": 7
+      "cards": ["forward", "left", "right", "light"], "par": 7
     },
     {
       "id": "1-7",
       "name": "The Maze",
       "hint": "Find a path through the walls to reach the exit!",
-      "width": 5,
-      "height": 5,
-      "grid": [
-        [".", "W", ".", ".", "."],
-        [".", "W", ".", "W", "."],
-        [".", ".", ".", "W", "."],
-        [".", "W", "W", ".", "."],
-        [".", ".", ".", ".", "."]
-      ],
-      "start": [0, 4],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [4, 0],
-      "cards": ["forward", "left", "right"],
-      "par": 12
+      "width": 5, "height": 5,
+      "grid": [[".", "W", ".", ".", "."], [".", "W", ".", "W", "."], [".", ".", ".", "W", "."], [".", "W", "W", ".", "."], [".", ".", ".", ".", "."]],
+      "start": [0, 4], "startDir": "up",
+      "goal": "reach", "target": [4, 0],
+      "cards": ["forward", "left", "right"], "par": 12
     },
     {
       "id": "1-8",
       "name": "Full Repair",
       "hint": "Collect both gears AND light both tiles to complete the repair!",
-      "width": 4,
-      "height": 4,
-      "grid": [
-        ["G", ".", ".", "L"],
-        [".", "W", ".", "."],
-        [".", ".", "W", "."],
-        ["L", ".", ".", "G"]
-      ],
-      "start": [0, 0],
-      "startDir": "down",
+      "width": 4, "height": 4,
+      "grid": [["G", ".", ".", "L"], [".", "W", ".", "."], [".", ".", "W", "."], ["L", ".", ".", "G"]],
+      "start": [0, 0], "startDir": "down",
       "goal": "collect",
-      "cards": ["forward", "left", "right", "pickup", "light"],
-      "par": 14
-    },
-
-    {
-      "id": "2-1",
-      "name": "Repeat After Me",
-      "hint": "You need to move 4 tiles forward, but you only want to use a few cards. Try the Repeat ×4 card with Forward inside it!",
-      "width": 1,
-      "height": 5,
-      "grid": [["."],["."],["."],["."],["." ]],
-      "start": [0, 4],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [0, 0],
-      "cards": ["forward", "repeat2", "repeat3", "repeat4"],
-      "par": 4
-    },
-    {
-      "id": "2-2",
-      "name": "The Square",
-      "hint": "The robot needs to visit all 4 corners. Notice the pattern: forward, turn right, forward, turn right... Can you put that in a Repeat?",
-      "width": 3,
-      "height": 3,
-      "grid": [
-        ["G", ".", "G"],
-        [".", ".", "."],
-        ["G", ".", "G"]
-      ],
-      "start": [0, 0],
-      "startDir": "right",
-      "goal": "collect",
-      "cards": ["forward", "right", "pickup", "repeat4"],
-      "par": 8
-    },
-    {
-      "id": "2-3",
-      "name": "Light Row",
-      "hint": "Light up all 3 lamps in a row. The pattern repeats: move forward, light up. Use a Repeat!",
-      "width": 4,
-      "height": 1,
-      "grid": [[".", "L", "L", "L"]],
-      "start": [0, 0],
-      "startDir": "right",
-      "goal": "light",
-      "cards": ["forward", "light", "repeat3"],
-      "par": 6
-    },
-    {
-      "id": "2-4",
-      "name": "Spiral Patrol",
-      "hint": "Patrol around the outside of this grid. It's a repeating pattern: 3 forwards + turn right. Use a Repeat ×4!",
-      "width": 4,
-      "height": 4,
-      "grid": [
-        ["L", ".", ".", "L"],
-        [".", ".", ".", "."],
-        [".", ".", ".", "."],
-        ["L", ".", ".", "L"]
-      ],
-      "start": [0, 0],
-      "startDir": "right",
-      "goal": "light",
-      "cards": ["forward", "right", "light", "repeat3", "repeat4"],
-      "par": 16
-    },
-
-    {
-      "id": "3-1",
-      "name": "Wall Ahead?",
-      "hint": "The robot might face a wall. Use 'If Wall' to turn when there's a wall ahead, otherwise keep going forward!",
-      "width": 3,
-      "height": 4,
-      "grid": [
-        [".", ".", "."],
-        [".", "W", "."],
-        [".", ".", "."],
-        [".", ".", "."]
-      ],
-      "start": [1, 3],
-      "startDir": "up",
-      "goal": "reach",
-      "target": [1, 0],
-      "cards": ["forward", "left", "right", "ifwall", "repeat4"],
-      "par": 5
-    },
-    {
-      "id": "3-2",
-      "name": "Gem Detector",
-      "hint": "Move through the row and pick up any gems you find. Use 'If Gem' to check if there's a gem on your tile before picking up!",
-      "width": 5,
-      "height": 1,
-      "grid": [[".", "G", ".", "G", "G"]],
-      "start": [0, 0],
-      "startDir": "right",
-      "goal": "collect",
-      "cards": ["forward", "pickup", "ifgem", "repeat4"],
-      "par": 7
-    },
-    {
-      "id": "3-3",
-      "name": "Smart Patrol",
-      "hint": "Navigate a corridor, lighting lamps and collecting gears as you find them. Combine conditionals with loops!",
-      "width": 6,
-      "height": 1,
-      "grid": [[".", "L", "G", ".", "L", "G"]],
-      "start": [0, 0],
-      "startDir": "right",
-      "goal": "collect",
-      "cards": ["forward", "pickup", "light", "ifgem", "iflight", "repeat4"],
-      "par": 10
+      "cards": ["forward", "left", "right", "pickup", "light"], "par": 14
     }
   ]
 }

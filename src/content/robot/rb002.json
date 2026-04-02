@@ -1,0 +1,48 @@
+{
+  "id": "rb002",
+  "title": "The Factory Floor",
+  "world": 2,
+  "narrative": "The workshop is repaired! Now the robot needs to restart the factory. The production lines run on repeating patterns — your robot just learned a new trick: the Repeat card. One card, many actions.",
+  "levels": [
+    {
+      "id": "2-1",
+      "name": "Repeat After Me",
+      "hint": "Move 4 tiles forward with just a few cards. Try putting Forward inside a Repeat ×4!",
+      "width": 1, "height": 5,
+      "grid": [["."],["."],["."],["."],["." ]],
+      "start": [0, 4], "startDir": "up",
+      "goal": "reach", "target": [0, 0],
+      "cards": ["forward", "repeat2", "repeat3", "repeat4"], "par": 4
+    },
+    {
+      "id": "2-2",
+      "name": "The Square",
+      "hint": "Collect all 4 corner gears. Notice the pattern: forward, turn right, forward, turn right... Put that pattern in a Repeat!",
+      "width": 3, "height": 3,
+      "grid": [["G", ".", "G"], [".", ".", "."], ["G", ".", "G"]],
+      "start": [0, 0], "startDir": "right",
+      "goal": "collect",
+      "cards": ["forward", "right", "pickup", "repeat4"], "par": 8
+    },
+    {
+      "id": "2-3",
+      "name": "Light Row",
+      "hint": "Light 3 lamps in a row. The pattern repeats: forward, light up. Use a Repeat ×3!",
+      "width": 4, "height": 1,
+      "grid": [[".", "L", "L", "L"]],
+      "start": [0, 0], "startDir": "right",
+      "goal": "light",
+      "cards": ["forward", "light", "repeat3"], "par": 6
+    },
+    {
+      "id": "2-4",
+      "name": "Spiral Patrol",
+      "hint": "Patrol the perimeter and light the corner lamps. Pattern: 3 forwards + turn right. Repeat ×4!",
+      "width": 4, "height": 4,
+      "grid": [["L", ".", ".", "L"], [".", ".", ".", "."], [".", ".", ".", "."], ["L", ".", ".", "L"]],
+      "start": [0, 0], "startDir": "right",
+      "goal": "light",
+      "cards": ["forward", "right", "light", "repeat3", "repeat4"], "par": 16
+    }
+  ]
+}
