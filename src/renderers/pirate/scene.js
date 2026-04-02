@@ -147,9 +147,11 @@ function createRaft(scene) {
         }
         if (cfg.reskin && c.material && c.material.color) cfg.reskin(c)
       })
-      // Plant feet on deck for ALL models
+      // Plant feet on deck — compute once and store
       const box = new THREE.Box3().setFromObject(model)
-      model.position.y = 7 - box.min.y
+      const feetY = 7 - box.min.y
+      model.position.y = feetY
+      model.userData.feetY = feetY
 
       if (gltf.animations && gltf.animations.length > 0) {
         const mixer = new THREE.AnimationMixer(model)
@@ -170,14 +172,16 @@ function createRaft(scene) {
 
   // Function to show N pirates and center them on platform
   function showPirates(count) {
-    const spacing = 55
+    const spacing = 80
     const startX = -(count - 1) * spacing / 2
     for (let i = 0; i < 5; i++) {
       if (!pirates[i]) continue
       if (i < count) {
+        resetPirate(i)
         pirates[i].visible = true
         pirates[i].position.x = startX + i * spacing
         pirates[i].position.z = -20
+        pirates[i].position.y = pirates[i].userData.feetY || 7
       } else {
         pirates[i].visible = false
       }
@@ -186,11 +190,14 @@ function createRaft(scene) {
 
   // Play a specific animation on a pirate by index
   // Loops for `durationMs` then returns to Idle
+  const animTimeouts = {}
   function playAnimation(pirateIdx, animName, durationMs) {
     const model = pirates[pirateIdx]
     if (!model || !model.userData.mixer || !model.userData.clips) return
     const mixer = model.userData.mixer
     mixer.stopAllAction()
+    // Cancel any pending return-to-idle timeout
+    if (animTimeouts[pirateIdx]) { clearTimeout(animTimeouts[pirateIdx]); delete animTimeouts[pirateIdx] }
     const clip = model.userData.clips.find(c => c.name === animName)
     if (!clip) return
     const action = mixer.clipAction(clip)
@@ -198,16 +205,187 @@ function createRaft(scene) {
     action.reset().play()
 
     // Return to Idle after duration (default 4 seconds)
-    setTimeout(() => {
+    animTimeouts[pirateIdx] = setTimeout(() => {
       mixer.stopAllAction()
       const idle = model.userData.clips.find(c => c.name === 'Idle')
       if (idle) mixer.clipAction(idle).reset().play()
+      delete animTimeouts[pirateIdx]
     }, durationMs || 4000)
+  }
+
+  // Walk the plank — captain walks to the edge and falls off
+  let plankAnimId = null
+  function walkThePlank(pirateIdx, onComplete) {
+    const model = pirates[pirateIdx]
+    if (!model) return
+    if (!model.visible) model.visible = true
+    // Cancel any pending animation timeout so it doesn't interrupt the walk
+    if (animTimeouts[pirateIdx]) { clearTimeout(animTimeouts[pirateIdx]); delete animTimeouts[pirateIdx] }
+    const hasMixer = model.userData.mixer && model.userData.clips
+
+    const startX = model.position.x
+    const startY = model.position.y
+    const startZ = model.position.z
+    const startRotY = model.rotation.y
+
+    if (hasMixer) {
+      const mixer = model.userData.mixer
+      mixer.stopAllAction()
+      // Face away from camera (walk toward back edge)
+      model.rotation.y = 0
+      const walkClip = model.userData.clips.find(c => c.name === 'Walk')
+      if (walkClip) { mixer.clipAction(walkClip).reset().play() }
+    }
+
+    const startTime = performance.now()
+    const walkDuration = 2000
+    const fallDuration = 1500
+
+    function animatePlank() {
+      const elapsed = performance.now() - startTime
+
+      if (elapsed < walkDuration) {
+        const progress = elapsed / walkDuration
+        // Walk away from camera (+Z), toward back edge and off
+        model.position.z = startZ + progress * 150
+      } else if (elapsed < walkDuration + fallDuration) {
+        const fallElapsed = elapsed - walkDuration
+        if (fallElapsed < 50 && hasMixer) {
+          const mixer = model.userData.mixer
+          mixer.stopAllAction()
+          const jumpClip = model.userData.clips.find(c => c.name === 'Jump')
+          if (jumpClip) {
+            const action = mixer.clipAction(jumpClip)
+            action.loop = THREE.LoopOnce
+            action.clampWhenFinished = false
+            action.reset().play()
+          }
+        }
+        const fallProgress = fallElapsed / fallDuration
+        model.position.y = startY - fallProgress * fallProgress * 150
+        model.position.z = startZ + 150 + fallProgress * 30
+      } else {
+        // Done — hide and fully reset
+        cancelAnimationFrame(plankAnimId)
+        model.visible = false
+        if (onComplete) onComplete()
+        return
+      }
+
+      plankAnimId = requestAnimationFrame(animatePlank)
+    }
+
+    plankAnimId = requestAnimationFrame(animatePlank)
+  }
+
+  // Reset a pirate to clean state (position, rotation, animation)
+  function resetPirate(pirateIdx) {
+    const model = pirates[pirateIdx]
+    if (!model) return
+    model.rotation.set(0, 0, 0)
+    model.scale.setScalar(pirateConfigs[pirateIdx].scale)
+    model.position.y = model.userData.feetY || 7
+    if (model.userData.mixer) {
+      model.userData.mixer.stopAllAction()
+      const idle = model.userData.clips?.find(c => c.name === 'Idle')
+      if (idle) model.userData.mixer.clipAction(idle).reset().play()
+    }
+  }
+
+  // Animate coins from bag to pirate feet
+  const flyingCoins = []
+  const coinGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.3, 12)
+  const coinMat = new THREE.MeshStandardMaterial({ color: 0xDAA520, roughness: 0.05, metalness: 0.95 })
+
+  function distributeCoins(proposal) {
+    // Clean up any previous flying coins
+    for (const c of flyingCoins) { scene.remove(c.mesh); c.mesh.geometry.dispose() }
+    flyingCoins.length = 0
+
+    // Bag world position (bag is at group local (0, 7, 40))
+    const bagWorld = new THREE.Vector3()
+    group.localToWorld(bagWorld.set(0, 30, 40))
+
+    let delay = 0
+    for (let i = 0; i < proposal.length; i++) {
+      if (proposal[i] <= 0 || !pirates[i] || !pirates[i].visible) continue
+
+      // Target: pirate's feet
+      const pirateBox = new THREE.Box3().setFromObject(pirates[i])
+      const targetX = (pirateBox.max.x + pirateBox.min.x) / 2
+      const targetY = pirateBox.min.y + 2
+      const targetZ = (pirateBox.max.z + pirateBox.min.z) / 2
+
+      // Number of visible coins: 1-4 based on amount
+      const numCoins = Math.min(4, Math.max(1, Math.ceil(proposal[i] / 25)))
+
+      for (let c = 0; c < numCoins; c++) {
+        const coin = new THREE.Mesh(coinGeo, coinMat.clone())
+        coin.visible = false
+        scene.add(coin)
+
+        const coinDelay = delay + c * 120
+        const duration = 800 + Math.random() * 200
+        const startTime = performance.now() + coinDelay
+        const arcHeight = 30 + Math.random() * 15
+        const offsetX = (Math.random() - 0.5) * 4
+        const offsetZ = (Math.random() - 0.5) * 4
+
+        flyingCoins.push({
+          mesh: coin,
+          startTime,
+          duration,
+          from: bagWorld.clone(),
+          to: new THREE.Vector3(targetX + offsetX, targetY, targetZ + offsetZ),
+          arcHeight,
+          landed: false,
+        })
+      }
+      delay += 300
+    }
+  }
+
+  // Update flying coins each frame (called from render loop)
+  function updateFlyingCoins() {
+    const now = performance.now()
+    for (const c of flyingCoins) {
+      if (c.landed) continue
+      const elapsed = now - c.startTime
+      if (elapsed < 0) { c.mesh.visible = false; continue }
+
+      c.mesh.visible = true
+      const t = Math.min(1, elapsed / c.duration)
+      // Ease out
+      const ease = 1 - Math.pow(1 - t, 3)
+
+      c.mesh.position.lerpVectors(c.from, c.to, ease)
+      // Arc
+      c.mesh.position.y += Math.sin(t * Math.PI) * c.arcHeight
+      // Spin
+      c.mesh.rotation.y = t * Math.PI * 4
+      c.mesh.rotation.x = t * Math.PI * 2
+
+      if (t >= 1) {
+        c.landed = true
+        c.mesh.position.copy(c.to)
+        c.mesh.rotation.set(Math.random() * 0.3, Math.random() * Math.PI, Math.random() * 0.3)
+      }
+    }
+  }
+
+  function clearFlyingCoins() {
+    for (const c of flyingCoins) { scene.remove(c.mesh) }
+    flyingCoins.length = 0
   }
 
   group.userData.mixers = mixers
   group.userData.showPirates = showPirates
   group.userData.playAnimation = playAnimation
+  group.userData.walkThePlank = walkThePlank
+  group.userData.resetPirate = resetPirate
+  group.userData.distributeCoins = distributeCoins
+  group.userData.clearFlyingCoins = clearFlyingCoins
+  group.userData._updateFlyingCoins = updateFlyingCoins
   group.userData.pirates = pirates
 
   // Dummy flag ref
@@ -302,6 +480,8 @@ export function createScene(container) {
     if (raftGroup.userData.mixers) {
       raftGroup.userData.mixers.forEach(m => m.update(delta))
     }
+    // Flying coins
+    if (raftGroup.userData._updateFlyingCoins) raftGroup.userData._updateFlyingCoins()
     // Idle sway for static models — feet stay planted, body rocks
     raftGroup.children.forEach(child => {
       if (child.userData && child.userData.staticBob) {

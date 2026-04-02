@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import * as THREE from 'three'
 import { Link } from 'react-router-dom'
 import { createScene } from './pirate/scene'
 import { getOptimalProposal, simulateVote, getLevelData, TOTAL_LEVELS, TOTAL_GOLD } from './pirate/gameLogic'
@@ -6,6 +7,40 @@ import './PirateRenderer.css'
 
 const COLORS = ['#cc3333','#3366cc','#33aa55','#9944cc','#ee8833']
 const NAMES = ['Captain', 'Henry', 'Pietro', 'Wookho', 'Rohan']
+
+function getVoteReasoning(pirateCount, proposal, votes, optimal) {
+  const isOpt = proposal.every((v, i) => v === optimal[i])
+  const passed = votes.filter(Boolean).length >= Math.ceil(pirateCount / 2)
+  const fallback = pirateCount > 2 ? getOptimalProposal(pirateCount - 1) : null
+
+  return proposal.map((amount, i) => {
+    if (i === 0) {
+      // Captain
+      if (passed && isOpt) return "Perfect split. I keep the most!"
+      if (passed && !isOpt) return "It passed... but I gave away too much."
+      return "They rejected me..."
+    }
+
+    const myFallback = fallback ? (i - 1 < fallback.length ? fallback[i - 1] : 0) : 100
+    const votedYes = votes[i]
+
+    if (pirateCount === 2) {
+      if (amount > 0) return `Free coins! I'll take ${amount}.`
+      return "Doesn't matter. Captain only needs his own vote."
+    }
+
+    if (votedYes) {
+      if (amount === 1 && myFallback === 0) return "1 coin beats nothing. I'll take it."
+      if (amount > myFallback) return `${amount} coins! Better than the ${myFallback} I'd get otherwise.`
+      return `${amount} coins works for me.`
+    } else {
+      if (amount === 0 && myFallback > 0) return `Nothing?! I'd get ${myFallback} without you. NO.`
+      if (amount === 0 && myFallback === 0) return "I get nothing either way. Throw him overboard!"
+      if (amount <= myFallback) return `Only ${amount}? I'd get ${myFallback} if you're gone. NO.`
+      return "Not enough. NO."
+    }
+  })
+}
 
 function CoinSlider({ index, value, onChange, label, color, max }) {
   return (
@@ -33,6 +68,42 @@ export default function PirateRenderer() {
   const [proposal, setProposal] = useState([100, 0])
   const [votes, setVotes] = useState(null)
   const [feedback, setFeedback] = useState(null)
+  const [speechBubbles, setSpeechBubbles] = useState([])
+  const [pirateScreenPos, setPirateScreenPos] = useState([])
+  const posFrameRef = useRef(null)
+
+  // Project pirate 3D positions to 2D screen coords — snapshot once when bubbles appear
+  useEffect(() => {
+    if (speechBubbles.length === 0) return
+
+    // Only compute positions once (on first bubble), then keep them fixed
+    if (pirateScreenPos.length > 0) return
+
+    function tryCapture() {
+      const s = sceneRef.current
+      if (!s || !s.raftGroup.userData.pirates) { setTimeout(tryCapture, 100); return }
+      const pirates = s.raftGroup.userData.pirates
+      const container = containerRef.current
+      if (!container) { setTimeout(tryCapture, 100); return }
+      const w = container.clientWidth
+      const h = container.clientHeight
+
+      const positions = []
+      for (let i = 0; i < 5; i++) {
+        const model = pirates[i]
+        if (!model || !model.visible) { positions.push(null); continue }
+        const box = new THREE.Box3().setFromObject(model)
+        const headPos = new THREE.Vector3((box.max.x + box.min.x) / 2, box.max.y + 10, (box.max.z + box.min.z) / 2)
+        headPos.project(s.camera)
+        positions.push({
+          x: (headPos.x * 0.5 + 0.5) * w,
+          y: (-headPos.y * 0.5 + 0.5) * h,
+        })
+      }
+      setPirateScreenPos(positions)
+    }
+    tryCapture()
+  }, [speechBubbles.length])
 
   const levelData = getLevelData(level)
   const pirateCount = levelData.pirateCount
@@ -55,21 +126,28 @@ export default function PirateRenderer() {
   useEffect(() => {
     const s = sceneRef.current
     if (!s) return
-    // Retry until models are loaded
+    let done = false
     const tryShow = () => {
-      if (s.raftGroup.userData.showPirates) {
+      if (done) return
+      const pirates = s.raftGroup.userData.pirates
+      if (s.raftGroup.userData.showPirates && pirates && pirates.filter(Boolean).length >= pirateCount) {
         s.raftGroup.userData.showPirates(pirateCount)
+        done = true
       }
     }
     tryShow()
-    const interval = setInterval(tryShow, 300)
-    setTimeout(() => clearInterval(interval), 5000)
-    return () => clearInterval(interval)
+    if (!done) {
+      const interval = setInterval(() => { tryShow(); if (done) clearInterval(interval) }, 300)
+      setTimeout(() => clearInterval(interval), 5000)
+      return () => clearInterval(interval)
+    }
   }, [pirateCount])
 
   function resetToStart() {
     setLevel(0); setPhase('propose'); setProposal([100, 0])
-    setVotes(null); setFeedback(null)
+    setVotes(null); setFeedback(null); setSpeechBubbles([]); setPirateScreenPos([])
+    const s = sceneRef.current
+    if (s && s.raftGroup.userData.clearFlyingCoins) s.raftGroup.userData.clearFlyingCoins()
   }
 
   function handleCoinChange(index, value) {
@@ -148,14 +226,22 @@ export default function PirateRenderer() {
         }, i * 400)
       }
     } else {
-      // Failed — captain upset, no-voters celebrate, yes-voters sad
-      play(0, 'HitReact', 6000)
+      // Failed — other pirates celebrate
       for (let i = 1; i < pirateCount; i++) {
         setTimeout(() => {
-          if (!result.votes[i]) play(i, 'Yes', 6000) // celebrating captain's demise
-          else play(i, 'No', 6000)
+          if (!result.votes[i]) play(i, 'Yes', 8000)
+          else play(i, 'No', 8000)
         }, i * 400)
       }
+      // Captain walks the plank automatically after speech bubbles appear
+      setTimeout(() => {
+        // Remove captain's bubble
+        setSpeechBubbles(prev => prev.filter(b => b.index !== 0))
+        // Walk the plank
+        if (s.raftGroup.userData.walkThePlank) {
+          s.raftGroup.userData.walkThePlank(0)
+        }
+      }, pirateCount * 800 + 1500)
     }
   }
 
@@ -165,9 +251,27 @@ export default function PirateRenderer() {
     setFeedback(null)
     const result = simulateVote(proposal, pirateCount)
     setVotes(result); setPhase('voting')
+    setSpeechBubbles([])
+
+    // Animate coins from bag to pirates
+    const s = sceneRef.current
+    if (s && s.raftGroup.userData.distributeCoins) {
+      s.raftGroup.userData.distributeCoins(proposal)
+    }
+
+    // Show result after brief voting pause
     setTimeout(() => {
       setPhase('result')
       triggerResultAnimations(result, proposal)
+
+      // Sequence speech bubbles — one pirate at a time
+      const opt = getOptimalProposal(pirateCount)
+      const reasons = getVoteReasoning(pirateCount, proposal, result.votes, opt)
+      for (let i = 0; i < pirateCount; i++) {
+        setTimeout(() => {
+          setSpeechBubbles(prev => [...prev, { index: i, text: reasons[i], vote: result.votes[i] }])
+        }, i * 800)
+      }
     }, 600 + pirateCount * 200)
   }
 
@@ -177,12 +281,23 @@ export default function PirateRenderer() {
     const nc = getLevelData(next).pirateCount
     setLevel(next); setPhase('propose')
     const init = new Array(nc).fill(0); init[0] = TOTAL_GOLD
-    setProposal(init); setVotes(null); setFeedback(null)
+    setProposal(init); setVotes(null); setFeedback(null); setSpeechBubbles([]); setPirateScreenPos([])
+    const s = sceneRef.current
+    if (s && s.raftGroup.userData.clearFlyingCoins) s.raftGroup.userData.clearFlyingCoins()
   }
 
+  const captainTrackRef = useRef(null)
+
   function handlePlankWalk() {
+    // Remove ONLY the captain's speech bubble
+    setSpeechBubbles(prev => prev.filter(b => b.index !== 0))
     setPhase('plank')
-    setTimeout(() => resetToStart(), 2800)
+
+    const s = sceneRef.current
+    if (s && s.raftGroup.userData.walkThePlank) {
+      s.raftGroup.userData.walkThePlank(0)
+    }
+    setTimeout(() => resetToStart(), 4500)
   }
 
   const proposalPassed = votes?.passes
@@ -203,6 +318,21 @@ export default function PirateRenderer() {
           <li>Rejected? Captain walks the plank</li>
         </ol>
       </div>
+
+      {/* Speech bubbles anchored to pirate heads */}
+      {speechBubbles.map((bubble) => {
+        const pos = pirateScreenPos[bubble.index]
+        if (!pos) return null
+        return (
+          <div key={bubble.index} className={`pr-speech-bubble ${bubble.vote ? 'yes' : 'no'}`}
+            style={{ left: pos.x, top: pos.y, transform: 'translate(-50%, -100%)' }}>
+            <div className="pr-speech-name" style={{ color: COLORS[bubble.index] }}>{NAMES[bubble.index]}</div>
+            <div className="pr-speech-text">{bubble.text}</div>
+            <div className="pr-speech-vote">{bubble.vote ? '✓ YES' : '✗ NO'}</div>
+            <div className="pr-speech-arrow" />
+          </div>
+        )
+      })}
 
       {/* 3D Scene */}
       <div ref={containerRef} className="pr-scene" />
@@ -253,7 +383,7 @@ export default function PirateRenderer() {
               {proposalPassed ? (
                 <button className="pr-propose-btn" onClick={handleNextLevel}>{level + 1 >= TOTAL_LEVELS ? '🏆 Victory!' : `Next → ${NAMES[pirateCount]} joins`}</button>
               ) : (
-                <button className="pr-propose-btn pr-plank-btn" onClick={handlePlankWalk}>Walk the Plank!</button>
+                <button className="pr-propose-btn" onClick={resetToStart}>Try Again</button>
               )}
             </div>
           </div>

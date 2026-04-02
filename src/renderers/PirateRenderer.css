@@ -292,6 +292,62 @@
 .pr-win-title { font-size: 1.3rem; font-weight: 700; color: #DAA520; }
 .pr-win-sub { color: rgba(255, 255, 255, 0.45); font-size: 0.82rem; margin-bottom: 0.4rem; }
 
+/* ─── Speech bubbles ─── */
+.pr-speech-bubble {
+  position: fixed;
+  z-index: 16;
+  background: rgba(0, 0, 0, 0.88);
+  border: 2px solid #DAA520;
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  max-width: 200px;
+  text-align: center;
+  pointer-events: none;
+  animation: speech-pop 0.3s ease-out;
+  backdrop-filter: blur(6px);
+}
+
+.pr-speech-bubble.yes { border-color: #4ade80; }
+.pr-speech-bubble.no { border-color: #ef4444; }
+
+.pr-speech-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.pr-speech-text {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  margin-bottom: 0.4rem;
+}
+
+.pr-speech-vote {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.pr-speech-bubble.yes .pr-speech-vote { color: #4ade80; }
+.pr-speech-bubble.no .pr-speech-vote { color: #ef4444; }
+
+.pr-speech-arrow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(0, 0, 0, 0.85);
+}
+
+@keyframes speech-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @media (max-width: 600px) {
   .pr-rules-bar { display: none; }
   .pr-coin-sliders { flex-direction: column; }
