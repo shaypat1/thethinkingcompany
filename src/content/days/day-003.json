@@ -6,6 +6,6 @@
     { "type": "flashcard", "id": "fc002", "label": "Mental Math" },
     { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
     { "type": "cardmatching", "id": "cm001", "label": "Card Match" },
-    { "type": "flashcard", "id": "fc003", "label": "Quick Fire" }
+    { "type": "hanoi", "id": "hanoi001", "label": "Towers of Hanoi" }
   ]
 }

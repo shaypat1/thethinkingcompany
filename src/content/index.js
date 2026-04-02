@@ -17,6 +17,7 @@ import cm001 from './cardmatching/cm001.json'
 import mi001 from './missingitem/mi001.json'
 import vb001 from './verbalmemory/vb001.json'
 import bs001 from './backwardsspan/bs001.json'
+import hanoi001 from './hanoi/hanoi001.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -31,6 +32,7 @@ const content = {
   missingitem: { mi001 },
   verbalmemory: { vb001 },
   backwardsspan: { bs001 },
+  hanoi: { hanoi001 },
 }
 
 export function getDay(dayNumber) {
