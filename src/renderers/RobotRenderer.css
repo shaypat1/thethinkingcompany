@@ -1,11 +1,10 @@
 .rb-wrapper {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0.75rem;
-  position: relative;
-  gap: 0.5rem;
+  z-index: 10;
+  background: #0d0d1a;
 }
 
 .rb-exit {
@@ -13,11 +12,254 @@
   top: 0.75rem;
   left: 1.25rem;
   text-decoration: none;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.85rem;
-  z-index: 5;
+  z-index: 15;
 }
-.rb-exit:hover { color: var(--text); }
+.rb-exit:hover { color: #fff; }
+
+/* 3D Canvas */
+.rb-canvas {
+  flex: 1;
+  position: relative;
+}
+.rb-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* HUD */
+.rb-hud {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 14;
+}
+
+.rb-hud-level {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.rb-hud-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.rb-hud-par {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Hint */
+.rb-hint {
+  position: fixed;
+  top: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 14;
+  font-size: 0.8rem;
+  color: rgba(100, 180, 255, 0.7);
+  font-style: italic;
+  text-align: center;
+  max-width: 400px;
+}
+
+/* Result overlay */
+.rb-result-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 16;
+  background: rgba(10, 10, 25, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.rb-result-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rb-result-info {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rb-result-gears {
+  font-size: 1.3rem;
+  margin: 0.25rem 0;
+}
+
+/* Bottom panel — conveyor + hand */
+.rb-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 14;
+  background: rgba(10, 10, 25, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Conveyor */
+.rb-conveyor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rb-belt-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.3);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
+.rb-belt {
+  flex: 1;
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  min-height: 40px;
+  align-items: center;
+  padding: 0.2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.rb-belt-empty {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+.rb-belt-card {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.rb-belt-card:hover {
+  border-color: rgba(255, 80, 80, 0.5);
+  background: rgba(255, 80, 80, 0.08);
+}
+
+.rb-belt-card.exec {
+  border-color: rgba(100, 180, 255, 0.8);
+  background: rgba(100, 180, 255, 0.12);
+  box-shadow: 0 0 10px rgba(100, 180, 255, 0.2);
+}
+
+.rb-belt-icon { font-size: 1rem; }
+
+.rb-conveyor-controls {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.rb-go {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: rgba(100, 180, 255, 0.9);
+  color: #0d0d1a;
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.rb-go:hover { opacity: 0.85; }
+.rb-go:disabled { opacity: 0.25; cursor: default; }
+
+/* Card hand */
+.rb-hand {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+  padding: 0.2rem 0;
+}
+
+.rb-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.4rem 0.7rem;
+  border: 2px solid var(--card-color, rgba(255,255,255,0.2));
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+  font-family: inherit;
+  color: #fff;
+}
+
+.rb-card:hover:not(:disabled) {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.rb-card:disabled { opacity: 0.25; cursor: default; }
+
+.rb-card-icon { font-size: 1.2rem; }
+.rb-card-name { font-size: 0.6rem; color: rgba(255, 255, 255, 0.6); white-space: nowrap; }
+
+/* Buttons */
+.rb-btn {
+  margin-top: 0.5rem;
+  padding: 0.55rem 1.8rem;
+  border: 2px solid rgba(100, 180, 255, 0.7);
+  border-radius: 8px;
+  background: none;
+  color: rgba(100, 180, 255, 0.9);
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.rb-btn:hover { background: rgba(100, 180, 255, 0.08); }
+
+.rb-btn-ghost {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.rb-btn-ghost:hover { color: rgba(255, 255, 255, 0.7); }
 
 /* Intro / Complete */
 .rb-intro {
@@ -25,289 +267,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 70vh;
+  min-height: 100vh;
   text-align: center;
   gap: 0.5rem;
-  max-width: 420px;
+  padding: 2rem;
+  background: #0d0d1a;
+  color: #fff;
 }
 
-.rb-robot-icon { font-size: 3.5rem; }
-.rb-title { font-size: 1.4rem; font-weight: 700; color: var(--text); }
-.rb-narrative { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
-.rb-level-count { font-size: 0.8rem; color: var(--text-muted); }
-
-.rb-total-gears { font-size: 2rem; font-weight: 700; color: var(--text); margin: 0.5rem 0; }
-
-.rb-gear-row { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
-.rb-gear-result { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
-.rb-gear-level { font-size: 0.65rem; color: var(--text-muted); }
-.rb-gear-dots { font-size: 0.75rem; }
-
-/* Buttons */
-.rb-btn {
-  margin-top: 0.75rem;
-  padding: 0.6rem 2rem;
-  border: 2px solid var(--accent);
-  border-radius: 8px;
-  background: none;
-  color: var(--accent);
-  font-size: 0.9rem;
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-}
-.rb-btn:hover { opacity: 0.75; }
-
-.rb-btn-ghost {
-  padding: 0.4rem 1rem;
-  border: none;
-  background: none;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-family: inherit;
-  cursor: pointer;
-}
-.rb-btn-ghost:hover { color: var(--text); }
-.rb-btn-ghost:disabled { opacity: 0.3; cursor: default; }
-
-/* Header */
-.rb-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  margin-top: 1.5rem;
-  width: 100%;
-  max-width: 600px;
-}
-
-.rb-level-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
-
-.rb-level-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text);
-  flex: 1;
-}
-
-.rb-par {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-}
-
-/* Grid */
-.rb-grid {
-  position: relative;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--border) 20%, transparent);
-}
-
-.rb-cell {
-  position: absolute;
-  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
-
-.rb-cell.wall {
-  background: var(--text);
-  opacity: 0.15;
-  border-radius: 4px;
-}
-
-.rb-cell.target { background: color-mix(in srgb, #27ae60 15%, transparent); }
-.rb-cell.lit { background: color-mix(in srgb, #f1c40f 20%, transparent); }
-.rb-cell.collected { opacity: 0.3; }
-
-.rb-cell-icon { font-size: 1.1rem; z-index: 1; }
-.rb-cell-icon.dim { opacity: 0.4; }
-.rb-cell-icon.glow { filter: drop-shadow(0 0 4px #f1c40f); }
-.target-icon { filter: drop-shadow(0 0 3px #27ae60); }
-
-/* Robot */
-.rb-robot {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-}
-
-.rb-robot-face { font-size: 1.6rem; transition: transform 0.2s; }
-
-.rb-robot.dir-up .rb-robot-face { transform: rotate(0deg); }
-.rb-robot.dir-right .rb-robot-face { transform: rotate(90deg); }
-.rb-robot.dir-down .rb-robot-face { transform: rotate(180deg); }
-.rb-robot.dir-left .rb-robot-face { transform: rotate(270deg); }
-
-.rb-robot.bonk { animation: rb-bonk 0.3s ease; }
-.rb-robot.celebrate { animation: rb-celebrate 0.5s ease; }
-
-@keyframes rb-bonk {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(0.85); }
-}
-
-@keyframes rb-celebrate {
-  0%, 100% { transform: scale(1); }
-  25% { transform: scale(1.2) rotate(10deg); }
-  75% { transform: scale(1.2) rotate(-10deg); }
-}
-
-/* Hint */
-.rb-hint {
-  font-size: 0.8rem;
-  color: var(--accent);
-  font-style: italic;
-  text-align: center;
-  max-width: 400px;
-}
-
-/* Result */
-.rb-result {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  width: 100%;
-  max-width: 400px;
-}
-
-.rb-result-icon { font-size: 1.5rem; }
-.rb-result-text { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-.rb-result-cards { font-size: 0.8rem; color: var(--text-muted); }
-.rb-result-gears { font-size: 1.1rem; margin: 0.25rem 0; }
-
-/* Conveyor belt */
-.rb-conveyor {
-  width: 100%;
-  max-width: 600px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.6rem;
-}
-
-.rb-conveyor-label {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  margin-bottom: 0.4rem;
-}
-
-.rb-belt {
-  display: flex;
-  gap: 0.35rem;
-  overflow-x: auto;
-  padding: 0.35rem 0;
-  min-height: 48px;
-  align-items: center;
-}
-
-.rb-belt-empty {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  opacity: 0.5;
-  padding: 0 0.5rem;
-}
-
-.rb-belt-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  padding: 0.3rem 0.5rem;
-  border: 1.5px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-  flex-shrink: 0;
-}
-
-.rb-belt-card:hover {
-  border-color: #cc4444;
-  background: color-mix(in srgb, #cc4444 8%, transparent);
-}
-
-.rb-belt-card.executing {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  animation: rb-pulse 0.4s ease infinite alternate;
-}
-
-@keyframes rb-pulse {
-  from { box-shadow: 0 0 0 0 transparent; }
-  to { box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 30%, transparent); }
-}
-
-.rb-belt-card-icon { font-size: 1rem; }
-.rb-belt-card-name { font-size: 0.55rem; color: var(--text-muted); white-space: nowrap; }
-
-/* Controls */
-.rb-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.4rem;
-}
-
-.rb-go {
-  padding: 0.5rem 1.5rem;
-  border: 2px solid var(--accent);
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 0.9rem;
-  font-family: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-.rb-go:hover { opacity: 0.85; }
-.rb-go:disabled { opacity: 0.3; cursor: default; }
-
-/* Card hand */
-.rb-hand {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 0.5rem 0;
-}
-
-.rb-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.5rem 0.8rem;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  background: none;
-  cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.15s;
-  font-family: inherit;
-}
-
-.rb-card:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--text) 10%, transparent);
-}
-
-.rb-card:disabled { opacity: 0.3; cursor: default; }
-
-.rb-card-icon { font-size: 1.3rem; }
-.rb-card-name { font-size: 0.7rem; font-weight: 500; color: var(--text); }
+.rb-robot-big { font-size: 4rem; }
+.rb-title { font-size: 1.5rem; font-weight: 700; }
+.rb-narrative { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 420px; }
+.rb-level-count { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
+.rb-total-score { font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; }
+.rb-total-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+.rb-gear-summary { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
+.rb-gear-item { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
