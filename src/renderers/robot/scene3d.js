@@ -4,17 +4,37 @@ const TILE_SIZE = 1.2
 const TILE_GAP = 0.06
 const WALL_HEIGHT = 1.0
 
-const FLOOR_COLOR = 0x2a2a3a
-const FLOOR_LINE = 0x3a3a5a
-const WALL_COLOR = 0x1a1a2a
-const BG_COLOR = 0x0d0d1a
-
 export { TILE_SIZE, TILE_GAP }
 
+function getThemeColor(prop) {
+  return getComputedStyle(document.documentElement).getPropertyValue(prop).trim()
+}
+
+function cssToHex(css) {
+  if (css.startsWith('#')) {
+    return parseInt(css.slice(1), 16)
+  }
+  return 0x2a2a3a // fallback
+}
+
 export function createScene(container, level) {
+  // Read theme colors
+  const bgColor = cssToHex(getThemeColor('--bg'))
+  const textColor = cssToHex(getThemeColor('--text'))
+  const borderColor = cssToHex(getThemeColor('--border'))
+  const accentColor = cssToHex(getThemeColor('--accent'))
+  const mutedColor = cssToHex(getThemeColor('--text-muted'))
+  const nodeLockedColor = cssToHex(getThemeColor('--node-locked'))
+
+  // Derive scene colors from theme
+  const floorColor = borderColor
+  const floorLine = accentColor
+  const wallColor = nodeLockedColor
+  const sceneBg = bgColor
+
   const scene = new THREE.Scene()
-  scene.background = new THREE.Color(BG_COLOR)
-  scene.fog = new THREE.FogExp2(BG_COLOR, 0.04)
+  scene.background = new THREE.Color(sceneBg)
+  scene.fog = new THREE.FogExp2(sceneBg, 0.04)
 
   // Camera — isometric-ish angle
   const gridW = level.width * (TILE_SIZE + TILE_GAP)
@@ -59,9 +79,9 @@ export function createScene(container, level) {
   fill.position.set(-5, 3, 2)
   scene.add(fill)
 
-  // Ground plane (dark, extends beyond grid)
+  // Ground plane
   const groundGeo = new THREE.PlaneGeometry(30, 30)
-  const groundMat = new THREE.MeshStandardMaterial({ color: 0x0a0a15, roughness: 0.9 })
+  const groundMat = new THREE.MeshStandardMaterial({ color: sceneBg, roughness: 0.9 })
   const ground = new THREE.Mesh(groundGeo, groundMat)
   ground.rotation.x = -Math.PI / 2
   ground.position.set(gridW * 0.4, -0.1, gridH * 0.35)
@@ -69,9 +89,9 @@ export function createScene(container, level) {
   scene.add(ground)
 
   // Build grid tiles and walls
-  const tileMat = new THREE.MeshStandardMaterial({ color: FLOOR_COLOR, roughness: 0.6, metalness: 0.2 })
-  const wallMat = new THREE.MeshStandardMaterial({ color: WALL_COLOR, roughness: 0.5, metalness: 0.3 })
-  const lineMat = new THREE.MeshStandardMaterial({ color: FLOOR_LINE, emissive: FLOOR_LINE, emissiveIntensity: 0.15 })
+  const tileMat = new THREE.MeshStandardMaterial({ color: floorColor, roughness: 0.6, metalness: 0.2 })
+  const wallMat = new THREE.MeshStandardMaterial({ color: wallColor, roughness: 0.5, metalness: 0.3 })
+  const lineMat = new THREE.MeshStandardMaterial({ color: floorLine, emissive: floorLine, emissiveIntensity: 0.2 })
 
   for (let y = 0; y < level.height; y++) {
     for (let x = 0; x < level.width; x++) {
@@ -113,8 +133,8 @@ export function createScene(container, level) {
     }
   }
 
-  // Background workshop elements (simple decorative planes)
-  const pipeMat = new THREE.MeshStandardMaterial({ color: 0x333355, metalness: 0.5, roughness: 0.4 })
+  // Background workshop elements
+  const pipeMat = new THREE.MeshStandardMaterial({ color: mutedColor, metalness: 0.5, roughness: 0.4 })
   for (let i = 0; i < 6; i++) {
     const pipe = new THREE.Mesh(
       new THREE.CylinderGeometry(0.06, 0.06, 8, 6),
@@ -125,14 +145,14 @@ export function createScene(container, level) {
     scene.add(pipe)
   }
 
-  // Accent lights on back wall
+  // Accent lights on back wall — use theme accent
   for (let i = 0; i < 4; i++) {
-    const light = new THREE.PointLight(0x4488ff, 0.3, 5)
+    const light = new THREE.PointLight(accentColor, 0.3, 5)
     light.position.set(-1 + i * 2.5, 1.5, -2.5)
     scene.add(light)
     const bulb = new THREE.Mesh(
       new THREE.SphereGeometry(0.08, 8, 8),
-      new THREE.MeshStandardMaterial({ color: 0x4488ff, emissive: 0x4488ff, emissiveIntensity: 0.8 })
+      new THREE.MeshStandardMaterial({ color: accentColor, emissive: accentColor, emissiveIntensity: 0.8 })
     )
     bulb.position.copy(light.position)
     scene.add(bulb)

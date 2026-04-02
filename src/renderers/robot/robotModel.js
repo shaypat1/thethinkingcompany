@@ -1,10 +1,21 @@
 import * as THREE from 'three'
 
-const BODY_COLOR = 0x5588cc
-const CHROME = 0xaabbcc
-const EYE_COLOR = 0x44ddff
+function getAccentHex() {
+  const css = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()
+  if (css.startsWith('#')) return parseInt(css.slice(1), 16)
+  return 0x44ddff
+}
+
+function getNodeStrokeHex() {
+  const css = getComputedStyle(document.documentElement).getPropertyValue('--node-stroke').trim()
+  if (css.startsWith('#')) return parseInt(css.slice(1), 16)
+  return 0x5588cc
+}
 
 export function createRobot() {
+  const BODY_COLOR = getNodeStrokeHex()
+  const CHROME = 0xaabbcc
+  const EYE_COLOR = getAccentHex()
   const group = new THREE.Group()
 
   const bodyMat = new THREE.MeshStandardMaterial({ color: BODY_COLOR, roughness: 0.3, metalness: 0.6 })
