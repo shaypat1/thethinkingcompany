@@ -9,6 +9,7 @@ import CardMatchingRenderer from './CardMatchingRenderer'
 import MissingItemRenderer from './MissingItemRenderer'
 import VerbalMemoryRenderer from './VerbalMemoryRenderer'
 import BackwardsSpanRenderer from './BackwardsSpanRenderer'
+import RobotRenderer from './RobotRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -32,6 +33,11 @@ export default function ActivityDispatcher({ type, content, label }) {
       return <VerbalMemoryRenderer />
     case 'backwardsspan':
       return <BackwardsSpanRenderer />
+    case 'robot': {
+      const levels = content?.levels || []
+      if (levels[0]) levels[0].__title = content.title
+      return <RobotRenderer levels={levels} narrative={content.narrative} />
+    }
     default:
       return <PlaceholderRenderer label={label} />
   }
