@@ -90,13 +90,6 @@ export function createScene(container, level) {
         wall.receiveShadow = true
         scene.add(wall)
 
-        // Warning stripe on top
-        const stripe = new THREE.Mesh(
-          new THREE.BoxGeometry(TILE_SIZE * 0.9, 0.02, TILE_SIZE * 0.1),
-          new THREE.MeshStandardMaterial({ color: 0xcc8800, emissive: 0xcc8800, emissiveIntensity: 0.3 })
-        )
-        stripe.position.set(px, WALL_HEIGHT + 0.01, pz)
-        scene.add(stripe)
       } else {
         // Floor tile
         const tile = new THREE.Mesh(

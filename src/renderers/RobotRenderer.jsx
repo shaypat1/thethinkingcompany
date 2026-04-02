@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { CARDS, DIRECTIONS, createRobotState, executeStep } from './robot/engine'
+import { CARDS, DIRECTIONS, createRobotState, executeStep, flattenProgram } from './robot/engine'
 import { createScene, tileToWorld } from './robot/scene3d'
 import { createRobot, getDirRotation, animateRobot, setRobotAnim } from './robot/robotModel'
 import { createGear, createLamp, createTarget, animateObjects, collectGear, lightUpLamp } from './robot/objects3d'
 import './RobotRenderer.css'
 
-const EXEC_DELAY = 450
+const EXEC_DELAY = 350
 
 export default function RobotRenderer({ levels, narrative }) {
   const containerRef = useRef(null)
@@ -18,7 +18,8 @@ export default function RobotRenderer({ levels, narrative }) {
 
   const [levelIndex, setLevelIndex] = useState(0)
   const [phase, setPhase] = useState('intro')
-  const [program, setProgram] = useState([])
+  const [program, setProgram] = useState([]) // array of strings or { type, count/condition, body: [] }
+  const [editingLoop, setEditingLoop] = useState(null) // index of loop being filled
   const [robotState, setRobotState] = useState(null)
   const [execIndex, setExecIndex] = useState(-1)
   const [gears, setGears] = useState([])
@@ -26,20 +27,17 @@ export default function RobotRenderer({ levels, narrative }) {
   const level = levels[levelIndex]
   const availableCards = level?.cards?.map((id) => CARDS[id]) || []
 
-  // Setup Three.js scene when level changes
+  // Three.js setup
   useEffect(() => {
     if (phase === 'intro' || !level) return
     const container = containerRef.current
     if (!container) return
-
-    // Clean previous
     while (container.firstChild?.tagName === 'CANVAS') container.removeChild(container.firstChild)
 
     const s = createScene(container, level)
     container.insertBefore(s.renderer.domElement, container.firstChild)
     sceneRef.current = s
 
-    // Create robot
     const robot = createRobot()
     const startPos = tileToWorld(level.start[0], level.start[1])
     robot.position.set(startPos.x, startPos.y, startPos.z)
@@ -50,39 +48,26 @@ export default function RobotRenderer({ levels, narrative }) {
     s.scene.add(robot)
     robotRef.current = robot
 
-    // Create objects
     const objects = []
     for (let y = 0; y < level.height; y++) {
       for (let x = 0; x < level.width; x++) {
         const cell = level.grid[y][x]
         const pos = tileToWorld(x, y)
-        if (cell === 'G') {
-          const gear = createGear(pos.x, pos.z)
-          s.scene.add(gear)
-          objects.push(gear)
-        }
-        if (cell === 'L') {
-          const lamp = createLamp(pos.x, pos.z)
-          s.scene.add(lamp)
-          objects.push(lamp)
-        }
+        if (cell === 'G') { const g = createGear(pos.x, pos.z); s.scene.add(g); objects.push(g) }
+        if (cell === 'L') { const l = createLamp(pos.x, pos.z); s.scene.add(l); objects.push(l) }
       }
     }
     if (level.goal === 'reach' && level.target) {
       const tp = tileToWorld(level.target[0], level.target[1])
-      const target = createTarget(tp.x, tp.z)
-      s.scene.add(target)
-      objects.push(target)
+      const t = createTarget(tp.x, tp.z); s.scene.add(t); objects.push(t)
     }
     objectsRef.current = objects
 
-    // Animation loop
     let frame
     const animate = () => {
       clockRef.current += 0.016
-      const t = clockRef.current
-      animateRobot(robot, t)
-      animateObjects(objects, t)
+      animateRobot(robot, clockRef.current)
+      animateObjects(objects, clockRef.current)
       s.renderer.render(s.scene, s.camera)
       frame = requestAnimationFrame(animate)
     }
@@ -94,33 +79,65 @@ export default function RobotRenderer({ levels, narrative }) {
       s.renderer.setSize(container.clientWidth, container.clientHeight)
     }
     window.addEventListener('resize', handleResize)
-
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', handleResize)
-      s.renderer.dispose()
-    }
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('resize', handleResize); s.renderer.dispose() }
   }, [levelIndex, phase === 'intro'])
 
   const initLevel = useCallback(() => {
     setProgram([])
+    setEditingLoop(null)
     setRobotState(createRobotState(level))
     setExecIndex(-1)
     setPhase('build')
   }, [level])
 
   function addCard(cardId) {
-    if (phase !== 'build' || program.length >= 16) return
-    setProgram([...program, cardId])
+    if (phase !== 'build') return
+    const card = CARDS[cardId]
+    if (card.type === 'loop') {
+      const newLoop = { type: 'loop', count: card.count, body: [], cardId }
+      setProgram([...program, newLoop])
+      setEditingLoop(program.length) // start editing the new loop
+    } else if (card.type === 'cond') {
+      const newCond = { type: 'cond', condition: card.condition, body: [], cardId }
+      setProgram([...program, newCond])
+      setEditingLoop(program.length)
+    } else if (editingLoop !== null) {
+      // Add to the loop/cond being edited
+      const next = [...program]
+      const block = next[editingLoop]
+      if (block && block.body.length < 6) {
+        block.body = [...block.body, cardId]
+      }
+      setProgram(next)
+    } else {
+      if (program.length < 16) setProgram([...program, cardId])
+    }
   }
 
-  function removeCard(index) {
+  function removeFromProgram(index) {
     if (phase !== 'build') return
+    if (editingLoop === index) setEditingLoop(null)
     setProgram(program.filter((_, i) => i !== index))
+    if (editingLoop !== null && editingLoop > index) setEditingLoop(editingLoop - 1)
+  }
+
+  function removeFromBody(blockIndex, bodyIndex) {
+    if (phase !== 'build') return
+    const next = [...program]
+    const block = next[blockIndex]
+    if (block?.body) {
+      block.body = block.body.filter((_, i) => i !== bodyIndex)
+      setProgram(next)
+    }
+  }
+
+  function finishBlock() {
+    setEditingLoop(null)
   }
 
   function clearProgram() {
     setProgram([])
+    setEditingLoop(null)
     resetRobot3D()
   }
 
@@ -132,8 +149,6 @@ export default function RobotRenderer({ levels, narrative }) {
     robot.userData.targetZ = pos.z
     robot.userData.targetRotY = getDirRotation(DIRECTIONS.indexOf(level.startDir || 'up'))
     robot.userData.animState = 'idle'
-
-    // Reset objects
     objectsRef.current.forEach((obj) => {
       if (obj.userData.type === 'gear') { obj.userData.collected = false; obj.visible = true }
       if (obj.userData.type === 'lamp' && obj.userData.lit) {
@@ -150,30 +165,33 @@ export default function RobotRenderer({ levels, narrative }) {
   function runProgram() {
     if (program.length === 0) return
     setPhase('running')
+    setEditingLoop(null)
     resetRobot3D()
 
-    let state = createRobotState(level)
-    const steps = []
-    for (let i = 0; i < program.length; i++) {
-      state = executeStep(state, program[i], level)
-      steps.push({ ...state, cardIndex: i, command: program[i] })
+    const initState = createRobotState(level)
+    const flatSteps = flattenProgram(program, initState, level)
+
+    // Execute step by step using the flattened list
+    let state = initState
+    const executed = []
+    for (const step of flatSteps) {
+      state = executeStep(state, step.card, level)
+      executed.push({ ...state, command: step.card })
       if (state.won) break
     }
 
     let step = 0
     const animate = () => {
-      if (step >= steps.length) {
+      if (step >= executed.length) {
         setExecIndex(-1)
-        setRobotState(steps[steps.length - 1])
-        if (steps[steps.length - 1].won) {
-          setRobotAnim(robotRef.current, 'celebrate', clockRef.current)
-        }
+        setRobotState(executed[executed.length - 1] || initState)
+        if (executed[executed.length - 1]?.won) setRobotAnim(robotRef.current, 'celebrate', clockRef.current)
         setPhase('result')
         return
       }
 
-      const s = steps[step]
-      setExecIndex(s.cardIndex)
+      const s = executed[step]
+      setExecIndex(step)
       setRobotState(s)
 
       const robot = robotRef.current
@@ -182,7 +200,6 @@ export default function RobotRenderer({ levels, narrative }) {
       robot.userData.targetZ = pos.z
       robot.userData.targetRotY = getDirRotation(s.dir)
 
-      // Trigger 3D animations based on message
       if (s.message === 'bonk') setRobotAnim(robot, 'bonk', clockRef.current)
       else if (s.message === 'pickup') {
         setRobotAnim(robot, 'pickup', clockRef.current)
@@ -201,7 +218,7 @@ export default function RobotRenderer({ levels, narrative }) {
       step++
       execRef.current = setTimeout(animate, EXEC_DELAY)
     }
-    execRef.current = setTimeout(animate, 300)
+    execRef.current = setTimeout(animate, 200)
   }
 
   function stopExec() {
@@ -213,14 +230,16 @@ export default function RobotRenderer({ levels, narrative }) {
 
   function nextLevel() {
     const won = robotState?.won
+    const flat = flattenProgram(program, createRobotState(level), level)
     const par = level.par
     let g = 0
-    if (won) g = program.length <= par ? 3 : program.length <= par + 2 ? 2 : 1
+    if (won) g = flat.length <= par ? 3 : flat.length <= par + 2 ? 2 : 1
     setGears([...gears, g])
     if (levelIndex + 1 < levels.length) {
       setLevelIndex(levelIndex + 1)
       setPhase('build')
       setProgram([])
+      setEditingLoop(null)
       setExecIndex(-1)
     } else {
       setPhase('complete')
@@ -230,9 +249,15 @@ export default function RobotRenderer({ levels, narrative }) {
   function retry() {
     setPhase('build')
     setProgram([])
+    setEditingLoop(null)
     resetRobot3D()
     setExecIndex(-1)
   }
+
+  // Count total actions for display
+  const flatCount = phase === 'result' && robotState
+    ? flattenProgram(program, createRobotState(level), level).length
+    : program.reduce((n, item) => n + (typeof item === 'string' ? 1 : item.body.length * (item.type === 'loop' ? item.count : 1)), 0)
 
   // Intro
   if (phase === 'intro') {
@@ -240,7 +265,7 @@ export default function RobotRenderer({ levels, narrative }) {
       <div className="rb-wrapper">
         <Link to="/" className="rb-exit">Exit</Link>
         <div className="rb-intro">
-          <div className="rb-robot-big">🤖</div>
+          <div className="rb-robot-big-sym">▲</div>
           <h1 className="rb-title">{levels[0]?.__title || 'Robot Workshop'}</h1>
           <p className="rb-narrative">{narrative}</p>
           <p className="rb-level-count">{levels.length} levels</p>
@@ -260,45 +285,47 @@ export default function RobotRenderer({ levels, narrative }) {
           <h1 className="rb-title">Workshop Complete!</h1>
           <div className="rb-total-score">{total}/{levels.length * 3}</div>
           <div className="rb-total-label">gears earned</div>
-          <div className="rb-gear-summary">
-            {gears.map((g, i) => (
-              <span key={i} className="rb-gear-item">L{i + 1}: {'⚙️'.repeat(g)}{'⚪'.repeat(3 - g)}</span>
-            ))}
-          </div>
           <Link to="/" className="rb-btn">Back to Track</Link>
         </div>
       </div>
     )
   }
 
+  // Render a card symbol
+  function CardSym({ cardId, small }) {
+    const card = CARDS[cardId]
+    if (!card) return null
+    return (
+      <span className={`rb-sym ${small ? 'small' : ''}`} style={{ color: card.color }}>{card.sym}</span>
+    )
+  }
+
   return (
     <div className="rb-wrapper">
       <Link to="/" className="rb-exit">Exit</Link>
-
-      {/* 3D Canvas container */}
       <div ref={containerRef} className="rb-canvas" />
 
-      {/* HUD overlay */}
+      {/* HUD */}
       <div className="rb-hud">
         <span className="rb-hud-level">Level {levelIndex + 1}</span>
         <span className="rb-hud-name">{level.name}</span>
         <span className="rb-hud-par">Par: {level.par}</span>
       </div>
 
-      {/* Hint */}
       {phase === 'build' && program.length === 0 && (
         <div className="rb-hint">{level.hint}</div>
       )}
 
-      {/* Result overlay */}
+      {/* Result */}
       {phase === 'result' && (
         <div className="rb-result-overlay">
           {robotState?.won ? (
             <>
               <div className="rb-result-title">Level Complete!</div>
-              <div className="rb-result-info">{program.length} cards · par {level.par}</div>
+              <div className="rb-result-info">{flatCount} steps · par {level.par}</div>
               <div className="rb-result-gears">
-                {program.length <= level.par ? '⚙️⚙️⚙️' : program.length <= level.par + 2 ? '⚙️⚙️⚪' : '⚙️⚪⚪'}
+                {'⚙'.repeat(flatCount <= level.par ? 3 : flatCount <= level.par + 2 ? 2 : 1)}
+                {'○'.repeat(3 - (flatCount <= level.par ? 3 : flatCount <= level.par + 2 ? 2 : 1))}
               </div>
               <button className="rb-btn" onClick={nextLevel}>{levelIndex + 1 < levels.length ? 'Next Level' : 'Finish'}</button>
               <button className="rb-btn-ghost" onClick={retry}>Optimize</button>
@@ -312,34 +339,69 @@ export default function RobotRenderer({ levels, narrative }) {
         </div>
       )}
 
-      {/* Card hand + conveyor */}
+      {/* Bottom panel */}
       <div className="rb-bottom">
+        {/* Program strip */}
         <div className="rb-conveyor">
-          <div className="rb-belt-label">PROGRAM</div>
           <div className="rb-belt">
-            {program.length === 0 && <span className="rb-belt-empty">Add cards to build your program</span>}
-            {program.map((cardId, i) => (
-              <div key={i} className={`rb-belt-card ${execIndex === i ? 'exec' : ''}`} onClick={() => removeCard(i)}>
-                <span className="rb-belt-icon">{CARDS[cardId].icon}</span>
-              </div>
-            ))}
+            {program.length === 0 && <span className="rb-belt-empty">Tap cards below to build your program</span>}
+            {program.map((item, i) => {
+              if (typeof item === 'string') {
+                return (
+                  <div key={i} className={`rb-belt-card ${execIndex === i ? 'exec' : ''}`}>
+                    <CardSym cardId={item} />
+                    <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                  </div>
+                )
+              }
+              // Loop or conditional block
+              const card = CARDS[item.cardId]
+              const isEditing = editingLoop === i
+              return (
+                <div key={i} className={`rb-belt-block ${isEditing ? 'editing' : ''}`} style={{ borderColor: card?.color }}>
+                  <div className="rb-block-header">
+                    <span className="rb-block-label" style={{ color: card?.color }}>{card?.name}</span>
+                    <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                  </div>
+                  <div className="rb-block-body">
+                    {item.body.length === 0 && isEditing && (
+                      <span className="rb-block-placeholder">Add cards inside</span>
+                    )}
+                    {item.body.map((bodyCard, j) => (
+                      <div key={j} className="rb-belt-card nested">
+                        <CardSym cardId={bodyCard} small />
+                        <button className="rb-belt-del" onClick={() => removeFromBody(i, j)}>×</button>
+                      </div>
+                    ))}
+                  </div>
+                  {isEditing && (
+                    <button className="rb-block-done" onClick={finishBlock}>Done</button>
+                  )}
+                  {!isEditing && phase === 'build' && (
+                    <button className="rb-block-edit" onClick={() => setEditingLoop(i)}>Edit</button>
+                  )}
+                </div>
+              )
+            })}
           </div>
           <div className="rb-conveyor-controls">
             {phase === 'build' && (
               <>
-                <button className="rb-go" onClick={runProgram} disabled={program.length === 0}>▶ RUN</button>
+                <button className="rb-go" onClick={runProgram} disabled={program.length === 0 || editingLoop !== null}>▶ RUN</button>
                 <button className="rb-btn-ghost" onClick={clearProgram}>Clear</button>
               </>
             )}
             {phase === 'running' && (
-              <button className="rb-btn-ghost" onClick={stopExec}>⏹ Stop</button>
+              <button className="rb-btn-ghost" onClick={stopExec}>■ Stop</button>
             )}
           </div>
         </div>
+
+        {/* Card hand */}
         <div className="rb-hand">
           {availableCards.map((card) => (
             <button key={card.id} className="rb-card" style={{ '--card-color': card.color }} onClick={() => addCard(card.id)} disabled={phase !== 'build'}>
-              <span className="rb-card-icon">{card.icon}</span>
+              <span className="rb-card-sym" style={{ color: card.color }}>{card.sym}</span>
               <span className="rb-card-name">{card.name}</span>
             </button>
           ))}
