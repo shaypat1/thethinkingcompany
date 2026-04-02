@@ -22,7 +22,7 @@
       "grid": [["G", ".", "G"], [".", ".", "."], ["G", ".", "G"]],
       "start": [0, 0], "startDir": "right",
       "goal": "collect",
-      "cards": ["forward", "right", "pickup", "repeat4"], "par": 8
+      "cards": ["forward", "right", "pickup", "repeat4"], "par": 12
     },
     {
       "id": "2-3",
@@ -42,7 +42,7 @@
       "grid": [["L", ".", ".", "L"], [".", ".", ".", "."], [".", ".", ".", "."], ["L", ".", ".", "L"]],
       "start": [0, 0], "startDir": "right",
       "goal": "light",
-      "cards": ["forward", "right", "light", "repeat3", "repeat4"], "par": 16
+      "cards": ["forward", "right", "light", "repeat3", "repeat4"], "par": 15
     }
   ]
 }

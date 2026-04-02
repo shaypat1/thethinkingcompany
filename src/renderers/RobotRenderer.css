@@ -347,7 +347,7 @@
 }
 .rb-btn-ghost:hover { color: rgba(255, 255, 255, 0.7); }
 
-/* Intro / Complete */
+/* Intro / Complete — uses theme colors */
 .rb-intro {
   display: flex;
   flex-direction: column;
@@ -357,15 +357,21 @@
   text-align: center;
   gap: 0.5rem;
   padding: 2rem;
-  background: #0d0d1a;
-  color: #fff;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.rb-robot-big { font-size: 4rem; }
-.rb-title { font-size: 1.5rem; font-weight: 700; }
-.rb-narrative { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 420px; }
-.rb-level-count { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
-.rb-total-score { font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; }
-.rb-total-label { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.06em; }
+.rb-robot-big-sym { font-size: 3rem; color: var(--accent); font-weight: 700; }
+.rb-title { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+.rb-narrative { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 420px; }
+.rb-level-count { font-size: 0.8rem; color: var(--text-muted); }
+.rb-total-score { font-size: 2.5rem; font-weight: 700; color: var(--text); margin: 0.5rem 0; }
+.rb-total-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
 .rb-gear-summary { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
-.rb-gear-item { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+.rb-gear-item { font-size: 0.75rem; color: var(--text-muted); }
+
+.rb-intro .rb-btn {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.rb-intro .rb-btn:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
