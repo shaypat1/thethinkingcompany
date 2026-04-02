@@ -18,6 +18,8 @@ import mi001 from './missingitem/mi001.json'
 import vb001 from './verbalmemory/vb001.json'
 import bs001 from './backwardsspan/bs001.json'
 import ld001 from './logicdetective/ld001.json'
+import ld002 from './logicdetective/ld002.json'
+import ld003 from './logicdetective/ld003.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -32,7 +34,7 @@ const content = {
   missingitem: { mi001 },
   verbalmemory: { vb001 },
   backwardsspan: { bs001 },
-  logicdetective: { ld001 },
+  logicdetective: { ld001, ld002, ld003 },
 }
 
 export function getDay(dayNumber) {

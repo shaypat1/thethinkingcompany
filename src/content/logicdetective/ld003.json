@@ -1,0 +1,178 @@
+{
+  "id": "ld003",
+  "title": "The Greenfield High Exposé",
+  "narrative": {
+    "intro": "You're an investigative journalist at the Greenfield Gazette, your school's underground newspaper. A leaked internal email suggests the school board is planning to cut the entire arts program to fund a new athletic complex. The story is blowing up — students, parents, board members, and influencers all have takes. Your job: sift through the noise, flag the BS reasoning, and publish an exposé that holds up to scrutiny. Every source has an angle. Trust the logic, not the loudest voice.",
+    "outro": "Your exposé ran on the front page of the Greenfield Gazette. By identifying the manipulative reasoning on all sides, you wrote the only balanced piece in the entire debate. The school board delayed the vote pending a public forum. Three other student papers cited your analysis. This is what real journalism looks like."
+  },
+  "cases": [
+    {
+      "id": "t1",
+      "tier": 3,
+      "format": "email",
+      "briefing": "The leaked email that started everything. Board member Henderson makes a bold claim. Is his reasoning airtight?",
+      "context": "Leaked Email",
+      "speaker": "Board Member Henderson",
+      "speakerRole": "school board treasurer, 12 years",
+      "emoji": "💼",
+      "emailMeta": { "from": "d.henderson@greenfieldSD.org", "to": "board-internal@greenfieldSD.org", "subject": "FW: Budget Reallocation Proposal — CONFIDENTIAL", "time": "11:42 PM, March 12" },
+      "claims": [
+        "The athletic department generated $340K in ticket revenue last year.",
+        "The arts program budget is $280K with no direct revenue stream.",
+        "Riverside High cut their arts program two years ago and their test scores went up 4%.",
+        "I believe reallocating arts funding to athletics is the fiscally responsible path forward."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Cause (Post Hoc)",
+      "fallacyNickname": "After ≠ Because",
+      "options": [
+        "Riverside's test scores rising after cutting arts doesn't prove the cut caused the improvement.",
+        "The revenue comparison between athletics and arts is misleading because they serve different purposes.",
+        "Henderson shouldn't be sending confidential emails late at night.",
+        "The $340K figure might include booster club donations, not just ticket sales."
+      ],
+      "correctOption": 0,
+      "explanation": "Henderson cites Riverside's test score increase after cutting arts as if the cut caused the improvement. But correlation isn't causation — maybe Riverside also hired new teachers, changed curriculum, or had a different student cohort. This is Post Hoc reasoning: assuming that because test scores rose AFTER the arts cut, the cut CAUSED the rise."
+    },
+    {
+      "id": "t2",
+      "tier": 3,
+      "format": "social",
+      "briefing": "The student body president posted a fiery response that went viral. She's passionate — but is she playing fair?",
+      "context": "Viral Post",
+      "speaker": "Jordan Kim",
+      "speakerRole": "student body president, senior",
+      "emoji": "🎤",
+      "socialMeta": { "platform": "X (Twitter)", "handle": "@JordanKimGHS", "likes": 2847, "time": "8:15 AM, March 13" },
+      "claims": [
+        "BREAKING: School board wants to DESTROY the arts program to build a sports palace 🏟️",
+        "Reminder that Board Member Henderson's son is the varsity quarterback. Coincidence? I think not.",
+        "This is what happens when jocks run the school board.",
+        "RT if you stand with the arts. Let's make some noise. 🎨✊ #SaveGreenfieldArts"
+      ],
+      "flawedIndex": 1,
+      "fallacyType": "Ad Hominem",
+      "fallacyNickname": "Attacking the Person",
+      "options": [
+        "Jordan attacks Henderson's personal connection to football instead of addressing the budget argument.",
+        "The hashtag is manipulative because it frames the issue as one-sided.",
+        "Jordan is exaggerating by calling it a 'sports palace.'",
+        "Student body presidents shouldn't use social media for political advocacy."
+      ],
+      "correctOption": 0,
+      "explanation": "Jordan's second statement implies Henderson's proposal is corrupt because his son plays football. But a person's family connections don't automatically invalidate their argument — the budget numbers might still be worth discussing on their merits. This is Ad Hominem: attacking the person making the argument instead of the argument itself."
+    },
+    {
+      "id": "t3",
+      "tier": 4,
+      "format": "interview",
+      "briefing": "The drama teacher is fighting for her program. She's emotional and eloquent — but one of her arguments doesn't hold up.",
+      "context": "Teacher Interview",
+      "speaker": "Ms. Castellano",
+      "speakerRole": "drama teacher, 18 years at Greenfield",
+      "emoji": "🎭",
+      "interviewMeta": { "location": "Greenfield Gazette Office", "time": "3:30 PM", "recorded": true },
+      "claims": [
+        "I've watched hundreds of students find their voice through theater over 18 years.",
+        "Three of our graduates are working on Broadway right now — Maya Chen, David Okafor, and Priya Nair.",
+        "Exposure to arts education correlates with higher college admission rates — that's documented.",
+        "If we cut arts today, next it'll be music. Then languages. Then science. Soon there'll be nothing left but a football field."
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "Slippery Slope",
+      "fallacyNickname": "The Domino Effect",
+      "options": [
+        "Ms. Castellano claims cutting arts will inevitably lead to cutting everything else, with no evidence this chain reaction would happen.",
+        "Having graduates on Broadway doesn't prove the program is worth $280K.",
+        "Correlation between arts and college admission doesn't prove causation.",
+        "18 years of experience doesn't make her budget analysis correct."
+      ],
+      "correctOption": 0,
+      "explanation": "Ms. Castellano argues that cutting arts will start an unstoppable chain: arts → music → languages → science → nothing. But she provides no evidence that one cut would cause all the others. Each budget decision is separate. This is a Slippery Slope — claiming that one action will trigger an extreme chain of events without justifying why each step would follow."
+    },
+    {
+      "id": "t4",
+      "tier": 4,
+      "format": "memo",
+      "briefing": "The superintendent issues a formal response. It sounds balanced and authoritative. But read carefully — she sidesteps something important.",
+      "context": "Official Statement",
+      "speaker": "Dr. Whitfield",
+      "speakerRole": "superintendent of Greenfield School District",
+      "emoji": "📋",
+      "memoMeta": { "to": "Greenfield Community", "from": "Superintendent Dr. Whitfield", "re": "Statement on Budget Discussions", "priority": "PUBLIC" },
+      "claims": [
+        "The district is committed to providing a well-rounded education for every student.",
+        "Budget discussions are a normal part of the annual planning process.",
+        "I want to assure families that our district spends 12% more per pupil than the state average — a number we're very proud of.",
+        "We welcome continued community input as we finalize the budget."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Red Herring",
+      "fallacyNickname": "Changing the Subject",
+      "options": [
+        "The per-pupil spending figure is irrelevant to whether the arts program specifically should be cut.",
+        "The superintendent should disclose exact budget numbers, not percentages.",
+        "Welcoming 'community input' is meaningless if the decision is already made.",
+        "The superintendent is trying to downplay the situation by calling it 'normal.'"
+      ],
+      "correctOption": 0,
+      "explanation": "Dr. Whitfield responds to concerns about the arts cut by citing overall per-pupil spending — a completely different metric. Total spending tells you nothing about whether arts specifically is being fairly funded. This is a Red Herring: introducing an impressive but irrelevant statistic to distract from the actual question."
+    },
+    {
+      "id": "t5",
+      "tier": 4,
+      "format": "texts",
+      "briefing": "A parent group chat is going OFF. One parent makes a claim that gets 47 thumbs-up reactions. But is it actually logical?",
+      "context": "Parent Group Chat",
+      "speaker": "Karen Ostrowski",
+      "speakerRole": "PTA vice president, parent of two",
+      "emoji": "👩‍👧‍👦",
+      "textsMeta": { "groupName": "GHS Parents United 💪", "time": "9:22 PM" },
+      "claims": [
+        "I just read the leaked email and I am LIVID",
+        "My daughter auditioned for the spring musical and it changed her life",
+        "If the arts program helped even ONE child, it's worth every penny of that $280K",
+        "Anyone who votes to cut it has no soul 💔"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Appeal to Emotion",
+      "fallacyNickname": "Pulling Heartstrings",
+      "options": [
+        "Using one emotional story to justify a $280K budget avoids the actual financial question.",
+        "Karen shouldn't call board members soulless.",
+        "One student's positive experience doesn't represent all students.",
+        "The PTA vice president has a conflict of interest."
+      ],
+      "correctOption": 0,
+      "explanation": "Karen's argument is essentially: 'My daughter's experience was moving, therefore the program is worth any cost.' But budget decisions require comparing costs and benefits for ALL students, not just one emotional anecdote. This is an Appeal to Emotion — using feelings to bypass rational evaluation of the actual question."
+    },
+    {
+      "id": "t6",
+      "tier": 5,
+      "format": "email",
+      "briefing": "Final piece of evidence. A data-savvy parent sends a 'gotcha' email to the board. It looks damning — but there's a logical crack.",
+      "context": "Public Comment Email",
+      "speaker": "Dr. Nathan Reeves",
+      "speakerRole": "data scientist, parent",
+      "emoji": "📊",
+      "emailMeta": { "from": "n.reeves.data@gmail.com", "to": "board-public@greenfieldSD.org", "subject": "Data Analysis: Athletics vs. Arts ROI", "time": "11:58 PM, March 14" },
+      "claims": [
+        "I've analyzed 10 years of Greenfield budget data and cross-referenced with student outcomes.",
+        "Students enrolled in arts programs have a 94% graduation rate vs. 89% for non-arts students.",
+        "Students enrolled in athletics have an 91% graduation rate vs. 89% for non-athlete students.",
+        "Since arts students graduate at a higher rate than athletes, arts clearly produces better outcomes than athletics and deserves more funding."
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "False Equivalence / Misleading Comparison",
+      "fallacyNickname": "Unfair Comparison",
+      "options": [
+        "Comparing raw graduation rates between arts and athletics ignores that the student populations may be fundamentally different.",
+        "The 5% difference between arts and non-arts students isn't statistically significant.",
+        "A parent shouldn't have access to 10 years of student data.",
+        "Graduation rate alone doesn't capture the full value of either program."
+      ],
+      "correctOption": 0,
+      "explanation": "Dr. Reeves compares graduation rates between arts and athletics students as if they're equivalent groups. But arts students might already be more academically inclined — the comparison doesn't control for pre-existing differences. Concluding that arts 'produces better outcomes' from raw rate comparisons is a Misleading Comparison: treating different groups as interchangeable to reach a predetermined conclusion."
+    }
+  ]
+}

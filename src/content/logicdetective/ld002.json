@@ -1,0 +1,113 @@
+{
+  "id": "ld002",
+  "title": "The Great Cookie Caper",
+  "narrative": {
+    "intro": "Oh no! Someone ate ALL the cookies that were cooling on the kitchen counter! Mom wants answers. You're the family detective — can you figure out who's telling the truth and who's using sneaky trick-thinking?",
+    "outro": "You cracked it! Turns out the dog knocked the plate off the counter and the cookies fell behind the trash can. Nobody ate them — they were hiding! Great detective work!"
+  },
+  "cases": [
+    {
+      "id": "y1",
+      "tier": 1,
+      "format": "interview",
+      "briefing": "Your little brother says he knows who did it. But does his reason make sense?",
+      "context": "Brother's Story",
+      "speaker": "Benny",
+      "speakerRole": "your little brother, age 6",
+      "emoji": "🧒",
+      "interviewMeta": { "location": "Kitchen", "time": "3:30 PM", "recorded": false },
+      "claims": [
+        "I was watching cartoons the whole time!",
+        "I didn't go near the kitchen, I promise!",
+        "It was definitely Grandpa because he's OLD and old people love cookies.",
+        "Can I have some juice?"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Ad Hominem",
+      "fallacyNickname": "Attacking the Person",
+      "options": [
+        "Being old doesn't mean someone took the cookies — that's not fair evidence!",
+        "Benny is lying about watching cartoons."
+      ],
+      "correctOption": 0,
+      "explanation": "Benny blames Grandpa just because he's old. But being old doesn't mean you took cookies! Blaming someone because of WHO they are instead of WHAT they did is called Attacking the Person. We need real clues, not name-calling!"
+    },
+    {
+      "id": "y2",
+      "tier": 1,
+      "format": "sticky",
+      "briefing": "Your sister left these notes on the fridge. She drew pictures and everything! But is her thinking right?",
+      "context": "Sister's Fridge Notes",
+      "speaker": "Lily",
+      "speakerRole": "your big sister, age 10",
+      "emoji": "👧",
+      "claims": [
+        "I made a chart of everyone's location 📊",
+        "Dad was in the garage, Mom was upstairs",
+        "The dog walked through the kitchen at 3:15",
+        "The dog was in the kitchen, then the cookies were gone — so the DOG ATE THEM!"
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "False Cause",
+      "fallacyNickname": "After ≠ Because",
+      "options": [
+        "Just because the dog was there before the cookies vanished doesn't mean the dog ate them!",
+        "Dogs can't actually eat that many cookies."
+      ],
+      "correctOption": 0,
+      "explanation": "Lily saw the dog in the kitchen, then the cookies disappeared. But just because something happens AFTER something else doesn't mean it CAUSED it! Maybe someone else came in right after the dog left. This trick is called 'After ≠ Because.'"
+    },
+    {
+      "id": "y3",
+      "tier": 1,
+      "format": "texts",
+      "briefing": "Dad texted Mom about this. He seems pretty sure about what happened...",
+      "context": "Dad's Texts",
+      "speaker": "Dad",
+      "speakerRole": "your dad",
+      "emoji": "👨",
+      "textsMeta": { "groupName": "Mom & Dad 💬", "time": "3:45 PM" },
+      "claims": [
+        "I just heard about the cookies 😤",
+        "I bet it was the neighbor's kid, he was playing in our yard earlier",
+        "Either the neighbor kid took them or nobody did and they just vanished into thin air 🤷",
+        "Those are literally the only two possibilities"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Dilemma",
+      "fallacyNickname": "Only Two Choices",
+      "options": [
+        "Dad says there are only two options, but there could be lots of other explanations!",
+        "The neighbor kid wasn't actually in the yard."
+      ],
+      "correctOption": 0,
+      "explanation": "Dad says it's either the neighbor kid or magic. But wait — there are LOTS of other possibilities! Maybe someone in the family ate them, maybe the dog knocked them over, maybe they're just in a different spot. When someone pretends there are only two choices, that's the 'Only Two Choices' trick!"
+    },
+    {
+      "id": "y4",
+      "tier": 1,
+      "format": "social",
+      "briefing": "Your sister posted about this on her kid-safe social app. Look at what she's claiming...",
+      "context": "KidPost",
+      "speaker": "Lily",
+      "speakerRole": "your big sister, age 10",
+      "emoji": "👧",
+      "socialMeta": { "platform": "KidChat", "handle": "@CookieLily", "likes": 12, "time": "4:00 PM" },
+      "claims": [
+        "SOMEONE ATE ALL MOM'S COOKIES!! 🍪🍪",
+        "I asked 3 kids on my bus and they ALL said Benny probably did it",
+        "so basically EVERYONE agrees it was Benny",
+        "sorry bro but the people have spoken 😂"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Bandwagon",
+      "fallacyNickname": "Everyone's Doing It",
+      "options": [
+        "Just because 3 kids on the bus think Benny did it doesn't make it true!",
+        "Lily shouldn't be posting family stuff online."
+      ],
+      "correctOption": 0,
+      "explanation": "Lily asked 3 friends and says 'everyone agrees.' But 3 people isn't everyone! And even if lots of people think something, that doesn't make it true. This is the 'Everyone's Doing It' trick — using what other people think as proof."
+    }
+  ]
+}
