@@ -1,312 +1,339 @@
 import * as THREE from 'three'
+import { Water } from 'three/examples/jsm/objects/Water.js'
+import { Sky } from 'three/examples/jsm/objects/Sky.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-const WOOD_COLOR = 0x8B5E3C
-const WOOD_DARK = 0x5C3A1E
-const OCEAN_COLOR = 0x1a7090
-const GOLD_COLOR = 0xDAA520
-const ROPE_COLOR = 0x8a7a5a
+// ─── Gold bag ───
+function createGoldBag() {
+  const g = new THREE.Group()
+  const bagMat = new THREE.MeshStandardMaterial({ color: 0x6a5030, roughness: 0.8 })
+  const goldMat = new THREE.MeshStandardMaterial({ color: 0xDAA520, roughness: 0.05, metalness: 0.95 })
 
+  const bag = new THREE.Mesh(new THREE.SphereGeometry(12, 14, 12), bagMat)
+  bag.position.y = 10; bag.scale.set(1, 0.85, 0.9); g.add(bag)
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(4, 6, 6, 10), bagMat)
+  neck.position.y = 20; g.add(neck)
+  const rope = new THREE.Mesh(new THREE.TorusGeometry(4.5, 0.5, 8, 14), new THREE.MeshStandardMaterial({ color: 0x8a7a5a, roughness: 0.9 }))
+  rope.position.y = 21; rope.rotation.x = Math.PI / 2; g.add(rope)
+
+  for (let i = 0; i < 12; i++) {
+    const coin = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 0.3, 12), goldMat)
+    const a = Math.random() * Math.PI * 2, r = Math.random() * 5
+    coin.position.set(Math.cos(a) * r, 22 + Math.random() * 4, Math.sin(a) * r)
+    coin.rotation.set(Math.random(), Math.random(), Math.random()); g.add(coin)
+  }
+  for (let i = 0; i < 20; i++) {
+    const coin = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 0.3, 12), goldMat)
+    const a = Math.random() * Math.PI * 2, r = 10 + Math.random() * 15
+    coin.position.set(Math.cos(a) * r, 0.3, Math.sin(a) * r)
+    coin.rotation.set(Math.random() * 0.3, Math.random() * Math.PI, Math.random() * 0.3); g.add(coin)
+  }
+  const glow = new THREE.PointLight(0xffcc44, 5, 60)
+  glow.position.set(0, 25, 0); g.add(glow)
+  g.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true } })
+  return g
+}
+
+// ─── Platform ───
+function createRaft(scene) {
+  const group = new THREE.Group()
+  const deckMat = new THREE.MeshStandardMaterial({ color: 0x6b4226, roughness: 0.85 })
+  const hullMat = new THREE.MeshStandardMaterial({ color: 0x4a2d14, roughness: 0.8 })
+  const railMat = new THREE.MeshStandardMaterial({ color: 0x5a3a1a, roughness: 0.8 })
+
+  const hull = new THREE.Mesh(new THREE.BoxGeometry(400, 20, 200), hullMat)
+  hull.position.y = -5; hull.castShadow = true; hull.receiveShadow = true; group.add(hull)
+
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(410, 2, 210), deckMat)
+  deck.position.y = 6; deck.castShadow = true; deck.receiveShadow = true; group.add(deck)
+
+  // Railing — front side only (closest to camera, z = -100)
+  for (const x of [-190, -95, 0, 95, 190]) {
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.8, 20, 8), railMat)
+    post.position.set(x, 17, -100); post.castShadow = true; group.add(post)
+  }
+  const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 400, 8), railMat)
+  rail.rotation.z = Math.PI / 2; rail.position.set(0, 25, -100); group.add(rail)
+  const railLow = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 400, 8), railMat)
+  railLow.rotation.z = Math.PI / 2; railLow.position.set(0, 15, -100); group.add(railLow)
+
+  // Gold bag
+  const goldBag = createGoldBag()
+  goldBag.position.set(0, 7, 40)
+  group.add(goldBag)
+
+  // Load pirate models — 5 characters in a row
+  const loader = new GLTFLoader()
+  const mixers = []
+
+  function isSkinColor(col) {
+    return col.r > 0.35 && col.r < 0.95 && col.g > 0.2 && col.g < 0.75 && col.b > 0.08 && col.b < 0.55 && col.r > col.b * 1.2
+  }
+  function isHairColor(col) {
+    return col.r < 0.3 && col.g < 0.25 && col.b < 0.2
+  }
+  function isClothDark(col) {
+    return col.r < 0.15 && col.g < 0.15 && col.b < 0.15
+  }
+
+  function loadPirate(file, pos, rotY, reskin, animName, scale) {
+    loader.load(`/models/${file}`, (gltf) => {
+      const model = gltf.scene
+      model.scale.setScalar(scale || 30)
+      model.position.copy(pos)
+      model.rotation.y = rotY
+      model.traverse(c => {
+        if (!c.isMesh) return
+        c.castShadow = true; c.receiveShadow = true
+        // Remove white artifacts on Captain model
+        if (file.includes('Captain') && c.material) {
+          const m = c.material
+          if ((m.transparent && m.opacity < 0.3) || (m.map === null && m.color && m.color.r > 0.95 && m.color.g > 0.95 && m.color.b > 0.95)) {
+            c.visible = false; return
+          }
+        }
+        if (reskin && c.material && c.material.color) {
+          reskin(c)
+        }
+      })
+      // Play animation or mark for code-based bob
+      if (gltf.animations && gltf.animations.length > 0) {
+        const mixer = new THREE.AnimationMixer(model)
+        const clip = gltf.animations.find(a => a.name === (animName || 'Idle')) || gltf.animations.find(a => a.name === 'Idle') || gltf.animations[3]
+        if (clip) { mixer.clipAction(clip).play() }
+        mixers.push(mixer)
+        model.userData.mixer = mixer
+        model.userData.animations = gltf.animations
+      } else {
+        // Static model — plant feet on deck
+        // Compute bounding box to find the bottom of the model
+        const box = new THREE.Box3().setFromObject(model)
+        const bottomY = box.min.y
+        // Shift model up so feet sit on deck (deck surface is at y ≈ 7 in group space)
+        model.position.y = 7 - bottomY
+        model.userData.staticBob = true
+        model.userData.baseY = model.position.y
+        model.userData.bobPhase = Math.random() * Math.PI * 2
+      }
+      group.add(model)
+    })
+  }
+
+  // Pirates array — indexed by order. All loaded, initially hidden.
+  const pirates = [null, null, null, null, null]
+  const pirateConfigs = [
+    { file: 'Captain_7.glb', reskin: null, anim: 'Idle', scale: 50 },
+    { file: 'Characters_Henry_1.glb', reskin: (c) => { if (isSkinColor(c.material.color)) { c.material = c.material.clone(); c.material.color.setHex(0xf5dcc0) } }, anim: 'Idle', scale: 50 },
+    { file: 'pietro.glb', reskin: null, anim: 'Idle', scale: 50 },
+    { file: 'wookho.glb', reskin: null, anim: 'Idle', scale: 50 },
+    { file: 'rohan.glb', reskin: null, anim: 'Idle', scale: 50 },
+  ]
+
+  pirateConfigs.forEach((cfg, idx) => {
+    loader.load(`/models/${cfg.file}`, (gltf) => {
+      const model = gltf.scene
+      model.scale.setScalar(cfg.scale)
+      model.position.set(0, 0, -20)
+      model.visible = false // hidden until activated
+      model.traverse(c => {
+        if (!c.isMesh) return
+        c.castShadow = true; c.receiveShadow = true
+        if (cfg.file.includes('Captain') && c.material) {
+          const m = c.material
+          if ((m.transparent && m.opacity < 0.3) || (m.map === null && m.color && m.color.r > 0.95 && m.color.g > 0.95 && m.color.b > 0.95)) {
+            c.visible = false; return
+          }
+        }
+        if (cfg.reskin && c.material && c.material.color) cfg.reskin(c)
+      })
+      // Plant feet on deck for ALL models
+      const box = new THREE.Box3().setFromObject(model)
+      model.position.y = 7 - box.min.y
+
+      if (gltf.animations && gltf.animations.length > 0) {
+        const mixer = new THREE.AnimationMixer(model)
+        const clip = gltf.animations.find(a => a.name === cfg.anim) || gltf.animations[3]
+        if (clip) mixer.clipAction(clip).play()
+        mixers.push(mixer)
+        model.userData.mixer = mixer
+        model.userData.clips = gltf.animations
+      } else {
+        model.userData.staticBob = true
+        model.userData.baseY = model.position.y
+        model.userData.bobPhase = Math.random() * Math.PI * 2
+      }
+      pirates[idx] = model
+      group.add(model)
+    })
+  })
+
+  // Function to show N pirates and center them on platform
+  function showPirates(count) {
+    const spacing = 55
+    const startX = -(count - 1) * spacing / 2
+    for (let i = 0; i < 5; i++) {
+      if (!pirates[i]) continue
+      if (i < count) {
+        pirates[i].visible = true
+        pirates[i].position.x = startX + i * spacing
+        pirates[i].position.z = -20
+      } else {
+        pirates[i].visible = false
+      }
+    }
+  }
+
+  // Play a specific animation on a pirate by index
+  // Loops for `durationMs` then returns to Idle
+  function playAnimation(pirateIdx, animName, durationMs) {
+    const model = pirates[pirateIdx]
+    if (!model || !model.userData.mixer || !model.userData.clips) return
+    const mixer = model.userData.mixer
+    mixer.stopAllAction()
+    const clip = model.userData.clips.find(c => c.name === animName)
+    if (!clip) return
+    const action = mixer.clipAction(clip)
+    action.loop = THREE.LoopRepeat
+    action.reset().play()
+
+    // Return to Idle after duration (default 4 seconds)
+    setTimeout(() => {
+      mixer.stopAllAction()
+      const idle = model.userData.clips.find(c => c.name === 'Idle')
+      if (idle) mixer.clipAction(idle).reset().play()
+    }, durationMs || 4000)
+  }
+
+  group.userData.mixers = mixers
+  group.userData.showPirates = showPirates
+  group.userData.playAnimation = playAnimation
+  group.userData.pirates = pirates
+
+  // Dummy flag ref
+  const flag = new THREE.Object3D()
+  group.add(flag)
+
+  return { group, flag }
+}
+
+// ─── Scene ───
 export function createScene(container) {
-  const scene = new THREE.Scene()
-
-  // Sky-to-ocean gradient background
-  const bgCanvas = document.createElement('canvas')
-  bgCanvas.width = 1
-  bgCanvas.height = 512
-  const bgCtx = bgCanvas.getContext('2d')
-  const grad = bgCtx.createLinearGradient(0, 0, 0, 512)
-  grad.addColorStop(0, '#1a3050')
-  grad.addColorStop(0.3, '#1a5570')
-  grad.addColorStop(0.5, '#1a7090')
-  grad.addColorStop(1, '#0d4060')
-  bgCtx.fillStyle = grad
-  bgCtx.fillRect(0, 0, 1, 512)
-  scene.background = new THREE.CanvasTexture(bgCanvas)
-
-  // Camera — top-down angled view looking at raft
-  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 200)
-  camera.position.set(0, 7, 10)
-  camera.lookAt(0, 0, -0.5)
-
-  // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true })
+  renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(container.clientWidth, container.clientHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 0.5
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
-  renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.3
+
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(container.clientWidth, container.clientHeight), 1.5, 0.4, 0.85)
+  bloomPass.threshold = 0; bloomPass.strength = 0.1; bloomPass.radius = 0
+  if (renderer.setEffects) renderer.setEffects([bloomPass])
+
+  const scene = new THREE.Scene()
+  const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 1, 20000)
+  camera.position.set(0, 110, 300)
+  camera.lookAt(0, 20, 0)
+
+  const sun = new THREE.Vector3()
+
+  // Water
+  const water = new Water(new THREE.PlaneGeometry(10000, 10000), {
+    textureWidth: 512, textureHeight: 512,
+    waterNormals: new THREE.TextureLoader().load('/textures/waternormals.jpg', t => { t.wrapS = t.wrapT = THREE.RepeatWrapping }),
+    sunDirection: new THREE.Vector3(), sunColor: 0xffffff, waterColor: 0x001e0f,
+    distortionScale: 3.7, fog: scene.fog !== undefined,
+  })
+  water.rotation.x = -Math.PI / 2; scene.add(water)
+
+  // Sky
+  const sky = new Sky(); sky.scale.setScalar(10000); scene.add(sky)
+  const skyU = sky.material.uniforms
+  skyU['turbidity'].value = 10; skyU['rayleigh'].value = 2
+  skyU['mieCoefficient'].value = 0.005; skyU['mieDirectionalG'].value = 0.8
+  if (skyU['cloudCoverage']) skyU['cloudCoverage'].value = 0.4
+  if (skyU['cloudDensity']) skyU['cloudDensity'].value = 0.5
+  if (skyU['cloudElevation']) skyU['cloudElevation'].value = 0.5
+
+  const params = { elevation: 20, azimuth: 180 }
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  const envScene = new THREE.Scene()
+  let rt
+
+  function updateSun() {
+    sun.setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - params.elevation), THREE.MathUtils.degToRad(params.azimuth))
+    skyU['sunPosition'].value.copy(sun)
+    water.material.uniforms['sunDirection'].value.copy(sun).normalize()
+    if (rt) rt.dispose()
+    envScene.add(sky); rt = pmrem.fromScene(envScene); scene.add(sky)
+    scene.environment = rt.texture
+  }
+  updateSun()
 
   // Lighting
-  const hemiLight = new THREE.HemisphereLight(0x88bbdd, 0x225566, 0.8)
-  scene.add(hemiLight)
+  const dirLight = new THREE.DirectionalLight(0xffeedd, 3)
+  dirLight.position.set(120, 200, 150); dirLight.target.position.set(0, 10, 0)
+  dirLight.castShadow = true; dirLight.shadow.mapSize.set(2048, 2048)
+  dirLight.shadow.camera.left = -200; dirLight.shadow.camera.right = 200
+  dirLight.shadow.camera.top = 200; dirLight.shadow.camera.bottom = -200
+  scene.add(dirLight); scene.add(dirLight.target)
+  scene.add(new THREE.AmbientLight(0x445566, 1.5))
 
-  const sun = new THREE.DirectionalLight(0xffeedd, 1.5)
-  sun.position.set(5, 12, 8)
-  sun.castShadow = true
-  sun.shadow.mapSize.set(2048, 2048)
-  sun.shadow.camera.near = 0.5
-  sun.shadow.camera.far = 30
-  sun.shadow.camera.left = -8
-  sun.shadow.camera.right = 8
-  sun.shadow.camera.top = 8
-  sun.shadow.camera.bottom = -8
-  scene.add(sun)
+  // Platform
+  const { group: raftGroup, flag } = createRaft(scene)
+  raftGroup.position.y = 5; scene.add(raftGroup)
 
-  const fill = new THREE.DirectionalLight(0x6688aa, 0.4)
-  fill.position.set(-5, 5, -3)
-  scene.add(fill)
+  // Render loop
+  let animId
+  function animate() {
+    animId = requestAnimationFrame(animate)
+    const time = performance.now() * 0.001
 
-  // === OCEAN — visible, animated, bright ===
-  const oceanGeo = new THREE.PlaneGeometry(60, 60, 50, 50)
-  const oceanMat = new THREE.MeshStandardMaterial({
-    color: OCEAN_COLOR,
-    roughness: 0.2,
-    metalness: 0.15,
-    emissive: 0x0a3050,
-    emissiveIntensity: 0.3,
-  })
-  const ocean = new THREE.Mesh(oceanGeo, oceanMat)
-  ocean.rotation.x = -Math.PI / 2
-  ocean.position.y = -0.35
-  ocean.receiveShadow = true
-  scene.add(ocean)
+    water.material.uniforms['time'].value += 1.0 / 60.0
+    if (skyU['time']) skyU['time'].value = time
 
-  // === RAFT — flat wooden platform the pirates stand on ===
-  const raftGroup = new THREE.Group()
+    raftGroup.position.y = 5 + Math.sin(time * 0.4) * 0.5
+    raftGroup.rotation.x = Math.sin(time * 0.3) * 0.004
+    raftGroup.rotation.z = Math.sin(time * 0.25 + 1) * 0.003
 
-  // Main planks
-  const plankMat = new THREE.MeshStandardMaterial({ color: WOOD_COLOR, roughness: 0.85 })
-  const plankDarkMat = new THREE.MeshStandardMaterial({ color: WOOD_DARK, roughness: 0.85 })
-  for (let i = -3; i <= 3; i++) {
-    const plank = new THREE.Mesh(
-      new THREE.BoxGeometry(0.7, 0.08, 5.5),
-      i % 2 === 0 ? plankMat : plankDarkMat
-    )
-    plank.position.set(i * 0.72, 0, 0)
-    plank.receiveShadow = true
-    plank.castShadow = true
-    raftGroup.add(plank)
-  }
-
-  // Cross beams underneath
-  for (const z of [-2, 0, 2]) {
-    const beam = new THREE.Mesh(
-      new THREE.BoxGeometry(5.2, 0.1, 0.25),
-      plankDarkMat
-    )
-    beam.position.set(0, -0.08, z)
-    raftGroup.add(beam)
-  }
-
-  // Rope wrappings at crossbeams
-  const ropeMat = new THREE.MeshStandardMaterial({ color: ROPE_COLOR, roughness: 0.9 })
-  for (const x of [-2.3, 2.3]) {
-    for (const z of [-2, 0, 2]) {
-      const rope = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 8), ropeMat)
-      rope.position.set(x, 0.02, z)
-      rope.rotation.x = Math.PI / 2
-      raftGroup.add(rope)
+    // Animate pirate models
+    const delta = 1 / 60
+    if (raftGroup.userData.mixers) {
+      raftGroup.userData.mixers.forEach(m => m.update(delta))
     }
+    // Idle sway for static models — feet stay planted, body rocks
+    raftGroup.children.forEach(child => {
+      if (child.userData && child.userData.staticBob) {
+        const p = child.userData.bobPhase
+        child.position.y = child.userData.baseY
+        child.scale.setScalar(50)
+        // Gentle lean/rock from the base — simulates upper body movement
+        child.rotation.z = Math.sin(time * 1.5 + p) * 0.03
+        child.rotation.x = Math.sin(time * 1.2 + p * 1.3) * 0.02
+        child.rotation.y = Math.sin(time * 0.8 + p) * 0.05
+      }
+    })
+
+    renderer.render(scene, camera)
   }
+  animate()
 
-  // Small mast with tattered flag
-  const mastMat = new THREE.MeshStandardMaterial({ color: WOOD_DARK, roughness: 0.8 })
-  const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 3, 6), mastMat)
-  mast.position.set(-2, 1.5, -2)
-  mast.castShadow = true
-  raftGroup.add(mast)
-
-  // Flag
-  const flagCanvas = document.createElement('canvas')
-  flagCanvas.width = 128
-  flagCanvas.height = 86
-  const fctx = flagCanvas.getContext('2d')
-  fctx.fillStyle = '#222'
-  fctx.fillRect(0, 0, 128, 86)
-  // Skull
-  fctx.fillStyle = '#ddd'
-  fctx.beginPath()
-  fctx.arc(64, 32, 16, 0, Math.PI * 2)
-  fctx.fill()
-  fctx.fillStyle = '#222'
-  fctx.beginPath(); fctx.arc(58, 30, 4, 0, Math.PI * 2); fctx.fill()
-  fctx.beginPath(); fctx.arc(70, 30, 4, 0, Math.PI * 2); fctx.fill()
-  fctx.fillRect(60, 38, 8, 3)
-  fctx.strokeStyle = '#ddd'
-  fctx.lineWidth = 4
-  fctx.lineCap = 'round'
-  fctx.beginPath(); fctx.moveTo(40, 55); fctx.lineTo(88, 70); fctx.stroke()
-  fctx.beginPath(); fctx.moveTo(88, 55); fctx.lineTo(40, 70); fctx.stroke()
-
-  const flagGeo = new THREE.PlaneGeometry(1, 0.67, 8, 4)
-  const flagMat = new THREE.MeshStandardMaterial({
-    map: new THREE.CanvasTexture(flagCanvas),
-    side: THREE.DoubleSide,
-    roughness: 0.9,
-  })
-  const flag = new THREE.Mesh(flagGeo, flagMat)
-  flag.position.set(-1.45, 2.7, -2)
-  raftGroup.add(flag)
-
-  raftGroup.position.y = 0
-  scene.add(raftGroup)
-
-  // === TREASURE CHEST — center of raft, clearly visible ===
-  const chestGroup = new THREE.Group()
-  const chestMat = new THREE.MeshStandardMaterial({ color: WOOD_DARK, roughness: 0.5 })
-  const chestBase = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.45, 0.55), chestMat)
-  chestBase.position.y = 0.225
-  chestBase.castShadow = true
-  chestGroup.add(chestBase)
-  const lidGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.82, 8, 1, false, 0, Math.PI)
-  const lid = new THREE.Mesh(lidGeo, new THREE.MeshStandardMaterial({ color: WOOD_COLOR, roughness: 0.5 }))
-  lid.rotation.z = Math.PI / 2
-  lid.rotation.y = Math.PI / 2
-  lid.position.set(0, 0.45, 0)
-  chestGroup.add(lid)
-  // Gold bands
-  const bandMat = new THREE.MeshStandardMaterial({ color: GOLD_COLOR, metalness: 0.8, roughness: 0.15 })
-  for (const x of [-0.22, 0, 0.22]) {
-    const b = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.47, 0.57), bandMat)
-    b.position.set(x, 0.225, 0)
-    chestGroup.add(b)
+  function handleResize() {
+    camera.aspect = container.clientWidth / container.clientHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(container.clientWidth, container.clientHeight)
   }
-  // Coins overflowing
-  const coinMat = new THREE.MeshStandardMaterial({
-    color: GOLD_COLOR,
-    metalness: 0.9,
-    roughness: 0.08,
-    emissive: 0xcc8800,
-    emissiveIntensity: 0.5,
-  })
-  for (let i = 0; i < 25; i++) {
-    const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.015, 10), coinMat)
-    const a = Math.random() * Math.PI * 2
-    const d = 0.1 + Math.random() * 0.4
-    coin.position.set(Math.cos(a) * d, 0.5 + Math.random() * 0.15, Math.sin(a) * d)
-    coin.rotation.x = Math.random()
-    coin.rotation.z = Math.random()
-    chestGroup.add(coin)
-  }
-  const coinLight = new THREE.PointLight(0xffcc44, 0.8, 4)
-  coinLight.position.set(0, 0.7, 0)
-  chestGroup.add(coinLight)
+  window.addEventListener('resize', handleResize)
 
-  chestGroup.position.set(0, 0.04, 1.5)
-  chestGroup.rotation.y = Math.PI
-  scene.add(chestGroup)
-
-  // === FLOATING COINS for animation (hidden initially) ===
-  const floatingCoins = []
-  for (let i = 0; i < 20; i++) {
-    const coin = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.1, 0.1, 0.02, 10),
-      coinMat.clone()
-    )
-    coin.visible = false
-    coin.castShadow = true
-    scene.add(coin)
-    floatingCoins.push(coin)
-  }
-
-  // === SHARKS — 4 fins circling ===
-  const sharkFins = []
-  for (let i = 0; i < 4; i++) {
-    const finGroup = new THREE.Group()
-    const finShape = new THREE.Shape()
-    finShape.moveTo(0, 0)
-    finShape.quadraticCurveTo(0.06, 0.6, 0.2, 0.7)
-    finShape.quadraticCurveTo(0.35, 0.4, 0.45, 0)
-    finShape.lineTo(0, 0)
-    const finGeo = new THREE.ExtrudeGeometry(finShape, { depth: 0.07, bevelEnabled: false })
-    const finMat = new THREE.MeshStandardMaterial({ color: 0x445555, roughness: 0.5 })
-    finGroup.add(new THREE.Mesh(finGeo, finMat))
-    // Wake
-    const wake = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.0, 0.15),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.25, side: THREE.DoubleSide })
-    )
-    wake.rotation.x = -Math.PI / 2
-    wake.position.set(-0.3, -0.05, 0.035)
-    finGroup.add(wake)
-    scene.add(finGroup)
-    finGroup.userData = {
-      orbitRadius: 5 + i * 1.8,
-      speed: 0.5 + i * 0.12,
-      phase: (i * Math.PI * 2) / 4,
-      bobPhase: i * 1.5,
-    }
-    sharkFins.push(finGroup)
-  }
-
-  return { scene, camera, renderer, ocean, sharkFins, chestGroup, raftGroup, flag, floatingCoins }
-}
-
-export function animateOcean(ocean, t) {
-  const pos = ocean.geometry.attributes.position
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i)
-    const z = pos.getZ(i)
-    pos.setY(i,
-      Math.sin(x * 0.3 + t * 0.7) * 0.15 +
-      Math.cos(z * 0.25 + t * 0.5) * 0.1 +
-      Math.sin((x + z) * 0.15 + t * 0.35) * 0.08
-    )
-  }
-  pos.needsUpdate = true
-}
-
-export function animateSharks(fins, t) {
-  for (const fin of fins) {
-    const d = fin.userData
-    const angle = t * d.speed + d.phase
-    fin.position.x = Math.cos(angle) * d.orbitRadius
-    fin.position.z = Math.sin(angle) * d.orbitRadius
-    fin.position.y = -0.25 + Math.sin(t * 2.5 + d.bobPhase) * 0.06
-    fin.rotation.y = -angle + Math.PI / 2
+  return {
+    renderer, scene, camera, water, raftGroup, flag,
+    dispose() { cancelAnimationFrame(animId); window.removeEventListener('resize', handleResize); if (rt) rt.dispose(); renderer.dispose() }
   }
 }
 
-export function animateRaft(raftGroup, t) {
-  raftGroup.rotation.z = Math.sin(t * 0.5) * 0.02
-  raftGroup.rotation.x = Math.sin(t * 0.4 + 1) * 0.015
-  raftGroup.position.y = Math.sin(t * 0.6) * 0.08
-}
-
-export function animateFlag(flag, t) {
-  const pos = flag.geometry.attributes.position
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i)
-    pos.setZ(i, Math.sin(x * 4 + t * 5) * 0.05 + Math.sin(x * 6 + t * 7) * 0.03)
-  }
-  pos.needsUpdate = true
-}
-
-// Animate coins sliding out of the chest to landing spots
-export function animateCoinsToTarget(floatingCoins, t, targets) {
-  for (const target of targets) {
-    const coin = floatingCoins[target.coinIndex]
-    if (!coin) continue
-    const elapsed = t - target.startTime
-    const progress = Math.min(elapsed / target.duration, 1)
-
-    if (progress >= 0 && progress < 1) {
-      coin.visible = true
-      const eased = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2
-      coin.position.lerpVectors(target.from, target.to, eased)
-      // Small hop out of chest then settle
-      coin.position.y += Math.sin(progress * Math.PI) * 0.4
-      coin.rotation.y = progress * Math.PI * 2
-    } else if (progress >= 1) {
-      // Stay visible at final position
-      coin.visible = true
-      coin.position.copy(target.to)
-      coin.rotation.y = 0
-    } else {
-      coin.visible = false
-    }
-  }
-}
+export function animateOcean() {}
+export function animateSharks() {}
+export function animateRaft() {}
+export function animateFlag() {}
+export function animateCoinsToTarget() {}

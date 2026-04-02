@@ -1,0 +1,327 @@
+/* ─── 2.5D Pirate Scene — theme-aware ─── */
+
+.scene-2d {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  /* Default theme ocean palette */
+  --sky-top: #0c1a3a;
+  --sky-mid: #1a4060;
+  --sky-bottom: #2a6585;
+  --ocean-body: #0c4a65;
+  --wave-far: #0a4a65;
+  --wave-mid: #0c5575;
+  --wave-near: #0e6585;
+  --wave-front: #0a5570;
+  --celestial-color: #ffe8a0;
+  --celestial-glow: rgba(255,200,80,0.25);
+  --cloud-color: rgba(255,255,255,0.35);
+  --star-display: none;
+}
+
+/* Theme overrides */
+.scene-2d.theme-cosmic {
+  --sky-top: #05001a; --sky-mid: #0a0030; --sky-bottom: #150050;
+  --ocean-body: #0a0030; --wave-far: #120040; --wave-mid: #1a0055; --wave-near: #220065; --wave-front: #1a0050;
+  --celestial-color: #b890ff; --celestial-glow: rgba(140,60,255,0.3);
+  --cloud-color: rgba(140,100,255,0.12); --star-display: block;
+}
+.scene-2d.theme-postapoc {
+  --sky-top: #1a0800; --sky-mid: #2a1408; --sky-bottom: #3a2010;
+  --ocean-body: #1a1008; --wave-far: #2a1808; --wave-mid: #3a2010; --wave-near: #4a2818; --wave-front: #3a2010;
+  --celestial-color: #ff8040; --celestial-glow: rgba(255,100,20,0.3);
+  --cloud-color: rgba(200,100,40,0.15); --star-display: none;
+}
+.scene-2d.theme-ice {
+  --sky-top: #a0c8e0; --sky-mid: #c0dce8; --sky-bottom: #d8ecf4;
+  --ocean-body: #80b8d0; --wave-far: #6aa0c0; --wave-mid: #7ab0cc; --wave-near: #8ac0d8; --wave-front: #80b8d0;
+  --celestial-color: #fff; --celestial-glow: rgba(200,230,255,0.4);
+  --cloud-color: rgba(255,255,255,0.5); --star-display: none;
+}
+.scene-2d.theme-rhythm {
+  --sky-top: #050510; --sky-mid: #0a0a18; --sky-bottom: #0f0f22;
+  --ocean-body: #0a0a14; --wave-far: #0f0f20; --wave-mid: #14142a; --wave-near: #1a1a35; --wave-front: #14142a;
+  --celestial-color: #ff2d95; --celestial-glow: rgba(255,45,149,0.3);
+  --cloud-color: rgba(255,45,149,0.08); --star-display: block;
+}
+.scene-2d.theme-mindscape {
+  --sky-top: #d0c0f0; --sky-mid: #e0d0ff; --sky-bottom: #ece0ff;
+  --ocean-body: #c8b0e8; --wave-far: #b8a0d8; --wave-mid: #c8b0e8; --wave-near: #d8c0f0; --wave-front: #c8b0e8;
+  --celestial-color: #fff; --celestial-glow: rgba(140,80,220,0.2);
+  --cloud-color: rgba(255,255,255,0.5); --star-display: none;
+}
+.scene-2d.theme-fantasy {
+  --sky-top: #041008; --sky-mid: #0a2010; --sky-bottom: #103018;
+  --ocean-body: #082818; --wave-far: #0a3018; --wave-mid: #0c3820; --wave-near: #0e4028; --wave-front: #0c3820;
+  --celestial-color: #ffd700; --celestial-glow: rgba(255,215,0,0.25);
+  --cloud-color: rgba(100,255,150,0.08); --star-display: block;
+}
+.scene-2d.theme-urban {
+  --sky-top: #1a1a1c; --sky-mid: #2a2a2c; --sky-bottom: #3a3a3c;
+  --ocean-body: #2a2a2c; --wave-far: #303032; --wave-mid: #383838; --wave-near: #404040; --wave-front: #383838;
+  --celestial-color: #e0c878; --celestial-glow: rgba(200,180,100,0.2);
+  --cloud-color: rgba(200,180,140,0.1); --star-display: none;
+}
+.scene-2d.theme-molten {
+  --sky-top: #0a0505; --sky-mid: #1a0808; --sky-bottom: #2a1010;
+  --ocean-body: #1a0a0a; --wave-far: #2a1010; --wave-mid: #3a1818; --wave-near: #4a2020; --wave-front: #3a1818;
+  --celestial-color: #ff6020; --celestial-glow: rgba(255,80,20,0.35);
+  --cloud-color: rgba(255,80,20,0.08); --star-display: block;
+}
+.scene-2d.theme-glitch {
+  --sky-top: #020a02; --sky-mid: #041004; --sky-bottom: #061806;
+  --ocean-body: #041004; --wave-far: #061806; --wave-mid: #082008; --wave-near: #0a280a; --wave-front: #082008;
+  --celestial-color: #00ff41; --celestial-glow: rgba(0,255,65,0.25);
+  --cloud-color: rgba(0,255,65,0.06); --star-display: block;
+}
+.scene-2d.theme-ocean {
+  --sky-top: #010810; --sky-mid: #020e1a; --sky-bottom: #041828;
+  --ocean-body: #031220; --wave-far: #041828; --wave-mid: #052030; --wave-near: #062838; --wave-front: #052030;
+  --celestial-color: #40b0d0; --celestial-glow: rgba(60,180,220,0.25);
+  --cloud-color: rgba(60,180,220,0.08); --star-display: block;
+}
+.scene-2d.theme-vapor {
+  --sky-top: #10021a; --sky-mid: #1a0530; --sky-bottom: #200840;
+  --ocean-body: #150425; --wave-far: #1a0530; --wave-mid: #200838; --wave-near: #280a42; --wave-front: #200838;
+  --celestial-color: #ff80d0; --celestial-glow: rgba(255,100,200,0.3);
+  --cloud-color: rgba(255,100,200,0.08); --star-display: block;
+}
+.scene-2d.theme-lava {
+  --sky-top: #0a0202; --sky-mid: #140404; --sky-bottom: #1e0808;
+  --ocean-body: #140505; --wave-far: #200808; --wave-mid: #2a0c0c; --wave-near: #351010; --wave-front: #2a0c0c;
+  --celestial-color: #ff4020; --celestial-glow: rgba(255,60,20,0.35);
+  --cloud-color: rgba(255,80,40,0.08); --star-display: block;
+}
+
+/* ─── Sky ─── */
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 45%, var(--sky-bottom) 75%, var(--ocean-body) 100%);
+}
+
+/* Stars */
+.stars { position: absolute; inset: 0; display: var(--star-display); }
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.8; }
+}
+
+/* Sun / Moon */
+.celestial {
+  position: absolute;
+  top: 10%;
+  right: 15%;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--celestial-color), transparent 70%);
+  box-shadow: 0 0 40px 15px var(--celestial-glow), 0 0 100px 40px var(--celestial-glow);
+  animation: celestial-pulse 5s ease-in-out infinite;
+}
+@keyframes celestial-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* Clouds — proper shapes */
+.cloud {
+  position: absolute;
+  color: var(--cloud-color);
+  animation: cloud-drift linear infinite;
+}
+.cloud svg { width: 100%; height: 100%; }
+.cloud-1 { top: 6%; width: 160px; height: 48px; animation-duration: 50s; left: -180px; }
+.cloud-2 { top: 16%; width: 130px; height: 40px; animation-duration: 65s; left: -150px; animation-delay: -22s; }
+.cloud-3 { top: 11%; width: 145px; height: 44px; animation-duration: 42s; left: -160px; animation-delay: -12s; }
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100vw + 200px)); }
+}
+
+/* ─── Ocean body fill ─── */
+.ocean-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55%;
+  background: var(--ocean-body);
+}
+
+/* ─── Waves ─── */
+.wave {
+  position: absolute;
+  left: 0;
+  width: 200%;
+}
+
+.wave-far { bottom: 42%; height: 10%; animation: wave-scroll 20s linear infinite; z-index: 1; opacity: 0.8; }
+.wave-mid { bottom: 30%; height: 14%; animation: wave-scroll 15s linear infinite reverse; z-index: 3; }
+.wave-near { bottom: 12%; height: 16%; animation: wave-scroll 11s linear infinite; z-index: 6; }
+.wave-front { bottom: 0; height: 14%; animation: wave-scroll 9s linear infinite reverse; z-index: 8; }
+
+@keyframes wave-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ─── Sharks ─── */
+.shark { position: absolute; z-index: 2; }
+.shark-svg {
+  width: 80px;
+  height: auto;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+}
+
+.shark-0 { bottom: 40%; animation: shark-0 16s linear infinite; }
+.shark-1 { bottom: 36%; animation: shark-1 20s linear infinite; animation-delay: -8s; }
+.shark-2 { bottom: 43%; animation: shark-2 14s linear infinite; animation-delay: -4s; }
+
+@keyframes shark-0 {
+  0% { left: -100px; transform: scaleX(1) translateY(0); }
+  48% { transform: scaleX(1) translateY(-8px); }
+  50% { left: calc(100% + 100px); transform: scaleX(1) translateY(0); }
+  50.1% { transform: scaleX(-1) translateY(0); }
+  98% { transform: scaleX(-1) translateY(6px); }
+  100% { left: -100px; transform: scaleX(-1) translateY(0); }
+}
+@keyframes shark-1 {
+  0% { right: -100px; left: auto; transform: scaleX(-1) translateY(0); }
+  48% { transform: scaleX(-1) translateY(10px); }
+  50% { right: calc(100% + 100px); transform: scaleX(-1) translateY(0); }
+  50.1% { transform: scaleX(1) translateY(0); }
+  98% { transform: scaleX(1) translateY(-6px); }
+  100% { right: -100px; transform: scaleX(1) translateY(0); }
+}
+@keyframes shark-2 {
+  0% { left: 30%; transform: scaleX(1) translateY(0); }
+  25% { left: calc(100% + 80px); transform: scaleX(1) translateY(-5px); }
+  25.1% { transform: scaleX(-1) translateY(-5px); }
+  75% { left: -100px; transform: scaleX(-1) translateY(8px); }
+  75.1% { transform: scaleX(1) translateY(8px); }
+  100% { left: 30%; transform: scaleX(1) translateY(0); }
+}
+
+/* ─── Raft ─── */
+.raft-layer {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%) perspective(900px) rotateX(12deg);
+  transform-origin: center bottom;
+  z-index: 5;
+  animation: raft-bob 3.5s ease-in-out infinite;
+}
+
+@keyframes raft-bob {
+  0%, 100% { transform: translateX(-50%) perspective(900px) rotateX(12deg) translateY(0) rotate(0deg); }
+  25% { transform: translateX(-50%) perspective(900px) rotateX(12deg) translateY(-10px) rotate(0.5deg); }
+  50% { transform: translateX(-50%) perspective(900px) rotateX(12deg) translateY(4px) rotate(-0.3deg); }
+  75% { transform: translateX(-50%) perspective(900px) rotateX(12deg) translateY(-6px) rotate(0.2deg); }
+}
+
+.raft { position: relative; width: min(95vw, 1100px); }
+.raft-svg { width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+
+/* Mast */
+.mast { position: absolute; left: 35px; bottom: 55px; }
+.mast-pole {
+  width: 7px; height: 220px;
+  background: linear-gradient(180deg, #4a2810, #3a1a08);
+  border-radius: 2px; margin-left: 10px;
+}
+.flag {
+  position: absolute; top: 0; left: 16px;
+  animation: flag-flutter 2.5s ease-in-out infinite;
+  transform-origin: left center;
+}
+.flag-svg { width: 100px; height: auto; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.35)); }
+
+@keyframes flag-flutter {
+  0%, 100% { transform: scaleX(1) skewY(0deg); }
+  25% { transform: scaleX(0.94) skewY(1.5deg); }
+  50% { transform: scaleX(1.03) skewY(-0.8deg); }
+  75% { transform: scaleX(0.96) skewY(1deg); }
+}
+
+/* Chest */
+.chest { position: absolute; right: 40px; bottom: 50px; }
+.chest-svg { width: 95px; height: auto; filter: drop-shadow(0 3px 8px rgba(218,165,32,0.25)); }
+
+/* ─── Pirates — zoomed in ─── */
+.pirates-row {
+  position: absolute;
+  bottom: 50px;
+  left: 130px;
+  right: 160px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.pirate-figure {
+  animation: pirate-idle 2.8s ease-in-out infinite;
+  transition: transform 0.3s ease;
+}
+
+.pirate-svg {
+  width: 110px;
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
+@keyframes pirate-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.pirate-figure.vote-yes { animation: pirate-jump 0.6s ease-out; }
+.pirate-figure.vote-no { animation: pirate-shake 0.6s ease-out; }
+.pirate-figure.plank-walk { animation: pirate-plank 2s ease-in forwards; }
+
+@keyframes pirate-jump {
+  0% { transform: translateY(0); }
+  35% { transform: translateY(-30px) scale(1.06); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes pirate-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px) rotate(-4deg); }
+  30% { transform: translateX(6px) rotate(4deg); }
+  45% { transform: translateX(-5px) rotate(-3deg); }
+  60% { transform: translateX(5px) rotate(3deg); }
+  75% { transform: translateX(-2px); }
+}
+
+@keyframes pirate-plank {
+  0% { transform: translateX(0) translateY(0); opacity: 1; }
+  45% { transform: translateX(90px) translateY(-12px); opacity: 1; }
+  65% { transform: translateX(110px) translateY(0); opacity: 1; }
+  100% { transform: translateX(140px) translateY(80px) rotate(25deg); opacity: 0; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 700px) {
+  .raft { width: min(98vw, 650px); }
+  .pirate-svg { width: 75px; }
+  .pirates-row { left: 80px; right: 100px; bottom: 40px; }
+  .chest-svg { width: 70px; }
+  .chest { bottom: 40px; }
+  .mast { bottom: 45px; }
+}
+@media (max-width: 500px) {
+  .raft { width: 100vw; }
+  .pirate-svg { width: 55px; }
+  .pirates-row { left: 55px; right: 70px; bottom: 35px; }
+  .chest-svg { width: 55px; }
+}

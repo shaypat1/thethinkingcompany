@@ -96,9 +96,10 @@ export default function Home() {
   return (
     <div className="app">
       <nav className="topbar">
-        <Link to="/leaderboard" className="topbar-link">
-          Leaderboard
-        </Link>
+        <div style={{ display: 'flex', gap: '1.5rem' }}>
+          <Link to="/leaderboard" className="topbar-link">Leaderboard</Link>
+          <Link to="/cms" className="topbar-link">CMS</Link>
+        </div>
         <Link to="/profile" className="topbar-link profile-link">
           Shay
           <span className="avatar">S</span>
