@@ -43,8 +43,8 @@ export function createScene(container, level) {
   const camDist = maxDim * 1.4 + 3
 
   const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100)
-  camera.position.set(gridW * 0.4, camDist * 0.7, gridH * 0.5 + camDist * 0.6)
-  camera.lookAt(gridW * 0.4, 0, gridH * 0.35)
+  camera.position.set(gridW * 0.4, camDist * 0.95, gridH * 0.5 + camDist * 0.35)
+  camera.lookAt(gridW * 0.4, 0, gridH * 0.4)
 
   // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true })

@@ -19,7 +19,8 @@ export default function RobotRenderer({ levels, narrative }) {
   const [levelIndex, setLevelIndex] = useState(0)
   const [phase, setPhase] = useState('intro')
   const [program, setProgram] = useState([]) // array of strings or { type, count/condition, body: [] }
-  const [editingLoop, setEditingLoop] = useState(null) // index of loop being filled
+  const [editingLoop, setEditingLoop] = useState(null) // index of top-level block being edited
+  const [editingNested, setEditingNested] = useState(null) // index of nested block inside editingLoop
   const [robotState, setRobotState] = useState(null)
   const [execIndex, setExecIndex] = useState(-1)
   const [gears, setGears] = useState([])
@@ -84,7 +85,7 @@ export default function RobotRenderer({ levels, narrative }) {
 
   const initLevel = useCallback(() => {
     setProgram([])
-    setEditingLoop(null)
+    setEditingLoop(null); setEditingNested(null)
     setRobotState(createRobotState(level))
     setExecIndex(-1)
     setPhase('build')
@@ -93,22 +94,49 @@ export default function RobotRenderer({ levels, narrative }) {
   function addCard(cardId) {
     if (phase !== 'build') return
     const card = CARDS[cardId]
-    if (card.type === 'loop') {
+
+    if (editingNested !== null && editingLoop !== null) {
+      // Adding inside a nested block (e.g., If Wall inside Repeat)
+      const next = [...program]
+      const block = next[editingLoop]
+      const nested = block?.body?.[editingNested]
+      if (nested && typeof nested === 'object' && nested.body.length < 6) {
+        if (card.type === 'loop' || card.type === 'cond') return // no deeper nesting
+        nested.body = [...nested.body, cardId]
+        block.body = [...block.body]
+        block.body[editingNested] = { ...nested }
+      }
+      setProgram(next)
+    } else if (editingLoop !== null) {
+      // Adding inside a top-level block
+      const next = [...program]
+      const block = next[editingLoop]
+      if (block && block.body.length < 6) {
+        if (card.type === 'loop') {
+          const nested = { type: 'loop', count: card.count, body: [], cardId }
+          block.body = [...block.body, nested]
+          setProgram(next)
+          setEditingNested(block.body.length - 1)
+          return
+        } else if (card.type === 'cond') {
+          const nested = { type: 'cond', condition: card.condition, body: [], cardId }
+          block.body = [...block.body, nested]
+          setProgram(next)
+          setEditingNested(block.body.length - 1)
+          return
+        } else {
+          block.body = [...block.body, cardId]
+        }
+      }
+      setProgram(next)
+    } else if (card.type === 'loop') {
       const newLoop = { type: 'loop', count: card.count, body: [], cardId }
       setProgram([...program, newLoop])
-      setEditingLoop(program.length) // start editing the new loop
+      setEditingLoop(program.length)
     } else if (card.type === 'cond') {
       const newCond = { type: 'cond', condition: card.condition, body: [], cardId }
       setProgram([...program, newCond])
       setEditingLoop(program.length)
-    } else if (editingLoop !== null) {
-      // Add to the loop/cond being edited
-      const next = [...program]
-      const block = next[editingLoop]
-      if (block && block.body.length < 6) {
-        block.body = [...block.body, cardId]
-      }
-      setProgram(next)
     } else {
       if (program.length < 16) setProgram([...program, cardId])
     }
@@ -116,13 +144,15 @@ export default function RobotRenderer({ levels, narrative }) {
 
   function removeFromProgram(index) {
     if (phase !== 'build') return
-    if (editingLoop === index) setEditingLoop(null)
+    if (editingLoop === index) { setEditingLoop(null); setEditingNested(null) }
     setProgram(program.filter((_, i) => i !== index))
     if (editingLoop !== null && editingLoop > index) setEditingLoop(editingLoop - 1)
   }
 
   function removeFromBody(blockIndex, bodyIndex) {
     if (phase !== 'build') return
+    if (editingNested === bodyIndex) setEditingNested(null)
+    else if (editingNested !== null && editingNested > bodyIndex) setEditingNested(editingNested - 1)
     const next = [...program]
     const block = next[blockIndex]
     if (block?.body) {
@@ -131,13 +161,54 @@ export default function RobotRenderer({ levels, narrative }) {
     }
   }
 
+  function ejectFromBody(blockIndex, bodyIndex) {
+    if (phase !== 'build') return
+    const next = [...program]
+    const block = next[blockIndex]
+    if (!block?.body) return
+    const item = block.body[bodyIndex]
+    block.body = block.body.filter((_, i) => i !== bodyIndex)
+    // Insert after the parent block in the top-level program
+    next.splice(blockIndex + 1, 0, item)
+    if (editingNested === bodyIndex) setEditingNested(null)
+    else if (editingNested !== null && editingNested > bodyIndex) setEditingNested(editingNested - 1)
+    setProgram(next)
+  }
+
   function finishBlock() {
-    setEditingLoop(null)
+    if (editingNested !== null) {
+      setEditingNested(null) // go back to editing parent block
+    } else {
+      setEditingLoop(null); setEditingNested(null)
+    }
+  }
+
+  function moveItem(index, dir) {
+    if (phase !== 'build') return
+    const target = index + dir
+    if (target < 0 || target >= program.length) return
+    const next = [...program]
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setProgram(next)
+    if (editingLoop === index) setEditingLoop(target)
+    else if (editingLoop === target) setEditingLoop(index)
+  }
+
+  function moveBodyItem(blockIndex, bodyIndex, dir) {
+    if (phase !== 'build') return
+    const target = bodyIndex + dir
+    const block = program[blockIndex]
+    if (!block?.body || target < 0 || target >= block.body.length) return
+    const next = [...program]
+    const body = [...block.body]
+    ;[body[bodyIndex], body[target]] = [body[target], body[bodyIndex]]
+    next[blockIndex] = { ...block, body }
+    setProgram(next)
   }
 
   function clearProgram() {
     setProgram([])
-    setEditingLoop(null)
+    setEditingLoop(null); setEditingNested(null)
     resetRobot3D()
   }
 
@@ -165,7 +236,7 @@ export default function RobotRenderer({ levels, narrative }) {
   function runProgram() {
     if (program.length === 0) return
     setPhase('running')
-    setEditingLoop(null)
+    setEditingLoop(null); setEditingNested(null)
     resetRobot3D()
 
     const initState = createRobotState(level)
@@ -239,7 +310,7 @@ export default function RobotRenderer({ levels, narrative }) {
       setLevelIndex(levelIndex + 1)
       setPhase('build')
       setProgram([])
-      setEditingLoop(null)
+      setEditingLoop(null); setEditingNested(null)
       setExecIndex(-1)
     } else {
       setPhase('complete')
@@ -249,7 +320,7 @@ export default function RobotRenderer({ levels, narrative }) {
   function retry() {
     setPhase('build')
     setProgram([])
-    setEditingLoop(null)
+    setEditingLoop(null); setEditingNested(null)
     resetRobot3D()
     setExecIndex(-1)
   }
@@ -357,7 +428,13 @@ export default function RobotRenderer({ levels, narrative }) {
                 return (
                   <div key={i} className={`rb-belt-card ${execIndex === i ? 'exec' : ''}`}>
                     <CardSym cardId={item} />
-                    <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                    {phase === 'build' && (
+                      <div className="rb-belt-actions">
+                        {i > 0 && <button className="rb-belt-move" onClick={() => moveItem(i, -1)}>‹</button>}
+                        {i < program.length - 1 && <button className="rb-belt-move" onClick={() => moveItem(i, 1)}>›</button>}
+                        <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                      </div>
+                    )}
                   </div>
                 )
               }
@@ -368,18 +445,65 @@ export default function RobotRenderer({ levels, narrative }) {
                 <div key={i} className={`rb-belt-block ${isEditing ? 'editing' : ''}`} style={{ borderColor: card?.color }}>
                   <div className="rb-block-header">
                     <span className="rb-block-label" style={{ color: card?.color }}>{card?.name}</span>
-                    <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                    <div className="rb-belt-actions">
+                      {i > 0 && phase === 'build' && <button className="rb-belt-move" onClick={() => moveItem(i, -1)}>‹</button>}
+                      {i < program.length - 1 && phase === 'build' && <button className="rb-belt-move" onClick={() => moveItem(i, 1)}>›</button>}
+                      <button className="rb-belt-del" onClick={() => removeFromProgram(i)}>×</button>
+                    </div>
                   </div>
                   <div className="rb-block-body">
                     {item.body.length === 0 && isEditing && (
                       <span className="rb-block-placeholder">Add cards inside</span>
                     )}
-                    {item.body.map((bodyCard, j) => (
-                      <div key={j} className="rb-belt-card nested">
-                        <CardSym cardId={bodyCard} small />
-                        <button className="rb-belt-del" onClick={() => removeFromBody(i, j)}>×</button>
-                      </div>
-                    ))}
+                    {item.body.map((bodyItem, j) => {
+                      if (typeof bodyItem === 'string') {
+                        return (
+                          <div key={j} className="rb-belt-card nested">
+                            <CardSym cardId={bodyItem} small />
+                            {isEditing && (
+                              <div className="rb-belt-actions">
+                                {j > 0 && <button className="rb-belt-move sm" onClick={() => moveBodyItem(i, j, -1)}>‹</button>}
+                                {j < item.body.length - 1 && <button className="rb-belt-move sm" onClick={() => moveBodyItem(i, j, 1)}>›</button>}
+                                <button className="rb-belt-eject" onClick={() => ejectFromBody(i, j)} title="Eject">↑</button>
+                                <button className="rb-belt-del" onClick={() => removeFromBody(i, j)}>×</button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      }
+                      // Nested block (cond inside loop, etc)
+                      const nestedCard = CARDS[bodyItem.cardId]
+                      const isEditingNested = isEditing && editingNested === j
+                      return (
+                        <div key={j} className={`rb-belt-block nested-block ${isEditingNested ? 'editing' : ''}`} style={{ borderColor: nestedCard?.color }}>
+                          <div className="rb-block-header">
+                            <span className="rb-block-label" style={{ color: nestedCard?.color }}>{nestedCard?.name}</span>
+                            {isEditing && (
+                              <div className="rb-belt-actions">
+                                <button className="rb-belt-eject" onClick={() => ejectFromBody(i, j)} title="Eject">↑</button>
+                                <button className="rb-belt-del" onClick={() => removeFromBody(i, j)}>×</button>
+                              </div>
+                            )}
+                          </div>
+                          <div className="rb-block-body">
+                            {bodyItem.body.length === 0 && isEditingNested && (
+                              <span className="rb-block-placeholder">Add cards</span>
+                            )}
+                            {bodyItem.body.map((innerCard, k) => (
+                              <div key={k} className="rb-belt-card nested">
+                                <CardSym cardId={innerCard} small />
+                              </div>
+                            ))}
+                          </div>
+                          {isEditingNested && (
+                            <button className="rb-block-done" onClick={finishBlock}>Done</button>
+                          )}
+                          {!isEditingNested && isEditing && (
+                            <button className="rb-block-edit" onClick={() => setEditingNested(j)}>Edit</button>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                   {isEditing && (
                     <button className="rb-block-done" onClick={finishBlock}>Done</button>
