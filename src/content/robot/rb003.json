@@ -32,7 +32,7 @@
       "grid": [[".", "L", "G", ".", "L", "G"]],
       "start": [0, 0], "startDir": "right",
       "goal": "collect",
-      "cards": ["forward", "pickup", "light", "ifgem", "iflight", "repeat4"], "par": 10
+      "cards": ["forward", "pickup", "light", "ifgem", "iflight", "repeat4"], "par": 7
     }
   ]
 }

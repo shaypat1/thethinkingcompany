@@ -99,6 +99,13 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+.rb-result-suboptimal {
+  font-size: 0.75rem;
+  color: rgba(255, 200, 100, 0.8);
+  max-width: 260px;
+  line-height: 1.4;
+}
+
 .rb-result-gears {
   font-size: 1.3rem;
   margin: 0.25rem 0;

@@ -321,14 +321,21 @@ export default function RobotRenderer({ levels, narrative }) {
         <div className="rb-result-overlay">
           {robotState?.won ? (
             <>
-              <div className="rb-result-title">Level Complete!</div>
-              <div className="rb-result-info">{flatCount} steps · par {level.par}</div>
+              <div className="rb-result-title">{flatCount <= level.par ? 'Perfect!' : 'Level Complete!'}</div>
+              <div className="rb-result-info">{flatCount} steps · optimal {level.par}</div>
+              {flatCount > level.par && (
+                <div className="rb-result-suboptimal">
+                  You solved it, but there's a {level.par}-step solution. Can you find it?
+                </div>
+              )}
               <div className="rb-result-gears">
                 {'⚙'.repeat(flatCount <= level.par ? 3 : flatCount <= level.par + 2 ? 2 : 1)}
                 {'○'.repeat(3 - (flatCount <= level.par ? 3 : flatCount <= level.par + 2 ? 2 : 1))}
               </div>
               <button className="rb-btn" onClick={nextLevel}>{levelIndex + 1 < levels.length ? 'Next Level' : 'Finish'}</button>
-              <button className="rb-btn-ghost" onClick={retry}>Optimize</button>
+              {flatCount > level.par && (
+                <button className="rb-btn-ghost" onClick={retry}>Try for {level.par} steps</button>
+              )}
             </>
           ) : (
             <>
