@@ -32,7 +32,7 @@
       "grid": [[".", ".", ".", "."], [".", "W", "W", "."], [".", ".", ".", "."], [".", ".", ".", "."]],
       "start": [0, 3], "startDir": "up",
       "goal": "reach", "target": [3, 0],
-      "cards": ["forward", "left", "right"], "par": 6
+      "cards": ["forward", "left", "right"], "par": 7
     },
     {
       "id": "1-4",
@@ -42,7 +42,7 @@
       "grid": [[".", ".", "W", ".", "."], [".", ".", "W", ".", "."], [".", ".", ".", ".", "."]],
       "start": [0, 2], "startDir": "right",
       "goal": "reach", "target": [4, 0],
-      "cards": ["forward", "left", "right"], "par": 8
+      "cards": ["forward", "left", "right"], "par": 7
     },
     {
       "id": "1-5",
@@ -52,7 +52,7 @@
       "grid": [["G", ".", "."], [".", ".", "."], [".", ".", "G"]],
       "start": [1, 1], "startDir": "up",
       "goal": "collect",
-      "cards": ["forward", "left", "right", "pickup"], "par": 8
+      "cards": ["forward", "left", "right", "pickup"], "par": 12
     },
     {
       "id": "1-6",
@@ -62,7 +62,7 @@
       "grid": [[".", "L", ".", "."], [".", ".", ".", "."], [".", ".", "L", "."]],
       "start": [0, 1], "startDir": "right",
       "goal": "light",
-      "cards": ["forward", "left", "right", "light"], "par": 7
+      "cards": ["forward", "left", "right", "light"], "par": 10
     },
     {
       "id": "1-7",
@@ -82,7 +82,7 @@
       "grid": [["G", ".", ".", "L"], [".", "W", ".", "."], [".", ".", "W", "."], ["L", ".", ".", "G"]],
       "start": [0, 0], "startDir": "down",
       "goal": "collect",
-      "cards": ["forward", "left", "right", "pickup", "light"], "par": 14
+      "cards": ["forward", "left", "right", "pickup", "light"], "par": 9
     }
   ]
 }
