@@ -64,7 +64,7 @@
     {
       "id": "1-2",
       "name": "Small City",
-      "hint": "A clue of 5 on a 5\u00d75 grid means buildings go 1,2,3,4,5 in ascending order from that edge.",
+      "hint": "A clue of 5 means buildings go 1,2,3,4,5 ascending. A clue of 1 means the tallest is at the edge.",
       "size": 5,
       "clues": {
         "top": [
@@ -77,8 +77,8 @@
         "bottom": [
           0,
           0,
+          2,
           0,
-          3,
           0
         ],
         "left": [
@@ -137,22 +137,22 @@
     {
       "id": "1-3",
       "name": "Growing Up",
-      "hint": "Use the 5-clue and 3-clue together to narrow down possibilities.",
+      "hint": "Start with the 5-clue \u2014 that column must be ascending. Then use the 3 and 4 clues to narrow down.",
       "size": 5,
       "clues": {
         "top": [
           0,
-          0,
-          0,
           5,
+          0,
+          0,
           0
         ],
         "bottom": [
-          0,
           3,
           0,
           0,
-          4
+          4,
+          0
         ],
         "left": [
           0,
@@ -210,13 +210,13 @@
     {
       "id": "1-4",
       "name": "Metropolis",
-      "hint": "6\u00d76 \u2014 start with the biggest clues. A 6-clue means ascending, a 4-clue on the bottom means the column reads 4 visible from below.",
+      "hint": "6\u00d76! The 6-clue means ascending order. The 2-clues at top help narrow columns fast.",
       "size": 6,
       "clues": {
         "top": [
           0,
           0,
-          2,
+          3,
           2,
           0,
           0
@@ -225,7 +225,7 @@
           0,
           0,
           0,
-          4,
+          2,
           0,
           0
         ],
