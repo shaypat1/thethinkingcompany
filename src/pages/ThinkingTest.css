@@ -343,10 +343,11 @@
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
-  z-index: 10;
+  z-index: 20;
   border: 3px solid rgba(255, 255, 255, 0.3);
   padding: 0.6rem 1rem;
   text-align: center;
+  font-family: 'Press Start 2P', monospace;
 }
 
 .tt-elo-label {
@@ -367,154 +368,59 @@
   position: fixed;
   top: 1.5rem;
   right: 1.5rem;
-  z-index: 10;
+  z-index: 20;
 }
 
 .tt-progress-text {
+  font-family: 'Press Start 2P', monospace;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.15em;
 }
 
-/* Game content */
-.tt-content-game {
-  margin-top: -4rem;
-  gap: 1rem;
-}
-
-.tt-q-type {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.3);
-  letter-spacing: 0.2em;
-  text-align: center;
-}
-
-.tt-q-elo {
+/* ─── Question ELO float ─── */
+.tt-q-elo-float {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 20;
+  font-family: 'Press Start 2P', monospace;
   font-size: 0.45rem;
-  color: rgba(255, 255, 255, 0.2);
-  letter-spacing: 0.1em;
-  text-align: center;
-}
-
-/* Analogy boxes */
-.tt-analogy-boxes {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  justify-content: center;
-  flex-wrap: nowrap;
-  margin: 1rem 0;
-}
-
-.tt-a-box {
-  min-width: 12vw;
-  height: 10vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.04);
-  font-size: 0.85rem;
-  color: #fff;
-  padding: 0 1.2rem;
-  flex-shrink: 0;
-}
-
-.tt-a-empty {
-  border-style: dashed;
-  border-color: rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.25);
-  min-width: 14vw;
-}
-
-.tt-a-sep {
-  font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.2);
-}
-
-/* Flaw */
-.tt-flaw-title {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.8);
   letter-spacing: 0.1em;
-  text-align: center;
 }
 
-.tt-flaw-argument {
-  font-size: 0.55rem;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 2.4;
-  padding: 1rem 1.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
-  text-align: center;
+/* ─── Feedback popup (centered box) ─── */
+.tt-feedback-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
 }
 
-/* Choices */
-.tt-choices {
+.tt-feedback-popup {
+  pointer-events: auto;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  background: rgba(10, 14, 26, 0.92);
+  padding: 2.5rem 3.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-}
-
-.tt-choice {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.8rem;
-  padding: 0.7rem 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.03);
-  cursor: pointer;
-  transition: all 0.1s;
-  font-family: 'Press Start 2P', monospace;
-  text-align: left;
-}
-
-.tt-choice:hover {
-  border-color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.06);
-  transform: translate(-2px, -2px);
-  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
-}
-
-.tt-choice-label {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.3);
-  flex-shrink: 0;
-  width: 16px;
-}
-
-.tt-choice-text {
-  font-size: 0.45rem;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 0.04em;
-  line-height: 2;
-}
-
-.tt-choice.correct { border-color: #00cc66; background: rgba(0,204,102,0.08); }
-.tt-choice.correct .tt-choice-label, .tt-choice.correct .tt-choice-text { color: #00cc66; }
-.tt-choice.wrong { border-color: #e03030; background: rgba(224,48,48,0.08); }
-.tt-choice.wrong .tt-choice-label, .tt-choice.wrong .tt-choice-text { color: #e03030; }
-.tt-choice.dim { opacity: 0.2; pointer-events: none; }
-
-/* Feedback bar */
-.tt-feedback-bar {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: 1.2rem;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
 }
 
 .tt-feedback-text {
-  font-size: 0.9rem;
-  letter-spacing: 0.15em;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.8rem;
+  letter-spacing: 0.12em;
+  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
 }
-.tt-feedback-text.correct { color: #00cc66; }
-.tt-feedback-text.wrong { color: #e03030; }
+.tt-feedback-text.correct { color: #00cc66; text-shadow: 4px 4px 0 rgba(0, 204, 102, 0.15); }
+.tt-feedback-text.wrong { color: #e03030; text-shadow: 4px 4px 0 rgba(224, 48, 48, 0.15); }
 
 .tt-elo-change {
   font-size: 0.65rem;
@@ -522,6 +428,34 @@
 }
 .tt-elo-change.correct { color: #00cc66; }
 .tt-elo-change.wrong { color: #e03030; }
+
+.tt-memory-detail {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+}
+
+/* Intro popup variant */
+.tt-intro-popup {
+  min-width: 550px;
+}
+
+.tt-intro-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tt-intro-rules p {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 0;
+  text-align: center;
+}
 
 .tt-next-btn {
   padding: 0.5rem 1.5rem;

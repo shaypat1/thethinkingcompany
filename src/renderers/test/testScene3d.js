@@ -17,8 +17,10 @@ export function createScene(container, level) {
   const camDist = maxDim * 1.5 + 3
 
   const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100)
-  camera.position.set(gridW * 0.4, camDist * 0.9, gridH * 0.5 + camDist * 0.4)
-  camera.lookAt(gridW * 0.4, 0, gridH * 0.4)
+  const camCx = (level.width - 1) * (TILE_SIZE + TILE_GAP) / 2
+  const camCz = (level.height - 1) * (TILE_SIZE + TILE_GAP) / 2
+  camera.position.set(camCx, camDist * 0.9, camCz + camDist * 0.4)
+  camera.lookAt(camCx, 0, camCz)
 
   // Renderer — no tone mapping for flat retro look
   const renderer = new THREE.WebGLRenderer({ antialias: false }) // pixelated
@@ -41,7 +43,7 @@ export function createScene(container, level) {
 
   // Neon underglow
   const neonGlow = new THREE.PointLight(0x00aaff, 0.4, 15)
-  neonGlow.position.set(gridW * 0.4, -0.5, gridH * 0.4)
+  neonGlow.position.set(camCx, -0.5, camCz)
   scene.add(neonGlow)
 
   // Ground — void black
@@ -50,7 +52,7 @@ export function createScene(container, level) {
     new THREE.MeshBasicMaterial({ color: 0x030508 })
   )
   ground.rotation.x = -Math.PI / 2
-  ground.position.set(gridW * 0.4, -0.15, gridH * 0.35)
+  ground.position.set(camCx, -0.15, camCz)
   scene.add(ground)
 
   // Materials — retro flat colors

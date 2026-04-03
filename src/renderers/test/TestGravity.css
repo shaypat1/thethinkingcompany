@@ -1,30 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 .gv-wrapper {
   position: fixed;
   inset: 0;
   z-index: 10;
-  background: var(--bg);
+  background: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+}
+
+.gv-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px, rgba(255, 255, 255, 0.015) 4px
+  );
 }
 
 .gv-canvas {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.gv-exit {
-  position: fixed;
-  top: 1.25rem;
-  left: 2rem;
-  z-index: 12;
-  text-decoration: none;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: color 0.15s;
-}
-
-.gv-exit:hover {
-  color: var(--text);
 }
 
 .gv-input-area {
@@ -36,30 +35,30 @@
 }
 
 .gv-input {
-  width: 280px;
-  padding: 0.8rem 1.2rem;
-  font-size: 1.1rem;
-  font-family: inherit;
-  font-weight: 500;
+  width: 320px;
+  padding: 0.9rem 1.2rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
   text-align: center;
-  background: var(--bg);
-  border: 2px solid var(--accent);
-  border-radius: 24px;
-  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0;
+  color: #fff;
   outline: none;
-  transition: box-shadow 0.15s;
+  letter-spacing: 0.05em;
+  transition: border-color 0.1s;
 }
 
 .gv-input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.5;
+  color: rgba(255, 255, 255, 0.2);
 }
 
 .gv-input:focus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Screens (ready, game over, won, level complete) */
+/* ─── Screens (ready, game over, won) ─── */
 
 .gv-overlay {
   position: fixed;
@@ -71,54 +70,123 @@
   justify-content: center;
   text-align: center;
   padding: 2rem;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  background: rgba(10, 14, 26, 0.92);
 }
 
 .gv-screen-title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 0.5rem;
+  font-size: 3rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
 }
 
 .gv-screen-score {
-  font-size: 3rem;
-  font-weight: 600;
-  color: var(--accent);
+  font-size: 4rem;
+  color: #fff;
   margin: 0.5rem 0;
 }
 
 .gv-screen-sub {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin-top: 0.25rem;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  line-height: 2.2;
+  margin-top: 0.5rem;
 }
 
 .gv-screen-btn {
   margin-top: 2rem;
-  padding: 0.75rem 3rem;
-  border: 2px solid var(--accent);
-  border-radius: 8px;
-  background: none;
-  color: var(--accent);
-  font-size: 1rem;
-  font-family: inherit;
-  font-weight: 500;
+  padding: 0.8rem 2.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1);
 }
 
 .gv-screen-btn:hover {
-  opacity: 0.75;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.12);
+}
+
+.gv-screen-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Popup box over game canvas ─── */
+.gv-popup-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.gv-popup {
+  pointer-events: auto;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  background: rgba(10, 14, 26, 0.92);
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 600px;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
+}
+
+.gv-popup-title {
+  font-size: 2.5rem;
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+.gv-popup-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.gv-popup-rules p {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 500px) {
+  .gv-popup { padding: 2rem 1.5rem; }
+  .gv-popup-title { font-size: 1.5rem; }
+  .gv-popup-rules p { font-size: 0.5rem; }
 }
 
 .gv-back {
   margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.2);
   text-decoration: none;
+  letter-spacing: 0.15em;
+  font-family: 'Press Start 2P', monospace;
 }
 
 .gv-back:hover {
-  color: var(--text);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 500px) {
+  .gv-screen-title { font-size: 1.8rem; }
+  .gv-input { width: 240px; font-size: 0.55rem; }
 }

@@ -94,7 +94,13 @@
   color: #0a0e1a;
 }
 
-.ct-cell.done {
+.ct-cell.correct {
+  background: #00cc66;
+  color: transparent;
+  box-shadow: 0 0 15px rgba(0, 204, 102, 0.4);
+}
+
+.ct-cell.wrong {
   background: #e03030;
   color: transparent;
   box-shadow: 0 0 15px rgba(224, 48, 48, 0.4);

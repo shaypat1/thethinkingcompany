@@ -8,7 +8,7 @@ import './TestRobot.css'
 
 const EXEC_DELAY = 350
 
-export default function RobotRenderer({ levels, narrative }) {
+export default function RobotRenderer({ levels, narrative, onComplete, onGameOver, skipIntro }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
   const robotRef = useRef(null)
@@ -17,7 +17,7 @@ export default function RobotRenderer({ levels, narrative }) {
   const execRef = useRef(null)
 
   const [levelIndex, setLevelIndex] = useState(0)
-  const [phase, setPhase] = useState('intro')
+  const [phase, setPhase] = useState(skipIntro ? 'build' : 'intro')
   const [program, setProgram] = useState([]) // array of strings or { type, count/condition, body: [] }
   const [editingLoop, setEditingLoop] = useState(null) // index of top-level block being edited
   const [editingNested, setEditingNested] = useState(null) // index of nested block inside editingLoop
@@ -28,10 +28,36 @@ export default function RobotRenderer({ levels, narrative }) {
 
   const level = levels[levelIndex]
   const availableCards = level?.cards?.map((id) => CARDS[id]) || []
+  const calledBack = useRef(false)
+
+  // Fire callbacks for terminal states
+  useEffect(() => {
+    if (calledBack.current) return
+    if (phase === 'complete' && onComplete) {
+      calledBack.current = true
+      setTimeout(() => onComplete(levels.length), 500)
+    }
+    if (phase === 'result' && robotState) {
+      const won = robotState.won
+      const flatCount = flattenProgram(program, createRobotState(level), level).length
+      const isOverPar = won && flatCount > level.par
+      const isGameOver = won && isOverPar && overParUsed
+      const failed = !won
+      if ((isGameOver || failed) && onGameOver) {
+        calledBack.current = true
+        setTimeout(() => onGameOver(levelIndex), 500)
+      }
+      // Success — passed the level (not over par, or first over-par gets a retry)
+      if (won && !isOverPar && onComplete) {
+        calledBack.current = true
+        setTimeout(() => onComplete(levelIndex + 1), 500)
+      }
+    }
+  }, [phase, robotState])
 
   // Three.js setup
   useEffect(() => {
-    if (phase === 'intro' || !level) return
+    if (!level) return
     const container = containerRef.current
     if (!container) return
     while (container.firstChild?.tagName === 'CANVAS') container.removeChild(container.firstChild)
@@ -331,42 +357,10 @@ export default function RobotRenderer({ levels, narrative }) {
     ? flattenProgram(program, createRobotState(level), level).length
     : program.reduce((n, item) => n + (typeof item === 'string' ? 1 : item.body.length * (item.type === 'loop' ? item.count : 1)), 0)
 
-  // Intro — skip the separate page, show popup overlay then go straight to game
-  if (phase === 'intro') {
-    return (
-      <div className="rb-wrapper">
-        <div className="rb-scanlines-overlay" />
-        <div className="rb-intro-overlay">
-          <div className="rb-intro-box">
-            <h1 className="rb-intro-heading">ROBOT GOLF</h1>
-            <div className="rb-intro-story">
-              <p>A ROGUE AI HAS SCRAMBLED THE FACTORY GRID.</p>
-              <p>YOUR ROBOT IS THE ONLY ONE LEFT STANDING.</p>
-              <p>PROGRAM IT. SOLVE THE GRID. SAVE THE FACTORY.</p>
-            </div>
-            <div className="rb-intro-levels">{levels.length} LEVELS</div>
-            <button className="rb-intro-btn" onClick={initLevel}>START</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Intro is now rendered as an overlay below, not a separate return
 
-  // Complete
-  if (phase === 'complete') {
-    const total = gears.reduce((a, b) => a + b, 0)
-    return (
-      <div className="rb-wrapper">
-        <Link to="/" className="rb-exit">Exit</Link>
-        <div className="rb-intro">
-          <h1 className="rb-title">Workshop Complete!</h1>
-          <div className="rb-total-score">{total}/{levels.length * 3}</div>
-          <div className="rb-total-label">gears earned</div>
-          <Link to="/" className="rb-btn">Back to Track</Link>
-        </div>
-      </div>
-    )
-  }
+  // Complete — don't return early, let the 3D scene stay visible
+  // ThinkingTest handles the callback via useEffect below
 
   // Render a card symbol
   function CardSym({ cardId, small }) {
@@ -379,11 +373,26 @@ export default function RobotRenderer({ levels, narrative }) {
 
   return (
     <div className="rb-wrapper">
-      <Link to="/" className="rb-exit">Exit</Link>
       <div ref={containerRef} className="rb-canvas" />
 
+      {/* Intro overlay — game scene visible behind */}
+      {phase === 'intro' && (
+        <div className="rb-intro-overlay">
+          <div className="rb-intro-box">
+            <h1 className="rb-intro-heading">ROBOT GOLF</h1>
+            <div className="rb-intro-story">
+              <p>A ROGUE AI HAS SCRAMBLED THE FACTORY GRID.</p>
+              <p>YOUR ROBOT IS THE ONLY ONE LEFT STANDING.</p>
+              <p>PROGRAM IT. SOLVE THE GRID. SAVE THE FACTORY.</p>
+            </div>
+            <div className="rb-intro-levels">{levels.length} LEVELS</div>
+            <button className="rb-intro-btn" onClick={initLevel}>START</button>
+          </div>
+        </div>
+      )}
+
       {/* Title */}
-      <div className="rb-title">ROBOT GOLF</div>
+      {phase !== 'intro' && <div className="rb-title">ROBOT GOLF</div>}
 
       {/* Level info — left side */}
       <div className="rb-level-info">
@@ -405,6 +414,9 @@ export default function RobotRenderer({ levels, narrative }) {
         const failed = !won
 
         if (isGameOver || failed) {
+          if (onGameOver) {
+            return null
+          }
           return (
             <div className="rb-result-overlay">
               <div className="rb-result-title">{isGameOver ? 'OVER PAR AGAIN' : robotState?.message === 'bonk' ? 'BONK!' : 'FAILED'}</div>
@@ -431,6 +443,7 @@ export default function RobotRenderer({ levels, narrative }) {
           )
         }
 
+        if (onComplete) return null
         return (
           <div className="rb-result-overlay">
             <div className="rb-result-title">{flatCount <= level.par ? 'PERFECT!' : 'COMPLETE!'}</div>

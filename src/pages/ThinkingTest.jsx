@@ -1,9 +1,60 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
+import GravityRenderer from '../renderers/test/TestGravity'
+import TestSequenceMemory from '../renderers/test/TestSequenceMemory'
+import TestChimpTest from '../renderers/test/TestChimpTest'
+import TestAnalogies from '../renderers/test/TestAnalogies'
+import TestFlaws from '../renderers/test/TestFlaws'
+import RobotRenderer from '../renderers/test/TestRobot'
+import TestFables from '../renderers/test/TestFables'
+import rb001 from '../content/robot/rb001.json'
 import './ThinkingTest.css'
 
-// ─── Question bank — all questions with ELO ───
-const QUESTION_BANK = [
-  // Analogies (800-1900)
+// ─── Gravity rounds — each round is one ELO "question" ───
+const GRAVITY_ROUNDS = [
+  { id: 'gv1', type: 'gravity', elo: 800, label: 'BASIC ADD/SUBTRACT',
+    questions: [
+      { q: '7 + 4', a: '11' }, { q: '3 + 9', a: '12' }, { q: '8 + 6', a: '14' }, { q: '9 - 7', a: '2' },
+    ]},
+  { id: 'gv2', type: 'gravity', elo: 900, label: 'TWO-DIGIT ADD/SUBTRACT',
+    questions: [
+      { q: '13 + 5', a: '18' }, { q: '6 + 17', a: '23' }, { q: '28 + 9', a: '37' }, { q: '14 - 9', a: '5' },
+    ]},
+  { id: 'gv3', type: 'gravity', elo: 1000, label: 'MULTI-DIGIT',
+    questions: [
+      { q: '39 + 45', a: '84' }, { q: '225 + 375', a: '600' }, { q: '403 - 136', a: '267' }, { q: '235 - 118', a: '117' },
+    ]},
+  { id: 'gv4', type: 'gravity', elo: 1100, label: 'MULTIPLICATION & DIVISION',
+    questions: [
+      { q: '8 x 9', a: '72' }, { q: '54 x 8', a: '432' }, { q: '56 / 8', a: '7' }, { q: '260 / 6', a: '43 r 2' },
+    ]},
+  { id: 'gv5', type: 'gravity', elo: 1200, label: 'LONG MULTIPLY/DIVIDE',
+    questions: [
+      { q: '406 x 38', a: '15428' }, { q: '1449 / 21', a: '69' }, { q: 'Reduce 18/24', a: '3/4' }, { q: 'Reduce 34/51', a: '2/3' },
+    ]},
+  { id: 'gv6', type: 'gravity', elo: 1300, label: 'FRACTION ARITHMETIC',
+    questions: [
+      { q: '3/5 + 1/5', a: '4/5' }, { q: '1/6 + 3/4', a: '11/12' }, { q: '1 1/5 x 5/9', a: '2/3' }, { q: '1 1/4 / 3 1/8', a: '2/5' },
+    ]},
+  { id: 'gv7', type: 'gravity', elo: 1400, label: 'ORDER OF OPERATIONS',
+    questions: [
+      { q: '1/6 + 1/2 + 1/9', a: '7/9' }, { q: '10 - 3 x 3', a: '1' }, { q: '18 x ___ = 6', a: '1/3' }, { q: '0.6 x 0.5', a: '0.3' },
+    ]},
+  { id: 'gv8', type: 'gravity', elo: 1500, label: 'NEGATIVES & ALGEBRA',
+    questions: [
+      { q: '-9 - (-6)', a: '-3' }, { q: 'Solve: 3x + 5 = 12', a: '7/3' },
+    ]},
+  { id: 'gv9', type: 'gravity', elo: 1600, label: 'EQUATIONS & SYSTEMS',
+    questions: [
+      { q: '3x-4 < 5x-2', a: 'x > -1' }, { q: 'Solve: x/3 - 1 = 2 - x', a: '9/4' },
+    ]},
+  { id: 'gv10', type: 'gravity', elo: 1700, label: 'QUADRATICS & SURDS',
+    questions: [
+      { q: '(x-5)(2x+3)', a: '2x^2 - 7x - 15' }, { q: 'Solve: (x-2)^2 = 25', a: 'x=7 or x=-3' },
+    ]},
+]
+
+// ─── Analogy & Flaw questions for later phases ───
+const ANALOGY_QUESTIONS = [
   { id: 'an1', type: 'analogy', elo: 800, words: ['HOT','COLD','BIG'], choices: ['LARGE','SMALL','WARM','HEAVY'], answer: 1 },
   { id: 'an2', type: 'analogy', elo: 900, words: ['DOG','PUPPY','CAT'], choices: ['FELINE','KITTEN','CUB','PAW'], answer: 1 },
   { id: 'an3', type: 'analogy', elo: 1000, words: ['BOOK','READ','SONG'], choices: ['SING','WRITE','LISTEN','DANCE'], answer: 2 },
@@ -12,19 +63,60 @@ const QUESTION_BANK = [
   { id: 'an6', type: 'analogy', elo: 1500, words: ['FAMINE','HUNGER','DELUGE'], choices: ['RAIN','DROUGHT','FLOOD','STORM'], answer: 2 },
   { id: 'an7', type: 'analogy', elo: 1700, words: ['SYCOPHANT','FLATTERY','ASCETIC'], choices: ['POVERTY','SELF-DENIAL','MEDITATION','WORSHIP'], answer: 1 },
   { id: 'an8', type: 'analogy', elo: 1900, words: ['APOGEE','NADIR','ZENITH'], choices: ['SUMMIT','PERIGEE','MERIDIAN','ECLIPSE'], answer: 1 },
-
-  // AI Flaws (800-1800)
-  { id: 'fl1', type: 'flaw', elo: 800, title: 'APPEAL TO AUTHORITY', argument: 'AN AI CHATBOT TELLS A STUDENT THAT "HISTORIANS WIDELY AGREE THE ROMAN EMPIRE FELL DUE TO MORAL DECAY." THE STUDENT ACCEPTS THIS WITHOUT CHECKING.',
-    choices: ['REPETITION IN TRAINING DATA DOESN\'T EQUAL VERIFIED FACT — THIS IS APPEAL TO AUTHORITY','THE STUDENT SHOULD USE A DIFFERENT AI','HISTORIANS DO AGREE SO THE AI IS CORRECT','AI SHOULDN\'T BE USED FOR HOMEWORK'], answer: 0 },
-  { id: 'fl2', type: 'flaw', elo: 1200, title: 'CORRELATION VS. CAUSATION', argument: 'AN AI REPORTS: "COUNTRIES WITH HIGHER ICE CREAM CONSUMPTION HAVE HIGHER DROWNING RATES. THEREFORE ICE CREAM INCREASES DROWNING RISK."',
-    choices: ['THE AI CORRECTLY IDENTIFIED THE PATTERN','HOT WEATHER INCREASES BOTH — THE AI CONFUSED CORRELATION WITH CAUSATION','THE DATASET MUST BE WRONG','AI CAN\'T UNDERSTAND HEALTH DATA'], answer: 1 },
-  { id: 'fl3', type: 'flaw', elo: 1600, title: 'HASTY GENERALIZATION', argument: 'AN AI TUTOR TESTED IN 3 WELL-FUNDED SUBURBAN SCHOOLS SHOWS 15% MATH IMPROVEMENT. THE COMPANY CLAIMS IT WORKS FOR ALL STUDENTS.',
-    choices: ['15% PROVES IT WORKS FOR EVERYONE','THREE SCHOOLS ISN\'T ENOUGH BUT PROBABLY RIGHT','THEY GENERALIZED FROM AN UNREPRESENTATIVE SAMPLE — UNDER-RESOURCED SCHOOLS MAY GET DIFFERENT RESULTS','MATH SCORES DON\'T MEASURE AI EFFECTIVENESS'], answer: 2 },
 ]
 
-const TOTAL_QUESTIONS = 7
+const FLAW_QUESTIONS = [
+  { id: 'fl1', type: 'flaw', elo: 800, title: 'APPEAL TO AUTHORITY',
+    argument: 'AN AI CHATBOT TELLS A STUDENT THAT "HISTORIANS WIDELY AGREE THE ROMAN EMPIRE FELL DUE TO MORAL DECAY." THE STUDENT ACCEPTS THIS WITHOUT CHECKING.',
+    choices: [
+      { label: 'A', text: 'REPETITION IN TRAINING DATA DOESN\'T EQUAL VERIFIED FACT — THIS IS APPEAL TO AUTHORITY' },
+      { label: 'B', text: 'THE STUDENT SHOULD USE A DIFFERENT AI' },
+      { label: 'C', text: 'HISTORIANS DO AGREE SO THE AI IS CORRECT' },
+      { label: 'D', text: 'AI SHOULDN\'T BE USED FOR HOMEWORK' },
+    ], answer: 0 },
+  { id: 'fl2', type: 'flaw', elo: 1000, title: 'CHERRY-PICKING',
+    argument: 'AN AI-GENERATED LESSON STATES: "EUROPEAN COLONIZATION BROUGHT INFRASTRUCTURE, EDUCATION, AND MODERN GOVERNANCE." IT CITES SCHOOLS AND RAILWAYS BUT MAKES NO MENTION OF EXPLOITATION, FORCED LABOR, OR CULTURAL DESTRUCTION.',
+    choices: [
+      { label: 'A', text: 'THE AI SELECTED ONLY DATA THAT FITS A POSITIVE NARRATIVE WHILE IGNORING MASSIVE COUNTEREVIDENCE — THIS IS CHERRY-PICKING' },
+      { label: 'B', text: 'THE AI IS CORRECT BECAUSE IT CITED REAL EXAMPLES' },
+      { label: 'C', text: 'COLONIZATION IS TOO COMPLEX FOR AI TO SUMMARIZE' },
+      { label: 'D', text: 'THE LESSON IS FINE BECAUSE IT DOESN\'T SAY COLONIZATION WAS GOOD' },
+    ], answer: 0 },
+  { id: 'fl3', type: 'flaw', elo: 1200, title: 'CORRELATION VS. CAUSATION',
+    argument: 'AN AI REPORTS: "COUNTRIES WITH HIGHER ICE CREAM CONSUMPTION HAVE HIGHER DROWNING RATES. THEREFORE ICE CREAM INCREASES DROWNING RISK."',
+    choices: [
+      { label: 'A', text: 'THE AI CORRECTLY IDENTIFIED THE PATTERN' },
+      { label: 'B', text: 'HOT WEATHER INCREASES BOTH — THE AI CONFUSED CORRELATION WITH CAUSATION' },
+      { label: 'C', text: 'THE DATASET MUST BE WRONG' },
+      { label: 'D', text: 'AI CAN\'T UNDERSTAND HEALTH DATA' },
+    ], answer: 1 },
+  { id: 'fl4', type: 'flaw', elo: 1400, title: 'FALSE DICHOTOMY',
+    argument: '"WE MUST CHOOSE — EITHER WE FULLY INTEGRATE AI INTO OUR NATIONAL CURRICULUM OR WE FALL BEHIND EVERY OTHER COUNTRY. THERE IS NO MIDDLE GROUND."',
+    choices: [
+      { label: 'A', text: 'THE OFFICIAL IS RIGHT — COUNTRIES MUST CHOOSE ONE EXTREME' },
+      { label: 'B', text: 'THE AI BRIEF CONFIRMS THE CLAIM WITH DATA' },
+      { label: 'C', text: 'THIS IS A FALSE DICHOTOMY — HYBRID MODELS EXIST AS A THIRD OPTION THE ARGUMENT DELIBERATELY EXCLUDES' },
+      { label: 'D', text: 'ECONOMIC DATA ALWAYS SUPPORTS FULL AI ADOPTION' },
+    ], answer: 2 },
+  { id: 'fl5', type: 'flaw', elo: 1600, title: 'HASTY GENERALIZATION',
+    argument: 'AN AI TUTOR TESTED IN 3 WELL-FUNDED SUBURBAN SCHOOLS SHOWS 15% MATH IMPROVEMENT. THE COMPANY CLAIMS IT WORKS FOR ALL STUDENTS.',
+    choices: [
+      { label: 'A', text: '15% PROVES IT WORKS FOR EVERYONE' },
+      { label: 'B', text: 'THREE SCHOOLS ISN\'T ENOUGH BUT PROBABLY RIGHT' },
+      { label: 'C', text: 'THEY GENERALIZED FROM AN UNREPRESENTATIVE SAMPLE — UNDER-RESOURCED SCHOOLS MAY GET DIFFERENT RESULTS' },
+      { label: 'D', text: 'MATH SCORES DON\'T MEASURE AI EFFECTIVENESS' },
+    ], answer: 2 },
+  { id: 'fl6', type: 'flaw', elo: 1800, title: 'THE CONFIDENCE TRAP',
+    argument: 'A STUDENT ASKS AN AI TO EXPLAIN QUANTUM MECHANICS. THE AI RESPONDS CONFIDENTLY WITH DETAILED STRUCTURE, BUT SUBTLY CONFLATES QUANTUM ENTANGLEMENT WITH FASTER-THAN-LIGHT COMMUNICATION. THE STUDENT ACCEPTS IT ALL.',
+    choices: [
+      { label: 'A', text: 'THE AI\'S EXPLANATION IS TRUSTWORTHY BECAUSE IT SOUNDS AUTHORITATIVE' },
+      { label: 'B', text: 'THE STUDENT SHOULD HAVE ASKED A MORE ADVANCED AI MODEL' },
+      { label: 'C', text: 'AI SYSTEMS OPTIMIZE FOR CONFIDENT-SOUNDING OUTPUT, NOT TRUTH — THE STUDENT MISTOOK FLUENCY FOR ACCURACY' },
+      { label: 'D', text: 'QUANTUM MECHANICS IS TOO HARD FOR AI' },
+    ], answer: 2 },
+]
+
 const K_FACTOR = 32
-const LABELS = ['A', 'B', 'C', 'D']
 
 function calcStartElo(age) {
   return Math.round(800 + (age / 116) * 200)
@@ -34,69 +126,252 @@ function calcExpected(playerElo, questionElo) {
   return 1 / (1 + Math.pow(10, (questionElo - playerElo) / 400))
 }
 
-function pickQuestion(playerElo, usedIds) {
-  const available = QUESTION_BANK.filter(q => !usedIds.includes(q.id))
+function pickClosest(playerElo, pool, usedIds) {
+  const available = pool.filter(q => !usedIds.includes(q.id))
   if (available.length === 0) return null
   available.sort((a, b) => Math.abs(a.elo - playerElo) - Math.abs(b.elo - playerElo))
   return available[0]
 }
 
 export default function ThinkingTest() {
-  const [phase, setPhase] = useState('landing') // landing | playing | feedback | email | results
+  const [phase, setPhase] = useState('landing') // landing | gravity | feedback | memory | memoryDone | email | results
   const [age, setAge] = useState('')
   const [error, setError] = useState(null)
   const [elo, setElo] = useState(800)
-  const [questionIndex, setQuestionIndex] = useState(0)
-  const [currentQuestion, setCurrentQuestion] = useState(null)
+  const [currentRound, setCurrentRound] = useState(null)
   const [usedIds, setUsedIds] = useState([])
-  const [selected, setSelected] = useState(null)
   const [result, setResult] = useState(null)
-  const [history, setHistory] = useState([]) // { question, correct, eloBefore, eloAfter }
+  const [rendererKey, setRendererKey] = useState(0)
+  const [history, setHistory] = useState([])
   const [email, setEmail] = useState('')
+  const [roundIndex, setRoundIndex] = useState(0)
+  const [memoryType, setMemoryType] = useState(null) // 'sequence' | 'chimp'
+  const [memoryLevels, setMemoryLevels] = useState(0)
+  const [memoryStartElo, setMemoryStartElo] = useState(0)
+  const [analogyQuestion, setAnalogyQuestion] = useState(null)
+  const [analogyUsedIds, setAnalogyUsedIds] = useState([])
+  const [robotLevelIndex, setRobotLevelIndex] = useState(0)
+  const [fablesRoundIndex, setFablesRoundIndex] = useState(0)
+
+  const TOTAL_ROUNDS = GRAVITY_ROUNDS.length
 
   function handleStart() {
     if (!age || parseInt(age) < 1) { setError('SELECT YOUR AGE'); return }
     setError(null)
     const startElo = calcStartElo(parseInt(age))
     setElo(startElo)
-    setQuestionIndex(0)
+    setRoundIndex(0)
     setUsedIds([])
     setHistory([])
-    const first = pickQuestion(startElo, [])
-    setCurrentQuestion(first)
-    setUsedIds([first.id])
-    setSelected(null)
     setResult(null)
-    setPhase('playing')
+
+    // Pick first gravity round closest to starting ELO
+    const first = pickClosest(startElo, GRAVITY_ROUNDS, [])
+    setCurrentRound(first)
+    setUsedIds([first.id])
+    setRendererKey(k => k + 1)
+    setPhase('gravity')
   }
 
-  function handleAnswer(choiceIdx) {
-    if (selected !== null) return
-    const correct = choiceIdx === currentQuestion.answer
-    const expected = calcExpected(elo, currentQuestion.elo)
-    const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
+  function handleGravityComplete(passed) {
+    const expected = calcExpected(elo, currentRound.elo)
+    const newElo = Math.round(elo + K_FACTOR * ((passed ? 1 : 0) - expected))
 
-    setSelected(choiceIdx)
-    setResult(correct ? 'correct' : 'wrong')
-    setHistory(prev => [...prev, { question: currentQuestion, correct, eloBefore: elo, eloAfter: newElo }])
+    setResult(passed ? 'correct' : 'wrong')
+    setHistory(prev => [...prev, { question: currentRound, correct: passed, eloBefore: elo, eloAfter: newElo }])
     setElo(newElo)
     setPhase('feedback')
   }
 
-  function handleNext() {
-    const nextIdx = questionIndex + 1
-    if (nextIdx >= TOTAL_QUESTIONS) {
+  function handleNextRound() {
+    const nextIdx = roundIndex + 1
+    if (nextIdx >= TOTAL_ROUNDS) {
+      startMemoryGame()
+      return
+    }
+    const next = pickClosest(elo, GRAVITY_ROUNDS, usedIds)
+    if (!next) { startMemoryGame(); return }
+    setCurrentRound(next)
+    setUsedIds(prev => [...prev, next.id])
+    setRoundIndex(nextIdx)
+    setResult(null)
+    setRendererKey(k => k + 1)
+    setPhase('gravity')
+  }
+
+  function handleNextGame() {
+    startMemoryGame()
+  }
+
+  function startMemoryGame() {
+    const type = Math.random() < 0.5 ? 'sequence' : 'chimp'
+    setMemoryType(type)
+    setMemoryStartElo(elo)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('memory')
+  }
+
+  function handleMemoryComplete(levelsCompleted) {
+    setMemoryLevels(levelsCompleted)
+    const label = memoryType === 'sequence' ? 'SEQUENCE' : 'CHIMP TEST'
+    const newHistory = []
+    let runningElo = elo
+
+    // Each cleared round is a win against that round's ELO
+    for (let i = 0; i < levelsCompleted; i++) {
+      const roundElo = 600 + (i + 1) * 200
+      const expected = calcExpected(runningElo, roundElo)
+      const newElo = Math.round(runningElo + K_FACTOR * (1 - expected))
+      newHistory.push({
+        question: { label: `${label} LVL ${i + 1}`, elo: roundElo },
+        correct: true, eloBefore: runningElo, eloAfter: newElo
+      })
+      runningElo = newElo
+    }
+
+    // The round they failed on is a loss
+    const failRoundElo = 600 + (levelsCompleted + 1) * 200
+    const failExpected = calcExpected(runningElo, failRoundElo)
+    const finalElo = Math.round(runningElo + K_FACTOR * (0 - failExpected))
+    newHistory.push({
+      question: { label: `${label} LVL ${levelsCompleted + 1}`, elo: failRoundElo },
+      correct: false, eloBefore: runningElo, eloAfter: finalElo
+    })
+
+    setHistory(prev => [...prev, ...newHistory])
+    setElo(finalElo)
+    setResult(finalElo > elo ? 'correct' : 'wrong')
+    setPhase('memoryDone')
+  }
+
+  function startAnalogies() {
+    // Pick the analogy just above current ELO
+    const sorted = [...ANALOGY_QUESTIONS].sort((a, b) => a.elo - b.elo)
+    const justAbove = sorted.find(q => q.elo >= elo) || sorted[sorted.length - 1]
+    setAnalogyQuestion(justAbove)
+    setAnalogyUsedIds([justAbove.id])
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('analogyIntro')
+  }
+
+  function handleAnalogyAnswer(correct) {
+    const expected = calcExpected(elo, analogyQuestion.elo)
+    const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
+
+    setResult(correct ? 'correct' : 'wrong')
+    setHistory(prev => [...prev, {
+      question: { label: 'ANALOGY', elo: analogyQuestion.elo },
+      correct, eloBefore: elo, eloAfter: newElo
+    }])
+    setElo(newElo)
+    setPhase('analogyFeedback')
+  }
+
+  function handleAnalogyNextRound() {
+    // Only called on correct — go to next higher ELO analogy
+    const sorted = [...ANALOGY_QUESTIONS].sort((a, b) => a.elo - b.elo)
+    const currentIdx = sorted.findIndex(q => q.id === analogyQuestion.id)
+
+    let nextQ = null
+    for (let i = currentIdx + 1; i < sorted.length; i++) {
+      if (!analogyUsedIds.includes(sorted[i].id)) { nextQ = sorted[i]; break }
+    }
+
+    if (!nextQ) {
+      // No more higher questions — move to next game
+      startRobotGolf()
+      return
+    }
+
+    setAnalogyQuestion(nextQ)
+    setAnalogyUsedIds(prev => [...prev, nextQ.id])
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('analogy')
+  }
+
+  function startRobotGolf() {
+    setRobotLevelIndex(0)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('robot')
+  }
+
+  function handleRobotLevelComplete() {
+    // Passed this level
+    const lvlElo = 600 + (robotLevelIndex + 1) * 100
+    const expected = calcExpected(elo, lvlElo)
+    const newElo = Math.round(elo + K_FACTOR * (1 - expected))
+    setHistory(prev => [...prev, {
+      question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
+      correct: true, eloBefore: elo, eloAfter: newElo
+    }])
+    setElo(newElo)
+    setResult('correct')
+    setPhase('robotDone')
+  }
+
+  function handleRobotGameOver() {
+    // Failed this level
+    const lvlElo = 600 + (robotLevelIndex + 1) * 100
+    const expected = calcExpected(elo, lvlElo)
+    const newElo = Math.round(elo + K_FACTOR * (0 - expected))
+    setHistory(prev => [...prev, {
+      question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
+      correct: false, eloBefore: elo, eloAfter: newElo
+    }])
+    setElo(newElo)
+    setResult('wrong')
+    setPhase('robotDone')
+  }
+
+  function handleRobotNextRound() {
+    const nextIdx = robotLevelIndex + 1
+    if (nextIdx >= rb001.levels.length) {
       setPhase('email')
       return
     }
-    const next = pickQuestion(elo, usedIds)
-    if (!next) { setPhase('email'); return }
-    setCurrentQuestion(next)
-    setUsedIds(prev => [...prev, next.id])
-    setQuestionIndex(nextIdx)
-    setSelected(null)
+    setRobotLevelIndex(nextIdx)
+    setRendererKey(k => k + 1)
     setResult(null)
-    setPhase('playing')
+    setPhase('robot')
+  }
+
+  const FABLES_ELOS = [900, 1200, 1500, 1800]
+
+  function startFables() {
+    setFablesRoundIndex(0)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('fablesIntro')
+  }
+
+  function handleFablesResult(correct, roundIdx) {
+    const roundElo = FABLES_ELOS[roundIdx] || 1000
+    const expected = calcExpected(elo, roundElo)
+    const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
+    setHistory(prev => [...prev, {
+      question: { label: `FABLES RND ${roundIdx + 1}`, elo: roundElo },
+      correct, eloBefore: elo, eloAfter: newElo
+    }])
+    setElo(newElo)
+    setResult(correct ? 'correct' : 'wrong')
+    setFablesRoundIndex(roundIdx)
+    setPhase('fablesDone')
+  }
+
+  function handleFablesNextRound() {
+    const nextIdx = fablesRoundIndex + 1
+    if (nextIdx >= FABLES_ELOS.length) {
+      setPhase('email')
+      return
+    }
+    setFablesRoundIndex(nextIdx)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('fables')
   }
 
   function handleEmailSubmit() {
@@ -133,98 +408,259 @@ export default function ThinkingTest() {
     )
   }
 
-  // ─── PLAYING / FEEDBACK ───
-  if ((phase === 'playing' || phase === 'feedback') && currentQuestion) {
-    const q = currentQuestion
+  // ─── GRAVITY ROUND ───
+  if ((phase === 'gravity' || phase === 'feedback') && currentRound) {
     return (
-      <div className="tt-wrapper">
-        <div className="tt-scanlines" />
+      <>
+        {/* Gravity renderer — fullscreen, auto-starts */}
+        <GravityRenderer
+          key={rendererKey}
+          questions={currentRound.questions}
+          onRoundComplete={handleGravityComplete}
+          autoStart={roundIndex > 0}
+        />
 
-        {/* ELO box top left */}
+        {/* HUD overlay */}
         <div className="tt-elo-box">
-          <div className="tt-elo-label">ELO</div>
+          <div className="tt-elo-label">SCORE</div>
           <div className="tt-elo-value">{elo}</div>
         </div>
 
-        {/* Progress top right */}
         <div className="tt-progress-box">
-          <div className="tt-progress-text">{questionIndex + 1}/{TOTAL_QUESTIONS}</div>
+          <div className="tt-progress-text">{roundIndex + 1}/{TOTAL_ROUNDS}</div>
         </div>
 
-        <div className="tt-content tt-content-game">
-          {/* Question type header */}
-          <div className="tt-q-type">{q.type === 'analogy' ? 'ANALOGY' : 'AI FLAW'}</div>
-          <div className="tt-q-elo">QUESTION ELO: {q.elo}</div>
+        <div className="tt-q-elo-float">{currentRound.label}</div>
 
-          {/* Analogy type */}
-          {q.type === 'analogy' && (
-            <>
-              <div className="tt-analogy-boxes">
-                <div className="tt-a-box">{q.words[0]}</div>
-                <div className="tt-a-sep">:</div>
-                <div className="tt-a-box">{q.words[1]}</div>
-                <div className="tt-a-sep">::</div>
-                <div className="tt-a-box">{q.words[2]}</div>
-                <div className="tt-a-sep">:</div>
-                <div className="tt-a-box tt-a-empty">{selected !== null ? q.choices[selected] : '?'}</div>
+        {/* Feedback popup */}
+        {phase === 'feedback' && (
+          <div className="tt-feedback-wrap">
+            <div className="tt-feedback-popup">
+              <div className={`tt-feedback-text ${result}`}>{result === 'correct' ? 'ROUND CLEARED' : 'ROUND FAILED'}</div>
+              <div className={`tt-elo-change ${result}`}>
+                {result === 'correct' ? '+' : ''}{history[history.length - 1]?.eloAfter - history[history.length - 1]?.eloBefore} POINTS
               </div>
-              <div className="tt-choices">
-                {q.choices.map((c, i) => {
-                  let cls = 'tt-choice'
-                  if (selected !== null) {
-                    if (i === q.answer) cls += ' correct'
-                    else if (i === selected) cls += ' wrong'
-                    else cls += ' dim'
-                  }
-                  return (
-                    <button key={i} className={cls} onClick={() => handleAnswer(i)}>
-                      <span className="tt-choice-label">{LABELS[i]}</span>
-                      <span className="tt-choice-text">{c}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </>
-          )}
-
-          {/* Flaw type */}
-          {q.type === 'flaw' && (
-            <>
-              <div className="tt-flaw-title">{q.title}</div>
-              <div className="tt-flaw-argument">{q.argument}</div>
-              <div className="tt-choices">
-                {q.choices.map((c, i) => {
-                  let cls = 'tt-choice'
-                  if (selected !== null) {
-                    if (i === q.answer) cls += ' correct'
-                    else if (i === selected) cls += ' wrong'
-                    else cls += ' dim'
-                  }
-                  return (
-                    <button key={i} className={cls} onClick={() => handleAnswer(i)}>
-                      <span className="tt-choice-label">{LABELS[i]}</span>
-                      <span className="tt-choice-text">{c}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </>
-          )}
-
-          {/* Feedback */}
-          {phase === 'feedback' && (
-            <div className="tt-feedback-bar">
-              <span className={`tt-feedback-text ${result}`}>{result === 'correct' ? 'CORRECT' : 'INCORRECT'}</span>
-              <span className={`tt-elo-change ${result}`}>
-                {result === 'correct' ? '+' : ''}{history[history.length - 1]?.eloAfter - history[history.length - 1]?.eloBefore} ELO
-              </span>
-              <button className="tt-next-btn" onClick={handleNext}>
-                {questionIndex + 1 >= TOTAL_QUESTIONS ? 'FINISH' : 'NEXT'}
-              </button>
+              {result === 'correct' ? (
+                <button className="tt-next-btn" onClick={handleNextRound}>
+                  {roundIndex + 1 >= TOTAL_ROUNDS ? 'NEXT GAME' : 'NEXT ROUND'}
+                </button>
+              ) : (
+                <button className="tt-next-btn" onClick={handleNextGame}>NEXT GAME</button>
+              )}
             </div>
-          )}
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // ─── MEMORY GAME ───
+  if (phase === 'memory' || phase === 'memoryDone') {
+    return (
+      <>
+        {memoryType === 'sequence' && (
+          <TestSequenceMemory key={rendererKey} onComplete={handleMemoryComplete} autoStart />
+        )}
+        {memoryType === 'chimp' && (
+          <TestChimpTest key={rendererKey} onComplete={handleMemoryComplete} autoStart />
+        )}
+
+        {/* HUD overlay */}
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
         </div>
-      </div>
+
+        {/* Feedback popup */}
+        {phase === 'memoryDone' && (
+          <div className="tt-feedback-wrap">
+            <div className="tt-feedback-popup">
+              <div className="tt-feedback-text wrong">INCORRECT</div>
+              <div className="tt-memory-detail">
+                {memoryLevels} LEVEL{memoryLevels !== 1 ? 'S' : ''} CLEARED
+              </div>
+              <div className={`tt-elo-change ${result}`}>
+                {elo - memoryStartElo >= 0 ? '+' : ''}{elo - memoryStartElo} POINTS
+              </div>
+              <button className="tt-next-btn" onClick={startAnalogies}>NEXT GAME</button>
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // ─── ANALOGY INTRO ───
+  if (phase === 'analogyIntro') {
+    return (
+      <>
+        <TestAnalogies key={rendererKey} question={analogyQuestion} onAnswer={handleAnalogyAnswer} />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+
+        <div className="tt-feedback-wrap">
+          <div className="tt-feedback-popup tt-intro-popup">
+            <div className="tt-feedback-text" style={{ color: '#fff' }}>ANALOGIES</div>
+            <div className="tt-intro-rules">
+              <p>A : B :: C : ?</p>
+              <p>FIND THE RELATIONSHIP AND COMPLETE THE PATTERN.</p>
+              <p>DRAG OR CLICK YOUR ANSWER.</p>
+              <p>ONE WRONG ANSWER AND IT'S OVER.</p>
+            </div>
+            <button className="tt-next-btn" onClick={() => setPhase('analogy')}>START GAME</button>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── ANALOGY PLAYING / FEEDBACK ───
+  if ((phase === 'analogy' || phase === 'analogyFeedback') && analogyQuestion) {
+    return (
+      <>
+        <TestAnalogies key={rendererKey} question={analogyQuestion} onAnswer={handleAnalogyAnswer} />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+
+        {phase === 'analogyFeedback' && (
+          <div className="tt-feedback-wrap">
+            <div className="tt-feedback-popup">
+              <div className={`tt-feedback-text ${result}`}>{result === 'correct' ? 'CORRECT' : 'INCORRECT'}</div>
+              <div className={`tt-elo-change ${result}`}>
+                {result === 'correct' ? '+' : ''}{history[history.length - 1]?.eloAfter - history[history.length - 1]?.eloBefore} POINTS
+              </div>
+              {result === 'correct' ? (
+                <button className="tt-next-btn" onClick={handleAnalogyNextRound}>NEXT ROUND</button>
+              ) : (
+                <button className="tt-next-btn" onClick={startRobotGolf}>NEXT GAME</button>
+              )}
+            </div>
+          </div>
+        )}
+      </>
+    )
+  }
+
+  // ─── ROBOT GOLF PLAYING ───
+  if (phase === 'robot') {
+    return (
+      <>
+        <RobotRenderer
+          key={rendererKey}
+          levels={[rb001.levels[robotLevelIndex]]}
+          narrative={rb001.narrative}
+          onComplete={handleRobotLevelComplete}
+          onGameOver={handleRobotGameOver}
+          skipIntro={robotLevelIndex > 0}
+        />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── ROBOT GOLF DONE ───
+  if (phase === 'robotDone') {
+    const lastEntry = history[history.length - 1]
+    const change = lastEntry ? lastEntry.eloAfter - lastEntry.eloBefore : 0
+    return (
+      <>
+        <RobotRenderer
+          key={rendererKey}
+          levels={[rb001.levels[robotLevelIndex]]}
+          narrative={rb001.narrative}
+        />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+
+        <div className="tt-feedback-wrap">
+          <div className="tt-feedback-popup">
+            <div className={`tt-feedback-text ${result}`}>{result === 'correct' ? 'MISSION COMPLETE' : 'MISSION FAILED'}</div>
+            <div className={`tt-elo-change ${result}`}>
+              {change >= 0 ? '+' : ''}{change} POINTS
+            </div>
+            {result === 'correct' ? (
+              <button className="tt-next-btn" onClick={robotLevelIndex + 1 >= rb001.levels.length ? startFables : handleRobotNextRound}>
+                {robotLevelIndex + 1 >= rb001.levels.length ? 'NEXT GAME' : 'NEXT ROUND'}
+              </button>
+            ) : (
+              <button className="tt-next-btn" onClick={startFables}>NEXT GAME</button>
+            )}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── FABLES INTRO ───
+  if (phase === 'fablesIntro') {
+    return (
+      <>
+        <TestFables key={rendererKey} onRoundResult={handleFablesResult} />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── FABLES PLAYING ───
+  if (phase === 'fables') {
+    return (
+      <>
+        <TestFables key={rendererKey} onRoundResult={handleFablesResult} skipIntro />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── FABLES DONE ───
+  if (phase === 'fablesDone') {
+    const lastEntry = history[history.length - 1]
+    const change = lastEntry ? lastEntry.eloAfter - lastEntry.eloBefore : 0
+    return (
+      <>
+        <TestFables key={rendererKey} onRoundResult={() => {}} skipIntro />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+
+        <div className="tt-feedback-wrap">
+          <div className="tt-feedback-popup">
+            <div className={`tt-feedback-text ${result}`}>{result === 'correct' ? 'CORRECT' : 'INCORRECT'}</div>
+            <div className={`tt-elo-change ${result}`}>
+              {change >= 0 ? '+' : ''}{change} POINTS
+            </div>
+            {result === 'correct' ? (
+              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? () => setPhase('email') : handleFablesNextRound}>
+                {fablesRoundIndex + 1 >= FABLES_ELOS.length ? 'NEXT GAME' : 'NEXT ROUND'}
+              </button>
+            ) : (
+              <button className="tt-next-btn" onClick={() => setPhase('email')}>NEXT GAME</button>
+            )}
+          </div>
+        </div>
+      </>
     )
   }
 
@@ -237,7 +673,7 @@ export default function ThinkingTest() {
         <div className="tt-content">
           <h1 className="tt-title-sm">TEST COMPLETE</h1>
           <div className="tt-complete-stats">
-            <span>{correct}/{TOTAL_QUESTIONS} CORRECT</span>
+            <span>{correct}/{history.length} ROUNDS CLEARED</span>
           </div>
           <div className="tt-email-prompt">ENTER YOUR EMAIL TO SEE YOUR RESULTS</div>
           <input className="tt-email-input" type="email" value={email} placeholder="YOUR@EMAIL.COM"
@@ -259,14 +695,14 @@ export default function ThinkingTest() {
         <div className="tt-content">
           <h1 className="tt-title-sm">YOUR RESULTS</h1>
           <div className="tt-final-elo">{elo}</div>
-          <div className="tt-final-label">THINKING ELO</div>
-          <div className="tt-final-stats">{correct}/{TOTAL_QUESTIONS} CORRECT</div>
+          <div className="tt-final-label">THINKING SCORE</div>
+          <div className="tt-final-stats">{correct}/{history.length} ROUNDS CLEARED</div>
           <div className="tt-history">
             {history.map((h, i) => (
               <div key={i} className={`tt-history-item ${h.correct ? 'correct' : 'wrong'}`}>
                 <span className="tt-history-num">{i + 1}</span>
-                <span className="tt-history-type">{h.question.type === 'analogy' ? 'ANALOGY' : 'AI FLAW'}</span>
-                <span className="tt-history-result">{h.correct ? 'CORRECT' : 'WRONG'}</span>
+                <span className="tt-history-type">{h.question.label}</span>
+                <span className="tt-history-result">{h.correct ? 'CLEARED' : 'FAILED'}</span>
                 <span className="tt-history-elo">{h.eloBefore} → {h.eloAfter}</span>
               </div>
             ))}

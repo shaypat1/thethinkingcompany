@@ -75,7 +75,7 @@
   flex-wrap: nowrap;
   justify-content: center;
   width: 100%;
-  margin-top: 12vh;
+  margin-top: 28vh;
 }
 
 .an-box {
@@ -133,15 +133,19 @@
 
 /* ─── Draggable choices tray ─── */
 .an-choices-tray {
+  position: fixed;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 0.6rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  margin-top: 3rem;
+  z-index: 5;
 }
 
 .an-drag-choice {
-  padding: 1.8rem 6rem;
+  padding: 1.4rem 3rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.04);
   color: rgba(255, 255, 255, 0.7);

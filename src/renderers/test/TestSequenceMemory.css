@@ -84,8 +84,18 @@
 }
 
 .sq-cell.lit {
+  background: #00cc66;
+  box-shadow: 0 0 25px rgba(0, 204, 102, 0.6), 0 0 50px rgba(0, 204, 102, 0.25);
+}
+
+.sq-cell.correct {
+  background: #00cc66;
+  box-shadow: 0 0 20px rgba(0, 204, 102, 0.4);
+}
+
+.sq-cell.wrong {
   background: #e03030;
-  box-shadow: 0 0 25px rgba(224, 48, 48, 0.6), 0 0 50px rgba(224, 48, 48, 0.25);
+  box-shadow: 0 0 20px rgba(224, 48, 48, 0.5);
 }
 
 /* Status text — big */
@@ -132,6 +142,55 @@
   font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.3);
   letter-spacing: 0.12em;
+}
+
+/* ─── Intro popup ─── */
+.sq-popup-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.sq-popup {
+  pointer-events: auto;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  background: #0a0e1a;
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.5rem;
+  min-width: 550px;
+  max-width: 700px;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
+}
+
+.sq-popup-title {
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+.sq-popup-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sq-popup-rules p {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 0;
+  text-align: center;
 }
 
 /* Responsive */

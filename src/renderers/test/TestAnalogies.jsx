@@ -16,8 +16,8 @@ const QUESTIONS = [
   { words: ['APOGEE', 'NADIR', 'ZENITH'], choices: ['SUMMIT', 'PERIGEE', 'MERIDIAN', 'ECLIPSE'], answer: 1, elo: 1900 },
 ]
 
-export default function TestAnalogies() {
-  const [phase, setPhase] = useState('start')
+export default function TestAnalogies({ question: singleQuestion, onAnswer }) {
+  const [phase, setPhase] = useState(singleQuestion ? 'playing' : 'start')
   const [index, setIndex] = useState(0)
   const [dragging, setDragging] = useState(null) // index of choice being dragged
   const [placed, setPlaced] = useState(null) // index of choice placed in slot
@@ -57,11 +57,18 @@ export default function TestAnalogies() {
   }
 
   function submitAnswer(choiceIdx) {
-    const question = QUESTIONS[index]
-    const isCorrect = choiceIdx === question.answer
+    const q = singleQuestion || QUESTIONS[index]
+    const isCorrect = choiceIdx === q.answer
     setPlaced(choiceIdx)
     setResult(isCorrect ? 'correct' : 'wrong')
     setDragging(null)
+
+    // Single-question mode: call back, don't auto-advance
+    if (singleQuestion) {
+      if (onAnswer) onAnswer(isCorrect)
+      return
+    }
+
     if (isCorrect) setScore(s => s + 1)
     setAnswers(prev => [...prev, isCorrect])
 
@@ -120,14 +127,14 @@ export default function TestAnalogies() {
     )
   }
 
-  const question = QUESTIONS[index]
+  const question = singleQuestion || QUESTIONS[index]
 
   return (
     <div className="an-wrapper">
       <div className="an-scanlines" />
       <div className="an-content">
         <h1 className="an-title">ANALOGIES</h1>
-        <div className="an-progress">ROUND {index + 1}/{QUESTIONS.length}</div>
+        {!singleQuestion && <div className="an-progress">ROUND {index + 1}/{QUESTIONS.length}</div>}
 
         {/* The 4 boxes — 3 filled, 1 drop target */}
         <div className="an-boxes">

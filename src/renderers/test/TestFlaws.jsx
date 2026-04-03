@@ -78,8 +78,8 @@ const PROBLEMS = [
 
 const LABELS = ['A', 'B', 'C', 'D']
 
-export default function TestFlaws() {
-  const [phase, setPhase] = useState('start')
+export default function TestFlaws({ question: singleQuestion, onAnswer }) {
+  const [phase, setPhase] = useState(singleQuestion ? 'playing' : 'start')
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState(null)
   const [result, setResult] = useState(null)
@@ -91,10 +91,18 @@ export default function TestFlaws() {
   }
 
   function handleSelect(choiceIdx) {
-    if (phase !== 'playing' || selected !== null) return
-    const isCorrect = choiceIdx === PROBLEMS[index].answer
+    if ((phase !== 'playing' && !singleQuestion) || selected !== null) return
+    const problem = singleQuestion || PROBLEMS[index]
+    const isCorrect = choiceIdx === problem.answer
     setSelected(choiceIdx)
     setResult(isCorrect ? 'correct' : 'wrong')
+
+    // Single-question mode: call back, don't manage game flow
+    if (singleQuestion) {
+      if (onAnswer) onAnswer(isCorrect)
+      return
+    }
+
     if (isCorrect) setScore(s => s + 1)
     setPhase('feedback')
   }
@@ -150,14 +158,14 @@ export default function TestFlaws() {
     )
   }
 
-  const problem = PROBLEMS[index]
+  const problem = singleQuestion || PROBLEMS[index]
 
   return (
     <div className="fl-wrapper">
       <div className="fl-scanlines" />
       <div className="fl-content fl-content-game">
-        <h1 className="fl-title">AI FLAWS</h1>
-        <div className="fl-round">ROUND {index + 1}/{PROBLEMS.length}</div>
+        {!singleQuestion && <h1 className="fl-title">AI FLAWS</h1>}
+        {!singleQuestion && <div className="fl-round">ROUND {index + 1}/{PROBLEMS.length}</div>}
         <div className="fl-problem-title">{problem.title}</div>
 
         <div className="fl-argument">{problem.argument}</div>
@@ -181,7 +189,7 @@ export default function TestFlaws() {
           })}
         </div>
 
-        {phase === 'feedback' && (
+        {!singleQuestion && phase === 'feedback' && (
           <div className="fl-result">
             <div className={`fl-result-text ${result}`}>
               {result === 'correct' ? 'CORRECT' : 'INCORRECT'}

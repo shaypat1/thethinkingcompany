@@ -17,14 +17,16 @@ function randomPositions(count) {
   return all.slice(0, count)
 }
 
-export default function TestChimpTest() {
+export default function TestChimpTest({ onComplete, autoStart }) {
   const [level, setLevel] = useState(START_COUNT)
   const [positions, setPositions] = useState([])
-  const [phase, setPhase] = useState('start') // start | flash | hidden | done
+  const [phase, setPhase] = useState(autoStart ? 'pending' : 'start') // start | pending | flash | hidden | done
   const [clickOrder, setClickOrder] = useState([])
   const [timerTicks, setTimerTicks] = useState(TICK_COUNT)
   const timeoutRef = useRef(null)
   const timerRef = useRef(null)
+  const calledBack = useRef(false)
+  const [wrongCell, setWrongCell] = useState(-1)
 
   function startRound(n) {
     setPositions(randomPositions(n))
@@ -49,12 +51,25 @@ export default function TestChimpTest() {
     return () => { clearTimeout(timeoutRef.current); clearInterval(timerRef.current) }
   }, [])
 
+  // Auto-start
+  useEffect(() => {
+    if (autoStart && phase === 'pending') {
+      startRound(level)
+    }
+  }, [autoStart, phase])
+
   function handleCellClick(cellIdx) {
     if (phase !== 'hidden') return
 
     const expected = clickOrder.length
     if (positions[expected] !== cellIdx) {
+      setWrongCell(cellIdx)
       setPhase('done')
+      if (onComplete && !calledBack.current) {
+        calledBack.current = true
+        const completed = level - START_COUNT
+        setTimeout(() => onComplete(completed), 1200)
+      }
       return
     }
 
@@ -92,6 +107,24 @@ export default function TestChimpTest() {
   }
 
   if (phase === 'done') {
+    if (onComplete) {
+      return (
+        <div className="ct-wrapper">
+          <div className="ct-scanlines" />
+          <div className="ct-content">
+            <h1 className="ct-title">CHIMP TEST</h1>
+            <div className="ct-grid">
+              {Array.from({ length: TOTAL }).map((_, i) => {
+                let cls = 'ct-cell'
+                if (clickOrder.includes(i)) cls += ' correct'
+                if (i === wrongCell) cls += ' wrong'
+                return <div key={i} className={cls} />
+              })}
+            </div>
+          </div>
+        </div>
+      )
+    }
     return (
       <div className="ct-wrapper">
         <div className="ct-scanlines" />
@@ -120,12 +153,13 @@ export default function TestChimpTest() {
             const isClicked = clickOrder.includes(i)
             let cls = 'ct-cell'
             if (isPos && showNumbers) cls += ' lit'
-            if (isClicked) cls += ' done'
+            if (isClicked) cls += ' correct'
+            if (i === wrongCell) cls += ' wrong'
 
             return (
               <div key={i} className={cls}
-                onClick={() => isPos && !isClicked && handleCellClick(i)}
-                style={{ cursor: isPos && !isClicked && phase === 'hidden' ? 'pointer' : 'default' }}>
+                onClick={() => !isClicked && phase === 'hidden' && handleCellClick(i)}
+                style={{ cursor: phase === 'hidden' && !isClicked ? 'pointer' : 'default' }}>
                 {isPos && showNumbers && !isClicked ? posMap[i] : ''}
               </div>
             )

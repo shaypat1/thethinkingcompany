@@ -245,10 +245,11 @@ function createForestScene(container) {
   }
 }
 
-export default function TestFables() {
+export default function TestFables({ onRoundResult, skipIntro }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
-  const [phase, setPhase] = useState('start') // start | playing | result | gameover | win
+  const [phase, setPhase] = useState(skipIntro ? 'playing' : 'start') // start | playing | result | gameover | win
+  const calledBack = useRef(false)
   const [round, setRound] = useState(0)
   const [selected, setSelected] = useState(null)
   const [result, setResult] = useState(null) // 'correct' | 'wrong'
@@ -276,6 +277,10 @@ export default function TestFables() {
     const isCorrect = charIdx === ROUNDS[round].liar
     setResult(isCorrect ? 'correct' : 'wrong')
     setPhase('result')
+    if (onRoundResult && !calledBack.current) {
+      calledBack.current = true
+      setTimeout(() => onRoundResult(isCorrect, round), 800)
+    }
   }
 
   function handleNext() {
@@ -339,8 +344,8 @@ export default function TestFables() {
             )
           })}
 
-          {/* Result */}
-          {phase === 'result' && (
+          {/* Result — only show renderer's own UI when not in test mode */}
+          {phase === 'result' && !onRoundResult && (
             <div className="fb-result-bar">
               <div className={`fb-result-text ${result}`}>
                 {result === 'correct' ? 'CORRECT' : 'INCORRECT'}
@@ -353,8 +358,8 @@ export default function TestFables() {
         </>
       )}
 
-      {/* Game over */}
-      {phase === 'gameover' && (
+      {/* Game over — hide in test mode */}
+      {phase === 'gameover' && !onRoundResult && (
         <div className="fb-overlay">
           <div className="fb-start-box">
             <div className="fb-start-heading">GAME OVER</div>
@@ -364,8 +369,8 @@ export default function TestFables() {
         </div>
       )}
 
-      {/* Win */}
-      {phase === 'win' && (
+      {/* Win — hide in test mode */}
+      {phase === 'win' && !onRoundResult && (
         <div className="fb-overlay">
           <div className="fb-start-box">
             <div className="fb-start-heading">YOU WIN</div>
