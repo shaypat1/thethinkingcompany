@@ -27,7 +27,7 @@ export function createScene(container, n) {
   scene.background = new THREE.Color(COLORS.void)
 
   // Camera
-  const camDist = gridW * 2.2 + 3
+  const camDist = gridW * 2.8 + 4
   const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 200)
   camera.position.set(gridW * 0.5, camDist * 0.7, gridW * 0.5 + camDist * 0.55)
   camera.lookAt(gridW * 0.45, 0, gridW * 0.45)
@@ -188,7 +188,7 @@ export function createScene(container, n) {
 export function addClues(scene, clues, n) {
   const step = TILE + GAP
   const gridW = n * step
-  const edgeDist = (gridW + 2.0) / 2 + 0.05 // flush with the platform wall face
+  const edgeDist = (gridW + 2.0) / 2 + 0.5 // slightly outside the platform wall so visible from isometric
   const gridCenter = (n - 1) * step / 2
 
   function makeClueSprite(text) {
