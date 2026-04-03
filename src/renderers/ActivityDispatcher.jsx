@@ -11,6 +11,7 @@ import VerbalMemoryRenderer from './VerbalMemoryRenderer'
 import BackwardsSpanRenderer from './BackwardsSpanRenderer'
 import RobotRenderer from './RobotRenderer'
 import HanoiRenderer from './HanoiRenderer'
+import LogicDetectiveRenderer from './LogicDetectiveRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -41,6 +42,14 @@ export default function ActivityDispatcher({ type, content, label }) {
     }
     case 'hanoi':
       return <HanoiRenderer />
+    case 'logicdetective': {
+      const cases = content?.cases || []
+      if (content?.narrative && cases[0]) {
+        cases[0].__narrative = content.narrative
+        cases[0].__title = content.title
+      }
+      return <LogicDetectiveRenderer cases={cases} />
+    }
     default:
       return <PlaceholderRenderer label={label} />
   }

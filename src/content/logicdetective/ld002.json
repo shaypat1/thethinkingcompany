@@ -1,0 +1,117 @@
+{
+  "id": "ld002",
+  "title": "The Great Cookie Caper",
+  "narrative": {
+    "intro": "Oh no! Someone ate ALL the cookies that were cooling on the kitchen counter! Mom wants answers. You're the family detective — figure out who's using trick-thinking and who's giving real clues!",
+    "outro": "You cracked it! Turns out the dog knocked the plate off the counter and the cookies fell behind the trash can. Nobody ate them — they were hiding! Great detective work!"
+  },
+  "cases": [
+    {
+      "id": "y1",
+      "tier": 1,
+      "format": "interview",
+      "briefing": "Your little brother has a theory about who did it. Listen carefully — one part of his story doesn't add up.",
+      "context": "Brother's Story",
+      "speaker": "Benny",
+      "speakerRole": "your little brother, age 6",
+      "emoji": "🧒",
+      "interviewMeta": { "location": "Kitchen", "time": "3:30 PM", "recorded": false },
+      "claims": [
+        "I was watching cartoons in the living room since 3 o'clock.",
+        "I heard someone open the kitchen door at like 3:15.",
+        "Grandpa eats cookies with his coffee every single day, so it was probably him.",
+        "Also I think the plate was blue, not the white one."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Ad Hominem",
+      "fallacyNickname": "Attacking the Person",
+      "options": [
+        "Grandpa liking cookies doesn't prove he took these specific ones today.",
+        "Benny couldn't actually hear the kitchen door from the living room.",
+        "Benny might be blaming Grandpa to cover for himself."
+      ],
+      "correctOption": 0,
+      "explanation": "Benny uses the fact that Grandpa likes cookies as his main evidence. But someone enjoying cookies in general doesn't mean they took these ones! You need actual proof someone did something — not just that they're the 'type' of person who might. That's Attacking the Person."
+    },
+    {
+      "id": "y2",
+      "tier": 1,
+      "format": "sticky",
+      "briefing": "Your sister made a chart tracking everyone's movements. She thinks she solved it — but did she?",
+      "context": "Sister's Investigation Board",
+      "speaker": "Lily",
+      "speakerRole": "your big sister, age 10",
+      "emoji": "👧",
+      "claims": [
+        "Mom went upstairs at 3:05 to fold laundry",
+        "Dad was in the garage working on his bike from 2:30 to 4:00",
+        "Benny's cartoon show ends at 3:20 and the cookies were gone by 3:25 — so Benny did it right when his show ended",
+        "The kitchen window was open all afternoon"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Cause",
+      "fallacyNickname": "After ≠ Because",
+      "options": [
+        "The timing matches but that doesn't prove Benny actually went to the kitchen.",
+        "Lily should have checked if Benny had crumbs on his hands.",
+        "The open window means someone from outside could have taken them."
+      ],
+      "correctOption": 0,
+      "explanation": "Lily noticed the cookies disappeared around when Benny's show ended. The timing fits — but fitting a timeline doesn't mean Benny did it! Lots of things happened around 3:20. When you assume something caused something else just because of timing, that's the 'After ≠ Because' trick."
+    },
+    {
+      "id": "y3",
+      "tier": 1,
+      "format": "texts",
+      "briefing": "Dad's texting Mom about it. He sounds logical, but read his messages carefully...",
+      "context": "Dad's Texts to Mom",
+      "speaker": "Dad",
+      "speakerRole": "your dad",
+      "emoji": "👨",
+      "textsMeta": { "groupName": "Mom & Dad 💬", "time": "3:45 PM" },
+      "claims": [
+        "Hey, so I asked the kids about the cookies",
+        "Benny says he didn't do it, Lily says she didn't do it",
+        "Well if neither of them took the cookies, then they must have just fallen off the counter on their own",
+        "I'll check behind the counter when I come inside"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Dilemma",
+      "fallacyNickname": "Only Two Choices",
+      "options": [
+        "Dad is only considering two possibilities — the kids or falling — when there are other explanations like the dog or someone else.",
+        "The kids might be lying when they say they didn't do it.",
+        "Dad should come inside to investigate instead of just texting."
+      ],
+      "correctOption": 0,
+      "explanation": "Dad hears the kids deny it and jumps straight to 'then they fell on their own.' But he forgot about the dog, Grandpa, the open window, or that maybe someone else visited! When you only consider two options and ignore others, that's the 'Only Two Choices' trick."
+    },
+    {
+      "id": "y4",
+      "tier": 1,
+      "format": "social",
+      "briefing": "Lily posted a poll on her app. She's using the results as evidence — but should she?",
+      "context": "KidChat Poll",
+      "speaker": "Lily",
+      "speakerRole": "your big sister, age 10",
+      "emoji": "👧",
+      "socialMeta": { "platform": "KidChat", "handle": "@CookieLily", "likes": 18, "time": "4:00 PM" },
+      "claims": [
+        "OK so I posted a poll asking who people think ate the cookies 🍪",
+        "I gave three options: Benny, the dog, or a mystery person",
+        "78% voted for Benny! That's a huge majority",
+        "So the poll basically confirms it was him, case closed ✅"
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "Bandwagon",
+      "fallacyNickname": "Everyone's Doing It",
+      "options": [
+        "A poll shows what people guess, not what actually happened — votes aren't evidence.",
+        "The poll options were limited so people had to pick one of only three choices.",
+        "Lily's friends don't even know Benny, so their votes are random guesses."
+      ],
+      "correctOption": 0,
+      "explanation": "Lily treats her poll results like proof. But votes just show what people think — not what's true! Her friends are guessing, not investigating. Even if 100% voted for Benny, that still wouldn't prove he did it. Using what most people believe as proof is the 'Everyone's Doing It' trick."
+    }
+  ]
+}

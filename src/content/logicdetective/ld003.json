@@ -1,0 +1,178 @@
+{
+  "id": "ld003",
+  "title": "The Greenfield High Exposé",
+  "narrative": {
+    "intro": "You're an investigative journalist at the Greenfield Gazette. A leaked email reveals the school board is considering cutting the arts program to expand athletics. The story is blowing up. Students, parents, board members, and teachers all have takes — and every one of them is trying to win you over. Your job: find the reasoning that doesn't hold up, no matter whose side it helps. Every source has an angle. Trust the logic.",
+    "outro": "Your exposé ran on the front page. By identifying the manipulative reasoning on all sides — not just the side you disagreed with — you wrote the only balanced piece in the entire debate. The school board delayed the vote pending a public forum. Three other student papers cited your analysis. This is what real journalism looks like."
+  },
+  "cases": [
+    {
+      "id": "t1",
+      "tier": 3,
+      "format": "email",
+      "briefing": "The leaked email that started everything. Henderson presents budget data and a comparison to another school. One of his data points looks convincing but hides a logical problem.",
+      "context": "Leaked Board Email",
+      "speaker": "Board Member Henderson",
+      "speakerRole": "school board treasurer, 12 years",
+      "emoji": "💼",
+      "emailMeta": { "from": "d.henderson@greenfieldSD.org", "to": "board-internal@greenfieldSD.org", "subject": "FW: Budget Reallocation Proposal — CONFIDENTIAL", "time": "11:42 PM, March 12" },
+      "claims": [
+        "The athletic department generated $340K in ticket revenue last fiscal year, making it one of our only self-sustaining programs.",
+        "The arts program operates at a net cost of $280K annually with no direct revenue stream, though it does contribute to school culture metrics.",
+        "Riverside High reallocated their arts budget two years ago and subsequently saw a 4% increase in standardized test scores.",
+        "Given these data points, I believe phased reallocation from arts to athletics represents the most fiscally responsible path forward."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "False Cause (Post Hoc)",
+      "fallacyNickname": "After ≠ Because",
+      "options": [
+        "Riverside's test scores rising after an arts cut doesn't prove the cut caused the improvement — other factors could explain it.",
+        "Comparing revenue-generating athletics to non-revenue arts is an unfair framework since they serve different educational purposes.",
+        "Henderson sending a confidential email at 11:42 PM suggests he's trying to avoid public scrutiny.",
+        "The $280K 'net cost' figure ignores indirect benefits like student engagement and college application strength."
+      ],
+      "correctOption": 0,
+      "explanation": "Henderson's most deceptive move is citing Riverside's experience as evidence. Riverside cut arts AND test scores went up — but dozens of other things also changed (new teachers, curriculum updates, different student demographics). Without controlling for those variables, the comparison is meaningless. This is Post Hoc reasoning: assuming that because scores rose AFTER the cut, the cut CAUSED the rise."
+    },
+    {
+      "id": "t2",
+      "tier": 3,
+      "format": "social",
+      "briefing": "The student body president fired back with a viral post. She raises real concerns about conflicts of interest — but one of her claims crosses from critique into a different kind of argument.",
+      "context": "Viral Response",
+      "speaker": "Jordan Kim",
+      "speakerRole": "student body president, senior",
+      "emoji": "🎤",
+      "socialMeta": { "platform": "X (Twitter)", "handle": "@JordanKimGHS", "likes": 2847, "time": "8:15 AM, March 13" },
+      "claims": [
+        "The leaked email shows the board is prioritizing revenue over education — athletics generates money, so it gets protected while arts gets cut.",
+        "Worth noting: Board Member Henderson's son is the starting varsity quarterback. His personal stake in athletics funding is obvious and should be disclosed.",
+        "This is what happens when people who personally benefit from athletics get to make budget decisions about arts programs.",
+        "Students deserve a transparent process. We're organizing a walkout Thursday. RT if you stand with the arts. #SaveGreenfieldArts"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Ad Hominem",
+      "fallacyNickname": "Attacking the Person",
+      "options": [
+        "Implying Henderson's proposal is invalid because of his son's athletics involvement attacks his motives rather than his budget argument.",
+        "Jordan's use of a walkout threat is coercive and doesn't address the financial data Henderson presented.",
+        "Disclosing conflicts of interest is standard practice — Jordan is right to mention Henderson's son.",
+        "The framing of 'revenue over education' is itself manipulative since athletics can also be educational."
+      ],
+      "correctOption": 0,
+      "explanation": "Jordan makes a valid point about disclosure (claim 2) — conflicts of interest should be noted. But claim 3 crosses the line: she uses Henderson's personal connection to dismiss his argument entirely, as if having a son in athletics automatically makes his budget analysis wrong. His numbers might be valid regardless of his family situation. That's Ad Hominem — discrediting an argument by attacking the person's motives instead of engaging with the data."
+    },
+    {
+      "id": "t3",
+      "tier": 4,
+      "format": "interview",
+      "briefing": "The drama teacher is fighting for her program. She presents strong evidence — but her final argument overreaches in a specific way.",
+      "context": "Teacher Interview",
+      "speaker": "Ms. Castellano",
+      "speakerRole": "drama teacher, 18 years at Greenfield",
+      "emoji": "🎭",
+      "interviewMeta": { "location": "Greenfield Gazette Office", "time": "3:30 PM", "recorded": true },
+      "claims": [
+        "Exposure to arts education correlates with higher college admission rates across multiple national studies — I can share the citations.",
+        "Three of our graduates are currently working on Broadway. Maya Chen credits our program in every interview she gives.",
+        "I've watched students who were failing other classes come alive in theater and turn their entire academic trajectory around.",
+        "If the board cuts drama, the music department is next — they share our budget line. Then visual arts loses its gallery space to make room for a weight room. Within three years, Greenfield won't offer a single arts elective."
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "Slippery Slope",
+      "fallacyNickname": "The Domino Effect",
+      "options": [
+        "Each budget decision would be voted on separately — cutting drama doesn't automatically trigger cuts to music and visual arts.",
+        "The Broadway success stories are anecdotal and don't prove the program's value for the average student.",
+        "Correlation between arts and college admissions doesn't prove arts education caused higher admissions.",
+        "Ms. Castellano's 18-year tenure gives her an emotional attachment that may bias her analysis."
+      ],
+      "correctOption": 0,
+      "explanation": "Ms. Castellano's first three claims are genuinely strong — research citations, concrete outcomes, personal observations. But her final claim chains together a sequence of hypothetical consequences (drama → music → visual arts → nothing) without evidence that each step would actually follow. Each budget line is a separate vote. This is a Slippery Slope: asserting an extreme chain of events without justifying why each domino would actually fall."
+    },
+    {
+      "id": "t4",
+      "tier": 4,
+      "format": "memo",
+      "briefing": "The superintendent issues a careful public statement. It sounds balanced and data-driven — but one of her key points quietly dodges the actual question everyone is asking.",
+      "context": "Official District Statement",
+      "speaker": "Dr. Whitfield",
+      "speakerRole": "superintendent of Greenfield School District",
+      "emoji": "📋",
+      "memoMeta": { "to": "Greenfield Community", "from": "Superintendent Dr. Whitfield", "re": "Statement on FY25 Budget Discussions", "priority": "PUBLIC" },
+      "claims": [
+        "The district is committed to providing well-rounded educational opportunities that prepare students for college and career success.",
+        "Budget discussions are a routine part of our annual planning process and do not reflect predetermined outcomes.",
+        "I want to assure families that Greenfield spends $14,200 per pupil — 12% above the state average — demonstrating our sustained investment in student outcomes.",
+        "We welcome and encourage continued community input as we work through the budget finalization process over the coming weeks."
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Red Herring",
+      "fallacyNickname": "Changing the Subject",
+      "options": [
+        "Per-pupil spending tells you nothing about whether arts specifically is being fairly funded — it answers a different question than the one people are asking.",
+        "The phrase 'do not reflect predetermined outcomes' suggests the decision might actually already be made.",
+        "Spending 12% above average doesn't mean the money is being allocated effectively across departments.",
+        "The 'welcome community input' language is standard PR and doesn't commit to any specific action."
+      ],
+      "correctOption": 0,
+      "explanation": "Everyone wants to know: will the arts program be cut? Dr. Whitfield responds by citing total per-pupil spending — an impressive number that has absolutely nothing to do with the arts budget specifically. A school could spend $14,200 per student and still zero out arts funding. This is a Red Herring: introducing an impressive but irrelevant statistic to change the conversation from the specific question being asked."
+    },
+    {
+      "id": "t5",
+      "tier": 4,
+      "format": "texts",
+      "briefing": "The parent group chat is going off. One message gets dozens of reactions — but the reasoning inside it substitutes feeling for thinking in a specific way.",
+      "context": "Parent Group Chat",
+      "speaker": "Karen Ostrowski",
+      "speakerRole": "PTA vice president, parent of two",
+      "emoji": "👩‍👧‍👦",
+      "textsMeta": { "groupName": "GHS Parents United 💪", "time": "9:22 PM" },
+      "claims": [
+        "I just re-read the leaked email and Henderson's revenue argument completely ignores that education isn't a business",
+        "My daughter was painfully shy until she joined the spring musical last year. She auditioned terrified and by closing night she was leading the curtain call",
+        "If that transformation is worth anything — and I'd argue it's worth more than any test score — then the $280K is justified no matter what the spreadsheet says",
+        "I'm drafting a petition tonight. Every parent who cares about their child's growth should sign it"
+      ],
+      "flawedIndex": 2,
+      "fallacyType": "Appeal to Emotion",
+      "fallacyNickname": "Pulling Heartstrings",
+      "options": [
+        "Using one powerful personal story to claim $280K is justified 'no matter what' bypasses any actual cost-benefit analysis.",
+        "Karen's daughter's experience might not be representative of what most arts students gain from the program.",
+        "The claim that 'education isn't a business' is itself debatable since schools do operate within budgets.",
+        "Framing petition-signing as something only parents who 'care about their child' would do is emotionally manipulative."
+      ],
+      "correctOption": 0,
+      "explanation": "Karen's daughter's story is genuinely moving — and the program probably did transform her. But 'this moved me, therefore any cost is justified regardless of data' is not sound reasoning. Budget decisions require weighing benefits for ALL students against costs and alternatives, not declaring one emotional story trumps all analysis. This is an Appeal to Emotion: using a powerful feeling to shut down rational evaluation."
+    },
+    {
+      "id": "t6",
+      "tier": 5,
+      "format": "email",
+      "briefing": "The final piece of evidence. A data-savvy parent sends analysis to the board. It looks rigorous and uses real numbers — but there's a methodological flaw hiding in his conclusion.",
+      "context": "Public Comment — Data Analysis",
+      "speaker": "Dr. Nathan Reeves",
+      "speakerRole": "data scientist, Greenfield parent",
+      "emoji": "📊",
+      "emailMeta": { "from": "n.reeves.data@gmail.com", "to": "board-public@greenfieldSD.org", "subject": "Data Analysis: Arts vs. Athletics Student Outcomes", "time": "11:58 PM, March 14" },
+      "claims": [
+        "I analyzed 10 years of Greenfield transcript data, cross-referencing program enrollment with graduation outcomes.",
+        "Students enrolled in at least one arts course have a 94% four-year graduation rate, compared to 89% for students with no arts enrollment.",
+        "Students enrolled in at least one athletic program have a 91% four-year graduation rate, compared to 89% for non-athletes.",
+        "Since arts students outperform athletic students in graduation rate by 3 percentage points, the data clearly shows arts programming produces stronger student outcomes than athletics and should be prioritized in funding."
+      ],
+      "flawedIndex": 3,
+      "fallacyType": "Misleading Comparison",
+      "fallacyNickname": "Unfair Comparison",
+      "options": [
+        "Students who choose arts versus athletics may already differ academically — the comparison doesn't account for self-selection bias.",
+        "A 3-percentage-point difference between 94% and 91% is too small to draw meaningful conclusions from.",
+        "Graduation rate alone doesn't capture everything a program contributes — athletics builds discipline, teamwork, and physical health.",
+        "10 years of data might include periods when the programs had different funding levels, making the comparison inconsistent."
+      ],
+      "correctOption": 0,
+      "explanation": "Dr. Reeves' data is real, but his conclusion has a fatal flaw: self-selection bias. Students who choose arts courses may already be more academically engaged, have more family support, or be higher-achieving before they ever enroll. Comparing their graduation rates to athletes' rates without controlling for these pre-existing differences is like comparing marathon runners' cardiovascular health to the general population and concluding that running clothes make you healthy. The groups aren't equivalent, so the comparison is misleading."
+    }
+  ]
+}

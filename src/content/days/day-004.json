@@ -6,6 +6,6 @@
     { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
     { "type": "sequencememory", "id": "sm001", "label": "Sequence" },
     { "type": "visualmemory", "id": "vm001", "label": "Visual Memory" },
-    { "type": "cardmatching", "id": "cm001", "label": "Card Match" }
+    { "type": "logicdetective", "id": "ld002", "label": "Cookie Caper" }
   ]
 }
