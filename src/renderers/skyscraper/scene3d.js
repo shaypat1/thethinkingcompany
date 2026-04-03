@@ -16,7 +16,7 @@ const COLORS = {
   wallGlow: 0xe03030,
 }
 
-const PLATFORM_Y = 1.5 // lift the whole city up so clues sit at platform level
+const PLATFORM_Y = 0.4 // thin platform — just enough to see clue numbers on the side
 
 export { TILE, GAP, PLATFORM_Y }
 
@@ -76,20 +76,32 @@ export function createScene(container, n) {
   ground.receiveShadow = true
   scene.add(ground)
 
-  // Platform base — raised slab under the city
-  const platMat = new THREE.MeshStandardMaterial({ color: 0x0d1520, roughness: 0.8, flatShading: true })
-  const platform = new THREE.Mesh(
-    new THREE.BoxGeometry(gridW + 1.5, PLATFORM_Y, gridW + 1.5),
-    platMat
-  )
-  platform.position.set(
-    (n - 1) * (TILE + GAP) / 2,
-    PLATFORM_Y / 2,
-    (n - 1) * (TILE + GAP) / 2
-  )
+  // Platform base — city block slab
+  const cx = (n - 1) * (TILE + GAP) / 2
+  const cz = (n - 1) * (TILE + GAP) / 2
+  const platW = gridW + 2.0
+
+  // Main slab
+  const platMat = new THREE.MeshStandardMaterial({ color: 0x0d1520, roughness: 0.7, flatShading: true })
+  const platform = new THREE.Mesh(new THREE.BoxGeometry(platW, PLATFORM_Y, platW), platMat)
+  platform.position.set(cx, PLATFORM_Y / 2, cz)
   platform.receiveShadow = true
   platform.castShadow = true
   scene.add(platform)
+
+  // Sidewalk edge — slightly wider, lighter strip on top
+  const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x1a2535, roughness: 0.6, flatShading: true })
+  const sidewalk = new THREE.Mesh(new THREE.BoxGeometry(platW + 0.3, 0.04, platW + 0.3), sidewalkMat)
+  sidewalk.position.set(cx, PLATFORM_Y + 0.02, cz)
+  scene.add(sidewalk)
+
+  // Neon edge around platform
+  const platEdge = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(platW + 0.3, 0.06, platW + 0.3)),
+    new THREE.LineBasicMaterial({ color: COLORS.tileEdgeDim })
+  )
+  platEdge.position.set(cx, PLATFORM_Y, cz)
+  scene.add(platEdge)
 
   // Build grid tiles
   const tiles = []
@@ -175,7 +187,7 @@ export function createScene(container, n) {
 // Add clue numbers as 3D sprites around the grid
 export function addClues(scene, clues, n) {
   const step = TILE + GAP
-  const offset = 1.0 // distance from grid edge
+  const offset = 1.2 // distance from grid edge — sits on the platform sidewalk
 
   function makeClueSprite(text) {
     const canvas = document.createElement('canvas')
@@ -193,7 +205,7 @@ export function addClues(scene, clues, n) {
     return sprite
   }
 
-  const clueY = PLATFORM_Y * 0.5 // halfway up the platform side
+  const clueY = PLATFORM_Y + 0.35 // just above the platform surface, visible
 
   if (clues.top) {
     clues.top.forEach((v, c) => {
