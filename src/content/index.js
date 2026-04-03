@@ -25,6 +25,7 @@ import ss002 from './sorting/ss002.json'
 import ss003 from './sorting/ss003.json'
 import ss004 from './sorting/ss004.json'
 import ss005 from './sorting/ss005.json'
+import sp001 from './spatial/sp001.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -41,6 +42,7 @@ const content = {
   backwardsspan: { bs001 },
   robot: { rb001, rb002, rb003 },
   sorting: { ss001, ss002, ss003, ss004, ss005 },
+  spatial: { sp001 },
 }
 
 export function getDay(dayNumber) {

@@ -1,0 +1,8 @@
+{
+  "id": "sp001",
+  "title": "Fold Challenge",
+  "narrative": "You'll see a flat pattern (an unfolded net). Figure out which 3D shape it folds into!",
+  "questions": [
+    { "id": "fold76", "answer": "A", "numOptions": 4 }
+  ]
+}

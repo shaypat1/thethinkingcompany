@@ -1,0 +1,199 @@
+/* Spatial Reasoning */
+.sp-wrapper {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-exit {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  z-index: 20;
+}
+
+.sp-progress {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  z-index: 15;
+}
+.sp-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.4s ease;
+}
+
+/* Intro / Complete */
+.sp-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+.sp-big-sym { font-size: 2.5rem; }
+.sp-title { font-size: 1.6rem; font-weight: 700; margin: 0; }
+.sp-narrative { max-width: 400px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+.sp-count { color: var(--text-muted); font-size: 0.8rem; }
+.sp-score { font-size: 2.5rem; font-weight: 800; }
+.sp-score-label { color: var(--text-muted); font-size: 0.85rem; }
+
+.sp-result-dots {
+  display: flex; gap: 0.4rem; margin: 0.8rem 0;
+  flex-wrap: wrap; justify-content: center;
+}
+.sp-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff;
+}
+.sp-dot.correct { background: rgba(40, 180, 80, 0.8); }
+.sp-dot.wrong { background: rgba(220, 60, 60, 0.8); }
+
+.sp-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.sp-btn:hover { opacity: 0.8; }
+
+/* HUD */
+.sp-hud {
+  position: absolute;
+  top: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  z-index: 10;
+  pointer-events: none;
+}
+.sp-hud-q { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.sp-hud-label { font-size: 0.95rem; font-weight: 600; }
+
+/* Main shape image */
+.sp-shape-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem 1rem;
+}
+
+.sp-shape-img {
+  max-height: 100%;
+  max-width: 55%;
+  object-fit: contain;
+  user-select: none;
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.8rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+/* Answer option cards */
+.sp-options {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem 1.2rem;
+  z-index: 10;
+}
+
+.sp-option {
+  width: 110px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.3rem 0.2rem 0.4rem;
+  gap: 0;
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.sp-option:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+.sp-option:disabled { cursor: default; }
+
+.sp-option-letter {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #666;
+  pointer-events: none;
+}
+
+.sp-option-img {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Feedback states */
+.sp-option.correct {
+  border-color: rgba(40, 200, 80, 0.9);
+  background: rgba(40, 200, 80, 0.12);
+  box-shadow: 0 0 16px rgba(40, 200, 80, 0.25);
+  transform: translateY(-4px);
+}
+.sp-option.wrong {
+  border-color: rgba(220, 60, 60, 0.9);
+  background: rgba(220, 60, 60, 0.12);
+}
+.sp-option.dimmed { opacity: 0.25; }
+
+/* Feedback flash */
+.sp-feedback {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  z-index: 20;
+  pointer-events: none;
+  animation: sp-flash 0.3s ease;
+}
+.sp-feedback.correct {
+  background: rgba(40, 200, 80, 0.2);
+  color: rgba(40, 255, 100, 0.95);
+}
+.sp-feedback.wrong {
+  background: rgba(220, 60, 60, 0.2);
+  color: rgba(255, 100, 80, 0.95);
+}
+
+@keyframes sp-flash {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
