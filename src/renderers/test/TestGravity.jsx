@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
-import './GravityRenderer.css'
+import './TestGravity.css'
 
+// Dark blue planet palette — fits the retro arcade theme
 const PLANETS = [
-  { name: 'Mercury', base: '#a0a0a0', light: '#c8c8c8', dark: '#707070', glow: '#c0c0c0', detail: 'craters' },
-  { name: 'Venus', base: '#e8c060', light: '#f0d880', dark: '#c09830', glow: '#f0d880', detail: 'clouds' },
-  { name: 'Earth', base: '#4090d0', light: '#60b0f0', dark: '#2060a0', glow: '#60b0f0', detail: 'earth' },
-  { name: 'Mars', base: '#d06030', light: '#e08050', dark: '#a04020', glow: '#e08050', detail: 'craters' },
-  { name: 'Jupiter', base: '#d0a060', light: '#e0c080', dark: '#a07830', glow: '#e0c080', detail: 'bands' },
-  { name: 'Saturn', base: '#c8b080', light: '#e0d0a0', dark: '#a08850', glow: '#e0d0a0', detail: 'rings' },
+  { name: 'MERCURY', base: '#1a2040', light: '#2a3060', dark: '#0c1020', glow: '#3040a0', detail: 'craters' },
+  { name: 'VENUS',   base: '#1e2548', light: '#2e3568', dark: '#0e1528', glow: '#3848b0', detail: 'clouds' },
+  { name: 'EARTH',   base: '#162050', light: '#263070', dark: '#0a1030', glow: '#3050c0', detail: 'earth' },
+  { name: 'MARS',    base: '#1a1838', light: '#2a2858', dark: '#0c0818', glow: '#3828a0', detail: 'craters' },
+  { name: 'JUPITER', base: '#141a3c', light: '#242a5c', dark: '#080a1c', glow: '#2a3a90', detail: 'bands' },
+  { name: 'SATURN',  base: '#181e44', light: '#282e64', dark: '#0a0e24', glow: '#3040a8', detail: 'rings' },
 ]
 
 const QUESTIONS_PER_LEVEL = 4
@@ -20,26 +20,25 @@ function normalize(str) {
   return str.replace(/,/g, '').replace(/\s+/g, '').toLowerCase()
 }
 
-function getThemeColors() {
-  const s = getComputedStyle(document.documentElement)
-  return {
-    bg: s.getPropertyValue('--bg').trim(),
-    text: s.getPropertyValue('--text').trim(),
-    muted: s.getPropertyValue('--text-muted').trim(),
-    accent: s.getPropertyValue('--accent').trim(),
-    border: s.getPropertyValue('--border').trim(),
-  }
+// Hardcoded retro arcade palette — no CSS vars dependency
+const RETRO_COLORS = {
+  bg: '#0a0e1a',
+  text: '#ffffff',
+  muted: 'rgba(255,255,255,0.35)',
+  accent: 'rgba(255,255,255,0.8)',
+  border: 'rgba(255,255,255,0.15)',
 }
 
-export default function GravityRenderer({ questions }) {
+export default function GravityRenderer({ questions, onRoundComplete, autoStart }) {
   const canvasRef = useRef(null)
   const gameRef = useRef(null)
   const inputRef = useRef(null)
   const [input, setInput] = useState('')
-  const [gameState, setGameState] = useState('ready') // ready | playing | gameOver | won
+  const [gameState, setGameState] = useState(autoStart ? 'playing' : 'ready') // ready | playing | gameOver | won
   const [level, setLevel] = useState(0)
   const [lives, setLives] = useState(MAX_LIVES)
   const [score, setScore] = useState(0)
+  const callbackFired = useRef(false)
 
   const totalLevels = Math.ceil(questions.length / QUESTIONS_PER_LEVEL)
 
@@ -57,7 +56,7 @@ export default function GravityRenderer({ questions }) {
       lives,
       score,
       gameState,
-      colors: getThemeColors(),
+      colors: RETRO_COLORS,
     }
   }, [])
 
@@ -71,12 +70,6 @@ export default function GravityRenderer({ questions }) {
     }
   }, [level, lives, score, gameState])
 
-  // Refresh theme colors when they might change
-  useEffect(() => {
-    if (gameRef.current) {
-      gameRef.current.colors = getThemeColors()
-    }
-  })
 
   const startLevel = useCallback((lvl) => {
     const g = gameRef.current
@@ -95,9 +88,18 @@ export default function GravityRenderer({ questions }) {
     setLives(MAX_LIVES)
     setScore(0)
     setGameState('playing')
+    callbackFired.current = false
     startLevel(0)
     if (inputRef.current) inputRef.current.focus()
   }, [startLevel])
+
+  // Auto-start first level when autoStart is set
+  useEffect(() => {
+    if (autoStart && gameRef.current) {
+      startLevel(0)
+      if (inputRef.current) inputRef.current.focus()
+    }
+  }, [autoStart, startLevel])
 
   // Canvas animation loop
   useEffect(() => {
@@ -181,7 +183,7 @@ export default function GravityRenderer({ questions }) {
       // Stars
       g.stars.forEach((s) => {
         const twinkle = 0.5 + Math.sin(t * 0.02 + s.x * 100) * 0.5
-        ctx.fillStyle = `rgba(${c.text === '#1a1a1a' ? '180,180,180' : '255,255,255'}, ${s.alpha * twinkle})`
+        ctx.fillStyle = `rgba(255,255,255, ${s.alpha * twinkle})`
         ctx.beginPath()
         ctx.arc(s.x * W, s.y * H * 0.85, s.size, 0, Math.PI * 2)
         ctx.fill()
@@ -243,7 +245,7 @@ export default function GravityRenderer({ questions }) {
             ctx.globalAlpha = 1
           }
         } else if (nextP.detail === 'earth') {
-          ctx.fillStyle = '#3a8a3a'
+          ctx.fillStyle = '#2a4a6a'
           ctx.globalAlpha = 0.35
           ctx.beginPath()
           ctx.ellipse(npX - 5, npY - 3, npR * 0.3, npR * 0.25, 0.3, 0, Math.PI * 2)
@@ -341,7 +343,7 @@ export default function GravityRenderer({ questions }) {
           ctx.globalAlpha = 1
         }
       } else if (planet.detail === 'earth') {
-        ctx.fillStyle = '#3a8a3a'
+        ctx.fillStyle = '#2a4a6a'
         ctx.globalAlpha = 0.35
         const landX = Math.sin(t * 0.002) * 20
         ctx.beginPath()
@@ -429,7 +431,13 @@ export default function GravityRenderer({ questions }) {
             }
 
             if (g.lives <= 0) {
-              setGameState('gameOver')
+              if (onRoundComplete && !callbackFired.current) {
+                callbackFired.current = true
+                setGameState('gameOver')
+                setTimeout(() => onRoundComplete(false), 800)
+              } else {
+                setGameState('gameOver')
+              }
             }
           }
         }
@@ -437,7 +445,10 @@ export default function GravityRenderer({ questions }) {
         // Check level complete
         const allDone = g.spawnQueue.length === 0 && g.asteroids.every((a) => !a.alive)
         if (allDone && g.gameState === 'playing' && g.lives > 0 && !g.transition) {
-          if (g.level + 1 >= totalLevels) {
+          if (onRoundComplete && !callbackFired.current) {
+            callbackFired.current = true
+            setTimeout(() => onRoundComplete(true), 800)
+          } else if (g.level + 1 >= totalLevels) {
             setGameState('won')
           } else {
             // Start fade transition to next planet (no overlay, auto-advance)
@@ -474,7 +485,7 @@ export default function GravityRenderer({ questions }) {
         ctx.moveTo(verts[0].x, verts[0].y)
         for (let i = 1; i < verts.length; i++) ctx.lineTo(verts[i].x, verts[i].y)
         ctx.closePath()
-        ctx.fillStyle = c.border
+        ctx.fillStyle = 'rgba(255,255,255,0.12)'
         ctx.fill()
 
         // Facet lines from center to create crystal look
@@ -485,7 +496,7 @@ export default function GravityRenderer({ questions }) {
           ctx.beginPath()
           ctx.moveTo(0, 0)
           ctx.lineTo(midX * 0.6, midY * 0.6)
-          ctx.strokeStyle = c.muted + '40'
+          ctx.strokeStyle = 'rgba(255,255,255,0.08)'
           ctx.lineWidth = 1
           ctx.stroke()
         }
@@ -499,7 +510,7 @@ export default function GravityRenderer({ questions }) {
             ctx.lineTo(verts[i].x, verts[i].y)
             ctx.lineTo(next.x, next.y)
             ctx.closePath()
-            ctx.fillStyle = c.text + '12'
+            ctx.fillStyle = 'rgba(255,255,255,0.06)'
             ctx.fill()
           }
         }
@@ -507,14 +518,14 @@ export default function GravityRenderer({ questions }) {
         // Highlight edge (top-left shine)
         ctx.beginPath()
         ctx.arc(-sz * 0.25, -sz * 0.25, sz * 0.35, 0, Math.PI * 2)
-        ctx.fillStyle = c.text + '08'
+        ctx.fillStyle = 'rgba(255,255,255,0.04)'
         ctx.fill()
 
         ctx.restore()
 
         // Question text on the asteroid (not rotated)
-        ctx.font = '700 22px Inter, system-ui, sans-serif'
-        ctx.fillStyle = c.text
+        ctx.font = '14px "Press Start 2P", monospace'
+        ctx.fillStyle = '#fff'
         ctx.fillText(a.q, cx, a.y)
       }
 
@@ -542,25 +553,27 @@ export default function GravityRenderer({ questions }) {
       if (g.gameState === 'playing') {
         // Planet name — top center
         ctx.textAlign = 'center'
-        ctx.fillStyle = c.muted
-        ctx.font = '500 12px Inter, system-ui, sans-serif'
-        ctx.fillText(planet.name, W / 2, 24)
+        ctx.fillStyle = 'rgba(255,255,255,0.3)'
+        ctx.font = '10px "Press Start 2P", monospace'
+        ctx.fillText(planet.name, W / 2, 28)
 
-        // Lives — centered below planet name
-        const gap = 16
-        const totalW = (MAX_LIVES - 1) * gap
+        // Lives — pixel hearts, centered below planet name
+        const heartGap = 28
+        const heartsW = (MAX_LIVES - 1) * heartGap
         for (let i = 0; i < MAX_LIVES; i++) {
-          ctx.fillStyle = i < g.lives ? c.accent : c.border
+          const hx = W / 2 - heartsW / 2 + i * heartGap
+          const hy = 46
+          const hs = 5 // half-size of each heart lobe
+          ctx.fillStyle = i < g.lives ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.1)'
           ctx.beginPath()
-          ctx.arc(W / 2 - totalW / 2 + i * gap, 44, 5, 0, Math.PI * 2)
+          // Pixel heart: two circles on top + triangle bottom
+          ctx.arc(hx - hs, hy - hs, hs, Math.PI, 0)
+          ctx.arc(hx + hs, hy - hs, hs, Math.PI, 0)
+          ctx.lineTo(hx + hs * 2, hy - hs)
+          ctx.lineTo(hx, hy + hs * 1.6)
+          ctx.lineTo(hx - hs * 2, hy - hs)
           ctx.fill()
         }
-
-        // Score — top right
-        ctx.fillStyle = c.text
-        ctx.font = '600 14px Inter, system-ui, sans-serif'
-        ctx.textAlign = 'right'
-        ctx.fillText(`${g.score}`, W - 20, 28)
       }
 
       // Draw fade overlay for level transition
@@ -605,8 +618,6 @@ export default function GravityRenderer({ questions }) {
           color: g.colors.accent,
         })
       }
-      setScore((s) => s + 100 + level * 25)
-      g.score += 100 + level * 25
     }
 
     setInput('')
@@ -616,7 +627,7 @@ export default function GravityRenderer({ questions }) {
 
   return (
     <div className="gv-wrapper">
-      <Link to="/" className="gv-exit">Exit</Link>
+      <div className="gv-scanlines" />
       <canvas ref={canvasRef} className="gv-canvas" />
 
       {playing && (
@@ -627,7 +638,7 @@ export default function GravityRenderer({ questions }) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type answer..."
+            placeholder="TYPE ANSWER..."
             autoComplete="off"
             autoFocus
           />
@@ -635,31 +646,33 @@ export default function GravityRenderer({ questions }) {
       )}
 
       {gameState === 'ready' && (
-        <div className="gv-overlay">
-          <div className="gv-screen-title">Gravity</div>
-          <p className="gv-screen-sub">Destroy the asteroids before they hit the planet.</p>
-          <p className="gv-screen-sub">{totalLevels} levels / {questions.length} questions</p>
-          <button className="gv-screen-btn" onClick={startGame}>Start</button>
+        <div className="gv-popup-wrap">
+          <div className="gv-popup">
+            <div className="gv-popup-title">GRAVITY</div>
+            <div className="gv-popup-rules">
+              <p>ASTEROIDS ARE FALLING TOWARD THE PLANET.</p>
+              <p>TYPE THE ANSWER TO DESTROY THEM.</p>
+              <p>IF AN ASTEROID HITS THE SURFACE, YOU LOSE A LIFE.</p>
+              <p>LOSE ALL 3 LIVES AND IT'S OVER.</p>
+            </div>
+            <button className="gv-screen-btn" onClick={startGame}>START</button>
+          </div>
         </div>
       )}
 
-      {gameState === 'gameOver' && (
+      {gameState === 'gameOver' && !onRoundComplete && (
         <div className="gv-overlay">
-          <div className="gv-screen-title">Game Over</div>
-          <div className="gv-screen-score">{score}</div>
-          <p className="gv-screen-sub">Made it to {PLANETS[level % PLANETS.length].name}</p>
-          <button className="gv-screen-btn" onClick={startGame}>Try Again</button>
-          <Link to="/" className="gv-back">Back to Track</Link>
+          <div className="gv-screen-title">GAME OVER</div>
+          <p className="gv-screen-sub">MADE IT TO {PLANETS[level % PLANETS.length].name}</p>
+          <button className="gv-screen-btn" onClick={startGame}>TRY AGAIN</button>
         </div>
       )}
 
-      {gameState === 'won' && (
+      {gameState === 'won' && !onRoundComplete && (
         <div className="gv-overlay">
-          <div className="gv-screen-title">You Win</div>
-          <div className="gv-screen-score">{score}</div>
-          <p className="gv-screen-sub">All planets cleared!</p>
-          <button className="gv-screen-btn" onClick={startGame}>Play Again</button>
-          <Link to="/" className="gv-back">Back to Track</Link>
+          <div className="gv-screen-title">YOU WIN</div>
+          <p className="gv-screen-sub">ALL PLANETS CLEARED</p>
+          <button className="gv-screen-btn" onClick={startGame}>PLAY AGAIN</button>
         </div>
       )}
 

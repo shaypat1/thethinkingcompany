@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.fl-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+
+.fl-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px);
+}
+
+.fl-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  padding: 2rem;
+}
+
+.fl-content-game {
+  align-items: stretch;
+  margin-top: -4rem;
+}
+
+.fl-title {
+  font-size: 3.5rem;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-shadow: 3px 3px 0 rgba(255,255,255,0.05);
+  text-align: center;
+}
+
+.fl-rules p {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.1em;
+  line-height: 2.2;
+  margin: 0;
+  text-align: center;
+}
+
+.fl-round {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.fl-problem-title {
+  font-size: 1.3rem;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.fl-argument {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.04em;
+  line-height: 2.6;
+  padding: 1.5rem 2rem;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.03);
+  text-align: center;
+}
+
+.fl-prompt {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.fl-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fl-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.9rem 1.3rem;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: all 0.1s;
+  font-family: 'Press Start 2P', monospace;
+  text-align: left;
+}
+
+.fl-choice:hover {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.06);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 rgba(255,255,255,0.05);
+}
+
+.fl-choice:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.fl-choice-label {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  flex-shrink: 0;
+  width: 18px;
+}
+
+.fl-choice-text {
+  font-size: 0.45rem;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  line-height: 2;
+}
+
+.fl-choice.correct {
+  border-color: #00cc66;
+  background: rgba(0,204,102,0.08);
+}
+.fl-choice.correct .fl-choice-label,
+.fl-choice.correct .fl-choice-text { color: #00cc66; }
+
+.fl-choice.wrong {
+  border-color: #e03030;
+  background: rgba(224,48,48,0.08);
+}
+.fl-choice.wrong .fl-choice-label,
+.fl-choice.wrong .fl-choice-text { color: #e03030; }
+
+.fl-choice.dim { opacity: 0.25; pointer-events: none; }
+
+.fl-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.fl-result-text {
+  font-size: 1.2rem;
+  letter-spacing: 0.15em;
+}
+.fl-result-text.correct { color: #00cc66; }
+.fl-result-text.wrong { color: #e03030; }
+
+.fl-btn {
+  padding: 0.8rem 2rem;
+  border: 3px solid rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255,255,255,0.1);
+}
+.fl-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 rgba(255,255,255,0.12); }
+.fl-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(255,255,255,0.06); }
+
+.fl-score {
+  font-size: 5rem;
+  color: #fff;
+  text-align: center;
+}
+
+.fl-score-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .fl-title { font-size: 2rem; }
+  .fl-argument { font-size: 0.45rem; }
+  .fl-choice { padding: 0.6rem 0.8rem; }
+  .fl-choice-text { font-size: 0.4rem; }
+}

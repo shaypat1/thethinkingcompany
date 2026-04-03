@@ -1,0 +1,186 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.ct-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+
+.ct-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+}
+
+.ct-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: -5rem;
+}
+
+/* Title */
+.ct-title {
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Rules */
+.ct-rules {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.ct-rules p {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  line-height: 2.2;
+  margin: 0;
+}
+
+/* Level */
+.ct-level {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.2em;
+}
+
+/* Grid */
+.ct-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+}
+
+.ct-cell {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  color: #0a0e1a;
+  transition: none;
+}
+
+.ct-cell.lit {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+}
+
+.ct-cell.correct {
+  background: #00cc66;
+  color: transparent;
+  box-shadow: 0 0 15px rgba(0, 204, 102, 0.4);
+}
+
+.ct-cell.wrong {
+  background: #e03030;
+  color: transparent;
+  box-shadow: 0 0 15px rgba(224, 48, 48, 0.4);
+}
+
+/* Timer bar */
+.ct-timer-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.ct-timer-tick {
+  width: 38px;
+  height: 10px;
+  transition: none;
+}
+
+.ct-timer-tick.on {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.ct-timer-tick.off {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Status */
+.ct-status {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.15em;
+  min-height: 1.5rem;
+}
+
+/* Start button */
+.ct-start-btn {
+  padding: 0.8rem 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.ct-start-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.12);
+}
+
+.ct-start-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Score */
+.ct-score {
+  font-size: 5rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.ct-score-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.12em;
+}
+
+.ct-score-detail {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.1em;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .ct-title { font-size: 1.8rem; }
+  .ct-cell { width: 42px; height: 42px; font-size: 0.5rem; }
+}
