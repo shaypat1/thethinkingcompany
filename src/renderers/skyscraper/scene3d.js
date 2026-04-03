@@ -321,28 +321,11 @@ export function createBuilding(height, maxHeight) {
     group.add(ac)
   }
 
-  // Height 4+: antenna mast
+  // Height 4+: just an extra AC unit
   if (height >= 4) {
-    const antMat = new THREE.MeshStandardMaterial({ color: 0x556677, flatShading: true, metalness: 0.4 })
-    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.3, 4), antMat)
-    ant.position.y = roofY + 0.19
-    group.add(ant)
-    // Blinking light on top
-    const bulb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.03, 4, 4),
-      new THREE.MeshBasicMaterial({ color: 0xff2222 })
-    )
-    bulb.position.y = roofY + 0.36
-    group.add(bulb)
-  }
-
-  // Height 5+: satellite dish
-  if (height >= 5) {
-    const dishMat = new THREE.MeshStandardMaterial({ color: 0x888899, flatShading: true, metalness: 0.3 })
-    const dish = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.05, 6), dishMat)
-    dish.position.set(-towerW * 0.2, roofY + 0.08, towerW * 0.2)
-    dish.rotation.x = -0.5
-    group.add(dish)
+    const ac2 = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.1), darkMat)
+    ac2.position.set(-towerW * 0.2, roofY + 0.05, towerW * 0.15)
+    group.add(ac2)
   }
 
   // Tallest building: helipad + beacon
