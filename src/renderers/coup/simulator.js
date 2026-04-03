@@ -181,29 +181,62 @@ export function runBatch(botConfigs, numGames, startSeed = 1) {
 }
 
 // ── CLI ──
+import { createMediumBot } from './mediumBot.js'
+import { createHardBot } from './hardBot.js'
+import { PERSONALITIES, PERSONALITY_NAMES } from './personality.js'
+
+function printReport(label, r) {
+  console.log(`\n${label}`)
+  console.log(`  Avg turns: ${r.avgTurns} (target: 25-60)`)
+  console.log(`  Win rates:`, r.winRates)
+  console.log(`  Actions:`, r.actionDist)
+  console.log(`  Challenge: ${r.challengeRate} rate, ${r.challengeSuccess} success`)
+
+  const turns = parseFloat(r.avgTurns)
+  const checks = [
+    ['Game length 25-60', turns >= 25 && turns <= 60],
+    ['Income ≤ 25%', parseFloat(r.actionDist.income || '0') <= 25],
+    ['No action > 35%', Object.values(r.actionDist).every(v => parseFloat(v) <= 35)],
+  ]
+  for (const [name, pass] of checks) console.log(`  ${pass ? '✅' : '❌'} ${name}`)
+}
+
 if (typeof process !== 'undefined' && process.argv?.[1]?.includes('simulator')) {
-  console.log('=== Coup Simulator ===\n')
+  console.log('=== Coup Simulator ===')
 
+  const N = 1000
+
+  // Test 1: 6 Easy
   const easy = { create: createEasyBot, personality: { name: 'default' } }
+  printReport(`Test 1: ${N} games — 6 Easy bots`, runBatch(Array(6).fill(easy), N, 1))
 
-  console.log('Test 1: 1000 games — 6 Easy bots')
-  const t0 = performance.now()
-  const r1 = runBatch(Array(6).fill(easy), 1000)
-  console.log(`  ${((performance.now() - t0) / 1000).toFixed(2)}s`)
-  console.log(`  Avg turns: ${r1.avgTurns} (target: 25-60)`)
-  console.log(`  Win rates:`, r1.winRates)
-  console.log(`  Actions:`, r1.actionDist)
-  console.log(`  Challenge rate: ${r1.challengeRate} (target: 10-25%)`)
-  console.log(`  Challenge success: ${r1.challengeSuccess} (target: 40-60%)`)
+  // Test 2: 6 Medium
+  const medium = { create: createMediumBot, personality: { name: 'default' } }
+  printReport(`Test 2: ${N} games — 6 Medium bots`, runBatch(Array(6).fill(medium), N, 100001))
+
+  // Test 3: 6 Hard
+  const hard = { create: createHardBot, personality: { name: 'default' } }
+  printReport(`Test 3: ${N} games — 6 Hard bots`, runBatch(Array(6).fill(hard), N, 200001))
+
+  // Test 4: Cross-tier — 2E 2M 2H
+  const mixed = [easy, easy, medium, medium, hard, hard]
+  const r4 = runBatch(mixed, N, 300001)
+  console.log(`\nTest 4: ${N} games — 2 Easy, 2 Medium, 2 Hard`)
+  console.log(`  Avg turns: ${r4.avgTurns}`)
+  const easyWin = (parseFloat(r4.winRates[0]) + parseFloat(r4.winRates[1])) / 2
+  const medWin = (parseFloat(r4.winRates[2]) + parseFloat(r4.winRates[3])) / 2
+  const hardWin = (parseFloat(r4.winRates[4]) + parseFloat(r4.winRates[5])) / 2
+  console.log(`  Easy avg: ${easyWin.toFixed(1)}%, Medium avg: ${medWin.toFixed(1)}%, Hard avg: ${hardWin.toFixed(1)}%`)
+  console.log(`  ${hardWin > medWin && medWin > easyWin ? '✅' : '❌'} Hierarchy: Hard > Medium > Easy`)
 
   // Target checks
-  const turns = parseFloat(r1.avgTurns)
+  const turns = parseFloat(r4.avgTurns)
   const checks = [
-    ['Game length', turns >= 25 && turns <= 60, `${r1.avgTurns}`],
-    ['Income < 25%', parseFloat(r1.actionDist.income || '0') <= 25, r1.actionDist.income],
-    ['Tax < 35%', parseFloat(r1.actionDist.tax || '0') <= 35, r1.actionDist.tax],
-    ['Coup 15-25%', parseFloat(r1.actionDist.coup || '0') >= 15 && parseFloat(r1.actionDist.coup || '0') <= 25, r1.actionDist.coup],
-    ['Assassinate 5-15%', parseFloat(r1.actionDist.assassinate || '0') >= 5 && parseFloat(r1.actionDist.assassinate || '0') <= 15, r1.actionDist.assassinate],
+    ['Game length', turns >= 25 && turns <= 60, `${r4.avgTurns}`],
+    ['Income < 25%', parseFloat(r4.actionDist.income || '0') <= 25, r4.actionDist.income],
+    ['Tax < 35%', parseFloat(r4.actionDist.tax || '0') <= 35, r4.actionDist.tax],
+    ['Coup 15-25%', parseFloat(r4.actionDist.coup || '0') >= 15 && parseFloat(r4.actionDist.coup || '0') <= 25, r4.actionDist.coup],
+    ['Assassinate 5-15%', parseFloat(r4.actionDist.assassinate || '0') >= 5 && parseFloat(r4.actionDist.assassinate || '0') <= 15, r4.actionDist.assassinate],
   ]
   console.log('\n  Health checks:')
   for (const [name, pass, val] of checks) {
