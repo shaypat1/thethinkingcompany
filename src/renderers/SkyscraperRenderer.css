@@ -1,0 +1,193 @@
+/* Skyscraper — retro arcade */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.sky-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #050810;
+  color: #00ccff;
+  font-family: 'Press Start 2P', monospace;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  image-rendering: pixelated;
+}
+
+.sky-exit {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  color: #00ccff;
+  text-decoration: none;
+  font-size: 0.55rem;
+  z-index: 20;
+  opacity: 0.6;
+}
+.sky-exit:hover { opacity: 1; }
+
+.sky-canvas { flex: 1; position: relative; cursor: grab; }
+.sky-canvas:active { cursor: grabbing; }
+.sky-canvas canvas { display: block; width: 100%; height: 100%; }
+
+/* Scanlines */
+.sky-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+/* Intro / Complete */
+.sky-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+  gap: 0.8rem;
+}
+.sky-big-sym { font-size: 2.5rem; }
+.sky-title { font-size: 1rem; font-weight: 400; margin: 0; color: #00ccff; }
+.sky-narrative { max-width: 400px; color: #558899; font-size: 0.5rem; line-height: 2; }
+.sky-count { color: #334455; font-size: 0.5rem; }
+.sky-total-score { font-size: 1.5rem; color: #ffcc00; }
+.sky-total-label { color: #558899; font-size: 0.5rem; }
+
+.sky-btn {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #00ccff;
+  border-radius: 2px;
+  background: transparent;
+  color: #00ccff;
+  font-size: 0.55rem;
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+.sky-btn:hover { background: rgba(0, 204, 255, 0.1); }
+
+/* HUD */
+.sky-hud {
+  position: absolute;
+  top: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  z-index: 10;
+  pointer-events: none;
+}
+.sky-hud-level { font-size: 0.45rem; color: #334455; text-transform: uppercase; }
+.sky-hud-name { font-size: 0.6rem; color: #00ccff; }
+.sky-hud-size { font-size: 0.45rem; color: #334455; }
+
+/* Clues — positioned around the 3D grid (HTML overlay) */
+.sky-clues {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+  display: none; /* TODO: position clues around 3D grid — for now use numpad */
+}
+
+.sky-clue {
+  font-size: 0.6rem;
+  color: #00ccff;
+  text-shadow: 0 0 8px rgba(0, 204, 255, 0.5);
+}
+
+/* Hint */
+.sky-hint {
+  position: absolute;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.45rem;
+  color: #335566;
+  text-align: center;
+  max-width: 380px;
+  pointer-events: none;
+  z-index: 10;
+  line-height: 1.8;
+}
+
+/* Number pad */
+.sky-numpad {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  z-index: 10;
+}
+
+.sky-num-btn {
+  width: 44px;
+  height: 44px;
+  border: 2px solid #00ccff;
+  border-radius: 2px;
+  background: rgba(0, 20, 40, 0.9);
+  color: #00ccff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+}
+.sky-num-btn:hover {
+  background: rgba(0, 204, 255, 0.15);
+  transform: translateY(-2px);
+}
+.sky-num-btn.clear {
+  border-color: #e03030;
+  color: #e03030;
+}
+.sky-num-btn.clear:hover { background: rgba(224, 48, 48, 0.15); }
+
+/* Selected cell info */
+.sky-sel-info {
+  position: absolute;
+  bottom: 4.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.45rem;
+  color: #558899;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Result */
+.sky-result-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(5, 8, 16, 0.95);
+  border: 2px solid #00ccff;
+  border-radius: 4px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 20;
+  min-width: 240px;
+}
+.sky-result-title { font-size: 0.8rem; color: #ffcc00; }
+.sky-result-info { font-size: 0.45rem; color: #558899; }
+.sky-result-gears { font-size: 1.2rem; color: #ffcc00; }

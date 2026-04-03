@@ -12,6 +12,7 @@ import BackwardsSpanRenderer from './BackwardsSpanRenderer'
 import RobotRenderer from './RobotRenderer'
 import HanoiRenderer from './HanoiRenderer'
 import LogicDetectiveRenderer from './LogicDetectiveRenderer'
+import SkyscraperRenderer from './SkyscraperRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -49,6 +50,11 @@ export default function ActivityDispatcher({ type, content, label }) {
         cases[0].__title = content.title
       }
       return <LogicDetectiveRenderer cases={cases} />
+    }
+    case 'skyscraper': {
+      const levels = content?.levels || []
+      if (levels[0]) levels[0].__title = content.title
+      return <SkyscraperRenderer levels={levels} narrative={content.narrative} />
     }
     default:
       return <PlaceholderRenderer label={label} />

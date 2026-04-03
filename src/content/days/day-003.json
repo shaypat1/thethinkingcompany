@@ -7,6 +7,7 @@
     { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
     { "type": "cardmatching", "id": "cm001", "label": "Card Match" },
     { "type": "robot", "id": "rb002", "label": "Factory Floor" },
-    { "type": "hanoi", "id": "hanoi001", "label": "Towers of Hanoi" }
+    { "type": "hanoi", "id": "hanoi001", "label": "Towers of Hanoi" },
+    { "type": "skyscraper", "id": "sky001", "label": "Sky City" }
   ]
 }
