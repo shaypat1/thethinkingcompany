@@ -25,9 +25,9 @@ export function createScene(container, n) {
   scene.background = new THREE.Color(COLORS.void)
 
   // Camera
-  const camDist = gridW * 1.6 + 2
+  const camDist = gridW * 2.2 + 3
   const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 200)
-  camera.position.set(gridW * 0.5, camDist * 0.8, gridW * 0.5 + camDist * 0.5)
+  camera.position.set(gridW * 0.5, camDist * 0.7, gridW * 0.5 + camDist * 0.55)
   camera.lookAt(gridW * 0.45, 0, gridW * 0.45)
 
   // Renderer — retro arcade: flat shading, hard shadows, pixel ratio 1
@@ -42,10 +42,8 @@ export function createScene(container, n) {
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
   controls.dampingFactor = 0.08
-  controls.enableZoom = true
+  controls.enableZoom = false
   controls.enablePan = false
-  controls.minDistance = 4
-  controls.maxDistance = camDist * 2
   controls.minPolarAngle = 0.3
   controls.maxPolarAngle = Math.PI / 2.2
   controls.target.set(gridW * 0.45, 0, gridW * 0.45)
