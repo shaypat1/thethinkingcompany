@@ -12,8 +12,8 @@ const PLANETS = [
 ]
 
 const QUESTIONS_PER_LEVEL = 4
-const BASE_SPEED = 1.0
-const SPAWN_INTERVAL_BASE = 180 // frames between spawns
+const BASE_SPEED = 2.5
+const SPAWN_INTERVAL_BASE = 60 // frames between spawns
 const MAX_LIVES = 3
 
 function normalize(str) {
@@ -36,7 +36,7 @@ export default function GravityRenderer({ questions }) {
   const gameRef = useRef(null)
   const inputRef = useRef(null)
   const [input, setInput] = useState('')
-  const [gameState, setGameState] = useState('ready') // ready | playing | levelComplete | gameOver | won
+  const [gameState, setGameState] = useState('ready') // ready | playing | gameOver | won
   const [level, setLevel] = useState(0)
   const [lives, setLives] = useState(MAX_LIVES)
   const [score, setScore] = useState(0)
@@ -51,6 +51,8 @@ export default function GravityRenderer({ questions }) {
       stars: [],
       spawnQueue: [],
       spawnTimer: 0,
+      transition: null, // { phase: 'fadeOut' | 'fadeIn', start: number, fromLevel: number, toLevel: number }
+      questions,
       level,
       lives,
       score,
@@ -84,7 +86,8 @@ export default function GravityRenderer({ questions }) {
     g.spawnQueue = questions.slice(start, end).map((q) => ({ ...q }))
     g.asteroids = []
     g.particles = []
-    g.spawnTimer = 0
+    g.spawnTimer = SPAWN_INTERVAL_BASE // first asteroid drops immediately
+    g.transition = null
   }, [questions])
 
   const startGame = useCallback(() => {
@@ -143,6 +146,38 @@ export default function GravityRenderer({ questions }) {
       // Clear
       ctx.clearRect(0, 0, W, H)
 
+      // Fade transition state
+      let fadeAlpha = 0
+      if (g.transition) {
+        const FADE_FRAMES = 25 // ~0.4s each way
+        const elapsed = t - g.transition.start
+        if (g.transition.phase === 'fadeOut') {
+          const p = Math.min(elapsed / FADE_FRAMES, 1)
+          fadeAlpha = p * p // ease in (accelerate to black)
+          if (p >= 1) {
+            const nextLvl = g.transition.toLevel
+            g.transition = { phase: 'fadeIn', start: t, fromLevel: g.transition.fromLevel, toLevel: nextLvl }
+            g.level = nextLvl
+            setLevel(nextLvl)
+            const qs = g.questions
+            const qStart = nextLvl * QUESTIONS_PER_LEVEL
+            const qEnd = Math.min(qStart + QUESTIONS_PER_LEVEL, qs.length)
+            g.spawnQueue = qs.slice(qStart, qEnd).map((q) => ({ ...q }))
+            g.asteroids = []
+            g.particles = []
+            g.spawnTimer = SPAWN_INTERVAL_BASE
+            fadeAlpha = 1
+          }
+        } else if (g.transition.phase === 'fadeIn') {
+          const p = Math.min(elapsed / FADE_FRAMES, 1)
+          fadeAlpha = (1 - p) * (1 - p) // ease out (decelerate from black)
+          if (p >= 1) {
+            g.transition = null
+            fadeAlpha = 0
+          }
+        }
+      }
+
       // Stars
       g.stars.forEach((s) => {
         const twinkle = 0.5 + Math.sin(t * 0.02 + s.x * 100) * 0.5
@@ -151,6 +186,105 @@ export default function GravityRenderer({ questions }) {
         ctx.arc(s.x * W, s.y * H * 0.85, s.size, 0, Math.PI * 2)
         ctx.fill()
       })
+
+      // Next planet in background (textured small sphere in sky)
+      if (g.level + 1 < totalLevels && !g.transition) {
+        const nextP = PLANETS[(g.level + 1) % PLANETS.length]
+        const npX = W * 0.82
+        const npY = H * 0.15
+        const npR = 25
+
+        ctx.save()
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR, 0, Math.PI * 2)
+        ctx.clip()
+
+        // Base gradient
+        const npGrad = ctx.createRadialGradient(npX - 8, npY - 8, 2, npX, npY, npR)
+        npGrad.addColorStop(0, nextP.light)
+        npGrad.addColorStop(0.5, nextP.base)
+        npGrad.addColorStop(1, nextP.dark)
+        ctx.fillStyle = npGrad
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR, 0, Math.PI * 2)
+        ctx.fill()
+
+        // Surface detail on the small planet
+        if (nextP.detail === 'craters') {
+          const seeds = [0.2, 0.5, 0.8, 0.35, 0.65]
+          for (let i = 0; i < seeds.length; i++) {
+            const cx = npX - npR + seeds[i] * npR * 2
+            const cy = npY - npR * 0.5 + seeds[(i + 2) % 5] * npR
+            const cr = 2 + seeds[(i + 1) % 5] * 4
+            ctx.fillStyle = nextP.dark
+            ctx.globalAlpha = 0.3
+            ctx.beginPath()
+            ctx.arc(cx, cy, cr, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.globalAlpha = 1
+          }
+        } else if (nextP.detail === 'bands') {
+          for (let i = 0; i < 4; i++) {
+            const by = npY - npR + i * (npR * 2 / 4)
+            ctx.fillStyle = i % 2 === 0 ? nextP.dark : nextP.light
+            ctx.globalAlpha = 0.2
+            ctx.fillRect(npX - npR, by, npR * 2, npR / 3)
+            ctx.globalAlpha = 1
+          }
+        } else if (nextP.detail === 'clouds') {
+          for (let i = 0; i < 3; i++) {
+            const cx = npX - npR * 0.5 + i * npR * 0.5 + Math.sin(i * 2 + t * 0.005) * 3
+            const cy = npY - npR * 0.3 + i * npR * 0.3
+            ctx.fillStyle = nextP.light
+            ctx.globalAlpha = 0.25
+            ctx.beginPath()
+            ctx.ellipse(cx, cy, npR * 0.4, 3, 0.2, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.globalAlpha = 1
+          }
+        } else if (nextP.detail === 'earth') {
+          ctx.fillStyle = '#3a8a3a'
+          ctx.globalAlpha = 0.35
+          ctx.beginPath()
+          ctx.ellipse(npX - 5, npY - 3, npR * 0.3, npR * 0.25, 0.3, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.beginPath()
+          ctx.ellipse(npX + 7, npY + 4, npR * 0.2, npR * 0.2, -0.2, 0, Math.PI * 2)
+          ctx.fill()
+          ctx.globalAlpha = 1
+        }
+
+        // Terminator shadow (dark side crescent)
+        const shadowGrad = ctx.createLinearGradient(npX + npR * 0.2, npY, npX + npR, npY)
+        shadowGrad.addColorStop(0, 'transparent')
+        shadowGrad.addColorStop(1, 'rgba(0,0,0,0.4)')
+        ctx.fillStyle = shadowGrad
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR, 0, Math.PI * 2)
+        ctx.fill()
+
+        ctx.restore()
+
+        // Rings drawn outside the clip so they extend beyond the planet sphere
+        if (nextP.detail === 'rings') {
+          ctx.strokeStyle = nextP.light
+          ctx.lineWidth = 1.5
+          ctx.globalAlpha = 0.3
+          ctx.beginPath()
+          ctx.ellipse(npX, npY, npR * 1.4, npR * 0.12, -0.15, Math.PI + 0.3, Math.PI * 2 - 0.3)
+          ctx.stroke()
+          ctx.globalAlpha = 1
+        }
+
+        // Atmosphere glow (outside the clip)
+        ctx.strokeStyle = nextP.glow
+        ctx.lineWidth = 1.5
+        ctx.globalAlpha = 0.3
+        ctx.beginPath()
+        ctx.arc(npX, npY, npR + 3, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.globalAlpha = 1
+      }
 
       // Planet — massive sphere, curved surface spans full width
       const pRadius = W * 1.2
@@ -249,16 +383,16 @@ export default function GravityRenderer({ questions }) {
         ctx.globalAlpha = 1
       }
 
-      // Game logic (only when playing)
-      if (g.gameState === 'playing') {
+      // Game logic (only when playing and not transitioning)
+      if (g.gameState === 'playing' && !g.transition) {
         // Spawn asteroids from queue
         g.spawnTimer++
         const spawnInterval = Math.max(40, SPAWN_INTERVAL_BASE - g.level * 15)
         if (g.spawnQueue.length > 0 && g.spawnTimer >= spawnInterval) {
           const q = g.spawnQueue.shift()
-          const asteroidW = Math.max(80, ctx.measureText(q.q).width + 40)
+          const asteroidW = 90
           g.asteroids.push({
-            x: Math.random() * (W - asteroidW - 40) + 20 + asteroidW / 2,
+            x: Math.random() * (W - 120) + 60,
             y: -30,
             vy: BASE_SPEED * (1 + g.level * 0.18),
             q: q.q,
@@ -302,72 +436,86 @@ export default function GravityRenderer({ questions }) {
 
         // Check level complete
         const allDone = g.spawnQueue.length === 0 && g.asteroids.every((a) => !a.alive)
-        if (allDone && g.gameState === 'playing' && g.lives > 0) {
+        if (allDone && g.gameState === 'playing' && g.lives > 0 && !g.transition) {
           if (g.level + 1 >= totalLevels) {
             setGameState('won')
           } else {
-            setGameState('levelComplete')
+            // Start fade transition to next planet (no overlay, auto-advance)
+            g.transition = { phase: 'fadeOut', start: t, fromLevel: g.level, toLevel: g.level + 1 }
           }
         }
       }
 
-      // Draw comets
+      // Draw chunky faceted asteroids
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       for (const a of g.asteroids) {
         if (!a.alive) continue
         const wobbleX = Math.sin(a.wobble) * 2
         const cx = a.x + wobbleX
-        const headR = 16
+        const sz = 38 // asteroid half-size
+        const rot = a.wobble * 0.3 // slow rotation
 
-        // Tail (flame trailing upward)
-        const tailLen = 50 + Math.sin(a.wobble * 3) * 8
-        const tailGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen)
-        tailGrad.addColorStop(0, c.accent)
-        tailGrad.addColorStop(0.4, c.accent + '60')
-        tailGrad.addColorStop(1, 'transparent')
-        ctx.fillStyle = tailGrad
+        ctx.save()
+        ctx.translate(cx, a.y)
+        ctx.rotate(rot)
+
+        // Generate faceted polygon vertices (irregular pentagon/hexagon)
+        const sides = 6
+        const verts = []
+        for (let i = 0; i < sides; i++) {
+          const angle = (Math.PI * 2 * i) / sides - Math.PI / 2
+          const r = sz * (0.8 + ((Math.sin(i * 137.5 + a.x) * 0.5 + 0.5) * 0.4))
+          verts.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r })
+        }
+
+        // Main body — dark faceted shape
         ctx.beginPath()
-        ctx.moveTo(cx - headR * 0.7, a.y - headR * 0.3)
-        ctx.quadraticCurveTo(cx - 4 + Math.sin(a.wobble * 5) * 3, a.y - tailLen * 0.6, cx, a.y - tailLen)
-        ctx.quadraticCurveTo(cx + 4 + Math.sin(a.wobble * 5 + 1) * 3, a.y - tailLen * 0.6, cx + headR * 0.7, a.y - headR * 0.3)
+        ctx.moveTo(verts[0].x, verts[0].y)
+        for (let i = 1; i < verts.length; i++) ctx.lineTo(verts[i].x, verts[i].y)
+        ctx.closePath()
+        ctx.fillStyle = c.border
         ctx.fill()
 
-        // Inner tail glow
-        const innerGrad = ctx.createLinearGradient(cx, a.y, cx, a.y - tailLen * 0.6)
-        innerGrad.addColorStop(0, c.accent)
-        innerGrad.addColorStop(1, 'transparent')
-        ctx.fillStyle = innerGrad
-        ctx.globalAlpha = 0.5
-        ctx.beginPath()
-        ctx.moveTo(cx - headR * 0.3, a.y - headR * 0.2)
-        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx, a.y - tailLen * 0.5)
-        ctx.quadraticCurveTo(cx, a.y - tailLen * 0.5, cx + headR * 0.3, a.y - headR * 0.2)
-        ctx.fill()
-        ctx.globalAlpha = 1
+        // Facet lines from center to create crystal look
+        for (let i = 0; i < verts.length; i++) {
+          const next = verts[(i + 1) % verts.length]
+          const midX = (verts[i].x + next.x) / 2
+          const midY = (verts[i].y + next.y) / 2
+          ctx.beginPath()
+          ctx.moveTo(0, 0)
+          ctx.lineTo(midX * 0.6, midY * 0.6)
+          ctx.strokeStyle = c.muted + '40'
+          ctx.lineWidth = 1
+          ctx.stroke()
+        }
 
-        // Comet head (rocky sphere)
-        const headGrad = ctx.createRadialGradient(cx - 3, a.y - 3, 2, cx, a.y, headR)
-        headGrad.addColorStop(0, c.muted)
-        headGrad.addColorStop(0.5, c.border)
-        headGrad.addColorStop(1, planet.dark || '#333')
-        ctx.fillStyle = headGrad
+        // Light facets (top-left faces brighter)
+        for (let i = 0; i < verts.length; i++) {
+          const next = verts[(i + 1) % verts.length]
+          if (verts[i].y < 0 && verts[i].x < 0) {
+            ctx.beginPath()
+            ctx.moveTo(0, 0)
+            ctx.lineTo(verts[i].x, verts[i].y)
+            ctx.lineTo(next.x, next.y)
+            ctx.closePath()
+            ctx.fillStyle = c.text + '12'
+            ctx.fill()
+          }
+        }
+
+        // Highlight edge (top-left shine)
         ctx.beginPath()
-        ctx.arc(cx, a.y, headR, 0, Math.PI * 2)
+        ctx.arc(-sz * 0.25, -sz * 0.25, sz * 0.35, 0, Math.PI * 2)
+        ctx.fillStyle = c.text + '08'
         ctx.fill()
 
-        // Head highlight
+        ctx.restore()
+
+        // Question text on the asteroid (not rotated)
+        ctx.font = '700 16px Inter, system-ui, sans-serif'
         ctx.fillStyle = c.text
-        ctx.globalAlpha = 0.15
-        ctx.beginPath()
-        ctx.arc(cx - 4, a.y - 4, headR * 0.5, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.globalAlpha = 1
-
-        // Question text below comet
-        ctx.font = '600 13px Inter, system-ui, sans-serif'
-        ctx.fillStyle = c.accent
-        ctx.fillText(a.q, cx, a.y + headR + 16)
+        ctx.fillText(a.q, cx, a.y)
       }
 
       // Update & draw particles
@@ -415,6 +563,12 @@ export default function GravityRenderer({ questions }) {
         ctx.fillText(`${g.score}`, W - 20, 28)
       }
 
+      // Draw fade overlay for level transition
+      if (fadeAlpha > 0) {
+        ctx.fillStyle = `rgba(0, 0, 0, ${fadeAlpha})`
+        ctx.fillRect(0, 0, W, H)
+      }
+
       t++
       frame = requestAnimationFrame(draw)
     }
@@ -456,15 +610,6 @@ export default function GravityRenderer({ questions }) {
     }
 
     setInput('')
-  }
-
-  // Advance to next level
-  function handleNextLevel() {
-    const next = level + 1
-    setLevel(next)
-    setGameState('playing')
-    startLevel(next)
-    if (inputRef.current) inputRef.current.focus()
   }
 
   const playing = gameState === 'playing'
@@ -518,14 +663,6 @@ export default function GravityRenderer({ questions }) {
         </div>
       )}
 
-      {gameState === 'levelComplete' && (
-        <div className="gv-overlay">
-          <div className="gv-screen-title">{PLANETS[level % PLANETS.length].name} Cleared</div>
-          <div className="gv-screen-score">{score}</div>
-          <p className="gv-screen-sub">Next: {PLANETS[(level + 1) % PLANETS.length].name}</p>
-          <button className="gv-screen-btn" onClick={handleNextLevel}>Continue</button>
-        </div>
-      )}
     </div>
   )
 }
