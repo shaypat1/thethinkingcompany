@@ -118,7 +118,69 @@ export function createScene(container, n) {
   )
   scene.add(frame)
 
-  return { scene, camera, renderer, controls, tiles }
+  return { scene, camera, renderer, controls, tiles, gridW }
+}
+
+// Add clue numbers as 3D sprites around the grid
+export function addClues(scene, clues, n) {
+  const step = TILE + GAP
+  const offset = 1.0 // distance from grid edge
+
+  function makeClueSprite(text) {
+    const canvas = document.createElement('canvas')
+    canvas.width = 64; canvas.height = 64
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = '#00ccff'
+    ctx.font = 'bold 42px monospace'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(String(text), 32, 32)
+    const tex = new THREE.CanvasTexture(canvas)
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true })
+    const sprite = new THREE.Sprite(mat)
+    sprite.scale.set(0.6, 0.6, 1)
+    return sprite
+  }
+
+  // Top clues (above the grid, looking down columns)
+  if (clues.top) {
+    clues.top.forEach((v, c) => {
+      if (!v) return
+      const s = makeClueSprite(v)
+      s.position.set(c * step, 0.3, -offset)
+      scene.add(s)
+    })
+  }
+
+  // Bottom clues (below the grid)
+  if (clues.bottom) {
+    clues.bottom.forEach((v, c) => {
+      if (!v) return
+      const s = makeClueSprite(v)
+      s.position.set(c * step, 0.3, (n - 1) * step + offset)
+      scene.add(s)
+    })
+  }
+
+  // Left clues (left of the grid, looking across rows)
+  if (clues.left) {
+    clues.left.forEach((v, r) => {
+      if (!v) return
+      const s = makeClueSprite(v)
+      s.position.set(-offset, 0.3, r * step)
+      scene.add(s)
+    })
+  }
+
+  // Right clues (right of the grid)
+  if (clues.right) {
+    clues.right.forEach((v, r) => {
+      if (!v) return
+      const s = makeClueSprite(v)
+      s.position.set((n - 1) * step + offset, 0.3, r * step)
+      scene.add(s)
+    })
+  }
 }
 
 export function tileCenter(row, col) {

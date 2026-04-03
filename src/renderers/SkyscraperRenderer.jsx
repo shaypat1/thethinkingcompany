@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import * as THREE from 'three'
 import { createState, placeBuilding, selectCell } from './skyscraper/engine'
-import { createScene, tileCenter, createBuilding, highlightTile, TILE, GAP } from './skyscraper/scene3d'
+import { createScene, tileCenter, createBuilding, highlightTile, addClues, TILE, GAP } from './skyscraper/scene3d'
 import './SkyscraperRenderer.css'
 
 export default function SkyscraperRenderer({ levels, narrative }) {
@@ -29,6 +29,9 @@ export default function SkyscraperRenderer({ levels, narrative }) {
     el.insertBefore(s.renderer.domElement, el.firstChild)
     sceneRef.current = s
     buildingsRef.current = {}
+
+    // Add clue numbers around the grid
+    addClues(s.scene, level.clues, level.size)
 
     // Place prefilled buildings
     if (level.prefilled) {
