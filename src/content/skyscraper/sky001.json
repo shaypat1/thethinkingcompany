@@ -210,22 +210,22 @@
     {
       "id": "1-4",
       "name": "Metropolis",
-      "hint": "6\u00d76! The 6-clue means ascending order. The 2-clues at top help narrow columns fast.",
+      "hint": "6\u00d76! The 6-clue means ascending order. Use the 2-clues at top to narrow columns.",
       "size": 6,
       "clues": {
         "top": [
           0,
           0,
-          3,
+          2,
           2,
           0,
           0
         ],
         "bottom": [
           0,
+          4,
           0,
           0,
-          2,
           0,
           0
         ],
@@ -248,28 +248,28 @@
       },
       "solution": [
         [
-          5,
+          3,
           6,
-          1,
-          4,
-          3,
-          2
-        ],
-        [
-          4,
-          1,
-          3,
           2,
-          6,
+          4,
+          1,
           5
         ],
         [
+          5,
+          1,
+          6,
+          2,
+          4,
+          3
+        ],
+        [
+          4,
           2,
           3,
-          6,
           1,
           5,
-          4
+          6
         ],
         [
           6,
@@ -281,19 +281,19 @@
         ],
         [
           1,
-          2,
+          4,
           5,
           6,
-          4,
-          3
+          3,
+          2
         ],
         [
-          3,
-          4,
           2,
-          5,
+          3,
           1,
-          6
+          5,
+          6,
+          4
         ]
       ]
     }
