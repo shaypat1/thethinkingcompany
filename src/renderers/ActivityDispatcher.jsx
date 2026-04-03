@@ -10,6 +10,7 @@ import MissingItemRenderer from './MissingItemRenderer'
 import VerbalMemoryRenderer from './VerbalMemoryRenderer'
 import BackwardsSpanRenderer from './BackwardsSpanRenderer'
 import RobotRenderer from './RobotRenderer'
+import SortingRenderer from './SortingRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -37,6 +38,11 @@ export default function ActivityDispatcher({ type, content, label }) {
       const levels = content?.levels || []
       if (levels[0]) levels[0].__title = content.title
       return <RobotRenderer levels={levels} narrative={content.narrative} />
+    }
+    case 'sorting': {
+      const levels = content?.levels || []
+      if (levels[0]) levels[0].__title = content.title
+      return <SortingRenderer levels={levels} narrative={content.narrative} />
     }
     default:
       return <PlaceholderRenderer label={label} />

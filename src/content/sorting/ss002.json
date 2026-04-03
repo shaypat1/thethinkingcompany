@@ -1,0 +1,40 @@
+{
+  "id": "ss002",
+  "title": "Pick a Side",
+  "world": 2,
+  "narrative": "New strategy! Pick a PIVOT crate, and everything else automatically sorts to its left (smaller) or right (larger). The pivot lands in its perfect position. Way fewer comparisons!",
+  "levels": [
+    {
+      "id": "2-1",
+      "name": "Left or Right?",
+      "hint": "Click any crate to make it the pivot. Everything smaller goes left, larger goes right. The pivot ends up in its final spot!",
+      "items": [5, 2, 8, 1, 4, 7],
+      "mode": "pivot",
+      "par": 12
+    },
+    {
+      "id": "2-2",
+      "name": "Do It Again",
+      "hint": "After the first partition, each half needs its own pivot. Keep picking until everything's placed!",
+      "items": [6, 3, 8, 1, 5, 7, 2, 4],
+      "mode": "pivot",
+      "par": 18
+    },
+    {
+      "id": "2-3",
+      "name": "Bad Pivot!",
+      "hint": "These crates are already in order. What happens if you pick the first one as pivot? Try it... then try picking the MIDDLE one instead.",
+      "items": [1, 2, 3, 4, 5, 6, 7, 8],
+      "mode": "pivot",
+      "par": 16
+    },
+    {
+      "id": "2-4",
+      "name": "The Showdown",
+      "hint": "12 crates! Remember how many comparisons 'Neighbors Only' would take? Watch how much faster pivoting is.",
+      "items": [9, 3, 11, 1, 7, 5, 12, 2, 8, 4, 10, 6],
+      "mode": "pivot",
+      "par": 28
+    }
+  ]
+}

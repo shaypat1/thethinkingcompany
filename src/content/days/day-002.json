@@ -6,6 +6,7 @@
     { "type": "chimptest", "id": "ct001", "label": "Chimp Test" },
     { "type": "missingitem", "id": "mi001", "label": "Missing Item" },
     { "type": "flashcard", "id": "fc001", "label": "Speed Drill" },
-    { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" }
+    { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" },
+    { "type": "sorting", "id": "ss001", "label": "Neighbors Only" }
   ]
 }

@@ -20,6 +20,11 @@ import bs001 from './backwardsspan/bs001.json'
 import rb001 from './robot/rb001.json'
 import rb002 from './robot/rb002.json'
 import rb003 from './robot/rb003.json'
+import ss001 from './sorting/ss001.json'
+import ss002 from './sorting/ss002.json'
+import ss003 from './sorting/ss003.json'
+import ss004 from './sorting/ss004.json'
+import ss005 from './sorting/ss005.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -35,6 +40,7 @@ const content = {
   verbalmemory: { vb001 },
   backwardsspan: { bs001 },
   robot: { rb001, rb002, rb003 },
+  sorting: { ss001, ss002, ss003, ss004, ss005 },
 }
 
 export function getDay(dayNumber) {

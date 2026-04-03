@@ -1,0 +1,45 @@
+{
+  "id": "ss004",
+  "title": "Find It Fast",
+  "world": 4,
+  "narrative": "The crates are sorted but face-down — you can't see the numbers! Probe one crate at a time to find the target. Each probe tells you 'higher' or 'lower'. How few probes can you use?",
+  "levels": [
+    {
+      "id": "4-1",
+      "name": "Higher or Lower",
+      "hint": "Click a crate to flip it. It tells you if the target is higher or lower. Try the middle!",
+      "items": [1, 2, 3, 4, 5, 6, 7, 8],
+      "target": 5,
+      "mode": "search",
+      "par": 3
+    },
+    {
+      "id": "4-2",
+      "name": "Twenty Questions",
+      "hint": "16 crates, hidden numbers. Always pick the middle of what's left — you'll need at most 4 guesses!",
+      "items": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      "target": 11,
+      "mode": "search",
+      "par": 4
+    },
+    {
+      "id": "4-3",
+      "name": "Double the Haystack",
+      "hint": "32 crates but the par only goes up by one! Doubling the crates costs just one extra guess.",
+      "items": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32],
+      "target": 23,
+      "mode": "search",
+      "par": 5
+    },
+    {
+      "id": "4-4",
+      "name": "Unsorted Nightmare",
+      "hint": "These crates are NOT sorted. No binary search possible — you have to check one by one. Feel the pain!",
+      "items": [14, 7, 22, 3, 18, 11, 25, 1, 19, 8, 28, 5, 16, 30, 9, 21],
+      "target": 19,
+      "mode": "search",
+      "unsorted": true,
+      "par": 16
+    }
+  ]
+}

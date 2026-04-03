@@ -1,0 +1,242 @@
+/* Sorting Station */
+.ss-wrapper {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-exit {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  z-index: 20;
+}
+
+.ss-canvas { flex: 1; position: relative; cursor: pointer; }
+.ss-canvas canvas { display: block; width: 100%; height: 100%; }
+
+/* Intro / Complete */
+.ss-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+.ss-big-sym { font-size: 2.5rem; }
+.ss-title { font-size: 1.6rem; font-weight: 700; margin: 0; }
+.ss-narrative { max-width: 420px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+.ss-level-count { color: var(--text-muted); font-size: 0.8rem; }
+.ss-total-score { font-size: 2rem; font-weight: 700; }
+.ss-total-label { color: var(--text-muted); font-size: 0.85rem; }
+
+.ss-gear-summary {
+  display: flex;
+  gap: 0.8rem;
+  margin: 0.5rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ss-gear-row { display: flex; align-items: center; gap: 0.3rem; font-size: 0.85rem; }
+.ss-gear-level { font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
+
+.ss-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+.ss-btn:hover { opacity: 0.8; }
+.ss-btn-ghost {
+  padding: 0.4rem 1rem; border: none; background: none;
+  color: var(--text-muted); font-size: 0.8rem; font-family: inherit; cursor: pointer;
+}
+.ss-btn-ghost:hover { color: var(--text); }
+
+/* HUD */
+.ss-hud {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  z-index: 10;
+  pointer-events: none;
+}
+.ss-hud-level { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.ss-hud-name { font-size: 1rem; font-weight: 700; }
+.ss-hud-par { font-size: 0.7rem; color: var(--text-muted); }
+
+/* THE COUNTER — the main teaching tool */
+.ss-counter {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  z-index: 10;
+  pointer-events: none;
+  background: rgba(10, 10, 25, 0.7);
+  padding: 0.3rem 1rem;
+  border-radius: 8px;
+}
+.ss-counter-num {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: rgba(100, 220, 100, 0.9);
+  transition: color 0.3s;
+}
+.ss-counter-num.over { color: rgba(255, 100, 80, 0.9); }
+.ss-counter-label { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+.ss-counter-swaps { font-size: 0.7rem; color: rgba(255,255,255,0.35); margin-left: 0.3rem; }
+
+/* Status text */
+.ss-status {
+  position: absolute;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  color: var(--text);
+  background: rgba(10, 10, 25, 0.6);
+  padding: 0.35rem 1rem;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 10;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Hint */
+.ss-hint {
+  position: absolute;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-style: italic;
+  text-align: center;
+  max-width: 420px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ss-guide-arrow {
+  position: absolute;
+  bottom: 6.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: rgba(100, 200, 255, 0.8);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Search mode */
+.ss-search-target {
+  position: absolute;
+  top: 4.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  background: rgba(10, 10, 25, 0.8);
+  padding: 0.4rem 1.2rem;
+  border-radius: 8px;
+  z-index: 10;
+  pointer-events: none;
+  color: #eee;
+}
+.ss-search-hint { color: rgba(255, 200, 80, 0.9); font-weight: 600; }
+.ss-search-found { color: rgba(80, 255, 120, 0.9); font-weight: 600; }
+
+/* Merge labels */
+.ss-merge-labels {
+  position: absolute;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Container buttons */
+.ss-container-buttons {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.8rem;
+  z-index: 10;
+}
+.ss-container-btn {
+  padding: 0.8rem 1.2rem;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(10, 10, 25, 0.85);
+  color: #eee;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  min-width: 100px;
+  transition: border-color 0.2s, transform 0.1s;
+}
+.ss-container-btn:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+.ss-container-btn small { font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 400; }
+.ss-container-btn.array { border-color: rgba(74, 144, 217, 0.5); }
+.ss-container-btn.set { border-color: rgba(39, 174, 96, 0.5); }
+.ss-container-btn.map { border-color: rgba(142, 68, 173, 0.5); }
+
+/* Result overlay */
+.ss-result-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(10, 10, 20, 0.95);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 20;
+  min-width: 260px;
+  color: #eee;
+}
+.ss-result-overlay .ss-btn { color: #eee; border-color: rgba(255,255,255,0.25); }
+.ss-result-overlay .ss-btn-ghost { color: rgba(255,255,255,0.5); }
+.ss-result-title { font-size: 1.5rem; font-weight: 700; color: #fff; }
+.ss-result-info { font-size: 0.85rem; color: rgba(255,255,255,0.6); }
+.ss-result-sub { font-size: 0.8rem; color: rgba(100, 200, 255, 0.8); font-style: italic; }
+.ss-result-gears { font-size: 1.4rem; letter-spacing: 0.1em; margin: 0.3rem 0; color: #fff; }

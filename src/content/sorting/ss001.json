@@ -1,0 +1,41 @@
+{
+  "id": "ss001",
+  "title": "Neighbors Only",
+  "world": 1,
+  "narrative": "Welcome to the Sorting Station! Here's the catch: you can ONLY swap crates that are right next to each other. Watch the comparison counter — every comparison costs you!",
+  "levels": [
+    {
+      "id": "1-1",
+      "name": "The Rule",
+      "hint": "Tap two NEIGHBORING crates to compare them. If the left one is bigger, they swap!",
+      "items": [2, 4, 1, 3],
+      "mode": "adjacent",
+      "par": 6
+    },
+    {
+      "id": "1-2",
+      "name": "Biggest Bubbles Up",
+      "hint": "Follow the arrows! Compare each pair left to right. Watch the biggest number float to the end.",
+      "items": [5, 2, 4, 1, 3],
+      "mode": "adjacent",
+      "guided": true,
+      "par": 8
+    },
+    {
+      "id": "1-3",
+      "name": "Keep Passing",
+      "hint": "One pass isn't enough! Keep making passes until nothing swaps. Watch the counter climb...",
+      "items": [4, 6, 2, 5, 1, 3],
+      "mode": "adjacent",
+      "par": 15
+    },
+    {
+      "id": "1-4",
+      "name": "The Cost",
+      "hint": "10 crates... this is going to take a while with only neighbor swaps. How high does the counter go?",
+      "items": [7, 3, 9, 1, 5, 8, 2, 10, 4, 6],
+      "mode": "adjacent",
+      "par": 30
+    }
+  ]
+}

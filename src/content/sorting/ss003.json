@@ -1,0 +1,42 @@
+{
+  "id": "ss003",
+  "title": "Merge Machine",
+  "world": 3,
+  "narrative": "No swapping at all! Instead, merge two sorted groups by always clicking the smaller front crate. Split the problem, sort the pieces, merge them back. It's fast!",
+  "levels": [
+    {
+      "id": "3-1",
+      "name": "Merge Two",
+      "hint": "Two sorted groups. Click whichever front crate is smaller to add it to the output. Easy!",
+      "items": [1, 3, 5, 7, 2, 4, 6, 8],
+      "mode": "merge",
+      "groups": [[1, 3, 5, 7], [2, 4, 6, 8]],
+      "par": 7
+    },
+    {
+      "id": "3-2",
+      "name": "Four Groups",
+      "hint": "Four small sorted groups. Merge the first two, then the next two, then merge the results!",
+      "items": [3, 1, 4, 2, 8, 5, 7, 6],
+      "mode": "merge",
+      "groups": [[1, 3], [2, 4], [5, 8], [6, 7]],
+      "par": 12
+    },
+    {
+      "id": "3-3",
+      "name": "Split and Merge",
+      "hint": "8 crates start as pairs. Merge pairs into groups of 4, then merge those into the final 8.",
+      "items": [5, 2, 8, 4, 1, 7, 3, 6],
+      "mode": "merge",
+      "par": 16
+    },
+    {
+      "id": "3-4",
+      "name": "Why Sort?",
+      "hint": "Sort 16 crates by merging... then see how fast you can FIND a number in the sorted result!",
+      "items": [11, 4, 15, 7, 2, 13, 6, 9, 1, 14, 5, 12, 3, 16, 8, 10],
+      "mode": "merge",
+      "par": 40
+    }
+  ]
+}

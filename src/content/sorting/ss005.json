@@ -1,0 +1,71 @@
+{
+  "id": "ss005",
+  "title": "Container Yard",
+  "world": 5,
+  "narrative": "Different containers for different jobs! Arrays store things in order. Sets check for duplicates instantly. Maps look up values by name. Route each crate to the right container!",
+  "levels": [
+    {
+      "id": "5-1",
+      "name": "The Shelf",
+      "hint": "These crates need to be stored by position. An ARRAY (shelf) stores things in numbered slots!",
+      "items": [],
+      "mode": "container",
+      "incoming": [
+        {"value": 5, "task": "Store in position order", "correctContainer": "array"},
+        {"value": 2, "task": "Store in position order", "correctContainer": "array"},
+        {"value": 8, "task": "Store in position order", "correctContainer": "array"},
+        {"value": 1, "task": "Store in position order", "correctContainer": "array"},
+        {"value": 9, "task": "Store in position order", "correctContainer": "array"}
+      ],
+      "par": 5
+    },
+    {
+      "id": "5-2",
+      "name": "The Barrel",
+      "hint": "Need to check for duplicates? Use a SET (barrel) — it rejects anything that's already inside!",
+      "items": [],
+      "mode": "container",
+      "incoming": [
+        {"value": 3, "task": "Check for duplicates", "correctContainer": "set"},
+        {"value": 7, "task": "Check for duplicates", "correctContainer": "set"},
+        {"value": 3, "task": "Check for duplicates", "correctContainer": "set"},
+        {"value": 5, "task": "Check for duplicates", "correctContainer": "set"},
+        {"value": 7, "task": "Check for duplicates", "correctContainer": "set"}
+      ],
+      "par": 5
+    },
+    {
+      "id": "5-3",
+      "name": "The Cabinet",
+      "hint": "These crates have names AND values. Use a MAP (cabinet) to look up values by name!",
+      "items": [],
+      "mode": "container",
+      "incoming": [
+        {"value": 95, "key": "Alice", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 87, "key": "Bob", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 92, "key": "Carol", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 78, "key": "Dave", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 88, "key": "Eve", "task": "Look up by name", "correctContainer": "map"}
+      ],
+      "par": 5
+    },
+    {
+      "id": "5-4",
+      "name": "Which Container?",
+      "hint": "Mixed tasks! Read what each crate needs, then route it to the RIGHT container. Wrong choice = penalty!",
+      "items": [],
+      "mode": "container",
+      "incoming": [
+        {"value": 5, "task": "Store in order", "correctContainer": "array"},
+        {"value": 3, "task": "Check if duplicate", "correctContainer": "set"},
+        {"value": 88, "key": "Alice", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 3, "task": "Check if duplicate", "correctContainer": "set"},
+        {"value": 7, "task": "Store in order", "correctContainer": "array"},
+        {"value": 92, "key": "Bob", "task": "Look up by name", "correctContainer": "map"},
+        {"value": 1, "task": "Store in order", "correctContainer": "array"},
+        {"value": 5, "task": "Check if duplicate", "correctContainer": "set"}
+      ],
+      "par": 8
+    }
+  ]
+}
