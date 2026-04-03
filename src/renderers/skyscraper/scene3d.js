@@ -188,7 +188,7 @@ export function createScene(container, n) {
 export function addClues(scene, clues, n) {
   const step = TILE + GAP
   const gridW = n * step
-  const edgeDist = (gridW + 2.0) / 2 + 0.5 // slightly outside the platform wall so visible from isometric
+  const edgeDist = (gridW + 2.0) / 2 + 0.8
   const gridCenter = (n - 1) * step / 2
 
   function makeClueSprite(text) {
