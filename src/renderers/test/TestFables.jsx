@@ -5,48 +5,44 @@ import './TestFables.css'
 
 const ROUNDS = [
   {
-    num: 1, title: 'THE RANSACKED COOLER', elo: 900,
-    setup: 'SOMEONE RAIDED THE GROUP COOLER ON THE FIRST NIGHT AT THE CABIN.',
+    num: 1, elo: 900,
     statements: [
-      { name: 'PIETRO', text: 'WHOEVER RAIDED THE COOLER IS LYING RIGHT NOW.' },
-      { name: 'WOOKHO', text: 'IT WAS ROHAN.' },
-      { name: 'ROHAN', text: "IT WASN'T WOOKHO." },
+      { name: 'PIETRO', text: 'I AM TELLING THE TRUTH.' },
+      { name: 'WOOKHO', text: 'PIETRO IS TELLING THE TRUTH.' },
+      { name: 'ROHAN', text: 'WOOKHO IS THE LIAR.' },
     ],
-    liar: 0, // Pietro
-    explanation: 'PIETRO IS THE LIAR. ROHAN AND WOOKHO ARE TRUTHFUL. WOOKHO SAYS ROHAN DID IT. ROHAN SAYS IT WASN\'T WOOKHO — TRUE. PIETRO SAYS THE RAIDER IS LYING, BUT ROHAN (THE RAIDER) IS TRUTHFUL.',
+    liar: 2,
+    explanation: 'ROHAN IS THE LIAR. WOOKHO BACKS PIETRO, PIETRO BACKS HIMSELF — ROHAN FALSELY ACCUSES WOOKHO.',
   },
   {
-    num: 2, title: 'THE COLLAPSED TENT', elo: 1200,
-    setup: 'SOMEONE DIDN\'T STAKE THE TENT PROPERLY AND IT BLEW INTO THE LAKE OVERNIGHT.',
+    num: 2, elo: 1200,
     statements: [
-      { name: 'PIETRO', text: 'EXACTLY ONE OF US IS TELLING THE TRUTH.' },
-      { name: 'WOOKHO', text: 'ROHAN IS TELLING THE TRUTH.' },
-      { name: 'ROHAN', text: 'PIETRO IS LYING.' },
-    ],
-    liar: 0,
-    explanation: 'PIETRO IS THE LIAR. ROHAN AND WOOKHO ARE BOTH TRUTHFUL — MORE THAN ONE TRUTH-TELLER MAKES PIETRO\'S CLAIM FALSE.',
-  },
-  {
-    num: 3, title: 'THE MISSING FIREWOOD', elo: 1500,
-    setup: 'SOMEONE WAS SUPPOSED TO CHOP FIREWOOD. NOBODY DID. EVERYONE\'S BLAMING EACH OTHER.',
-    statements: [
-      { name: 'PIETRO', text: 'IF WOOKHO IS TELLING THE TRUTH, THEN ROHAN IS TOO.' },
+      { name: 'PIETRO', text: 'ROHAN IS TELLING THE TRUTH.' },
       { name: 'WOOKHO', text: 'PIETRO IS THE LIAR.' },
-      { name: 'ROHAN', text: 'EXACTLY TWO OF US ARE TELLING THE TRUTH.' },
+      { name: 'ROHAN', text: 'WOOKHO IS THE LIAR.' },
     ],
-    liar: 1, // Wookho
-    explanation: 'WOOKHO IS THE LIAR. PIETRO\'S CONDITIONAL HAS A FALSE PREMISE (WOOKHO ISN\'T TRUTHFUL), MAKING IT VACUOUSLY TRUE. ROHAN\'S "EXACTLY TWO" IS CORRECT.',
+    liar: 1,
+    explanation: 'WOOKHO IS THE LIAR. PIETRO AND ROHAN BACK EACH OTHER UP. WOOKHO CLAIMS PIETRO IS THE LIAR, BUT THAT WOULD MAKE TWO LIARS.',
   },
   {
-    num: 4, title: 'THE DEAD CAR BATTERY', elo: 1800,
-    setup: 'MORNING OF DEPARTURE. SOMEONE LEFT THE HEADLIGHTS ON LAST NIGHT.',
+    num: 3, elo: 1500,
     statements: [
-      { name: 'PIETRO', text: 'EXACTLY ONE OF ROHAN AND WOOKHO IS TELLING THE TRUTH.' },
-      { name: 'WOOKHO', text: 'IF ROHAN IS LYING, THEN PIETRO IS TELLING THE TRUTH.' },
-      { name: 'ROHAN', text: 'WOOKHO IS LYING.' },
+      { name: 'PIETRO', text: 'EXACTLY TWO OF US ARE TELLING THE TRUTH.' },
+      { name: 'WOOKHO', text: 'PIETRO IS TELLING THE TRUTH.' },
+      { name: 'ROHAN', text: 'WOOKHO IS THE LIAR.' },
     ],
-    liar: 2, // Rohan
-    explanation: 'ROHAN IS THE LIAR. WOOKHO IS TRUTHFUL. WOOKHO\'S CONDITIONAL: ROHAN IS LYING SO PIETRO MUST BE TRUTHFUL. PIETRO SAYS EXACTLY ONE OF ROHAN/WOOKHO IS TRUTHFUL — CORRECT.',
+    liar: 2,
+    explanation: 'ROHAN IS THE LIAR. WOOKHO BACKS PIETRO, AND PIETRO\'S COUNT OF "EXACTLY TWO" ONLY WORKS WITH ROHAN AS THE LIAR.',
+  },
+  {
+    num: 4, elo: 1800,
+    statements: [
+      { name: 'PIETRO', text: 'EXACTLY ONE OF WOOKHO AND ROHAN IS TELLING THE TRUTH.' },
+      { name: 'WOOKHO', text: 'ROHAN IS THE LIAR.' },
+      { name: 'ROHAN', text: 'PIETRO IS NOT THE LIAR.' },
+    ],
+    liar: 1,
+    explanation: 'WOOKHO IS THE LIAR. ROHAN SAYS PIETRO IS TRUTHFUL. PIETRO SAYS EXACTLY ONE OF WOOKHO/ROHAN IS TRUTHFUL — ONLY ROHAN IS.',
   },
 ]
 
@@ -245,12 +241,12 @@ function createForestScene(container) {
   }
 }
 
-export default function TestFables({ onRoundResult, skipIntro }) {
+export default function TestFables({ onRoundResult, skipIntro, startRound: startRoundProp }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
   const [phase, setPhase] = useState(skipIntro ? 'playing' : 'start') // start | playing | result | gameover | win
   const calledBack = useRef(false)
-  const [round, setRound] = useState(0)
+  const [round, setRound] = useState(startRoundProp || 0)
   const [selected, setSelected] = useState(null)
   const [result, setResult] = useState(null) // 'correct' | 'wrong'
   const [charPositions, setCharPositions] = useState([null, null, null])
@@ -320,9 +316,7 @@ export default function TestFables({ onRoundResult, skipIntro }) {
           {/* Round info */}
           <div className="fb-round-info">
             <div className="fb-round-num">ROUND {currentRound.num}</div>
-            <div className="fb-round-title">{currentRound.title}</div>
           </div>
-          <div className="fb-setup">{currentRound.setup}</div>
 
           {/* Speech bubbles above characters */}
           {currentRound.statements.map((stmt, i) => {

@@ -5,14 +5,15 @@ import { createState, placeBuilding, selectCell } from './skyscraper/engine'
 import { createScene, tileCenter, createBuilding, highlightTile, addClues, TILE, GAP } from './skyscraper/scene3d'
 import './SkyscraperRenderer.css'
 
-export default function SkyscraperRenderer({ levels, narrative }) {
+export default function SkyscraperRenderer({ levels, narrative, onLevelComplete, onLevelFail, skipIntro }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
   const buildingsRef = useRef({}) // "row,col" → THREE.Group
   const handleRef = useRef(null)
 
   const [levelIndex, setLevelIndex] = useState(0)
-  const [phase, setPhase] = useState('intro')
+  const [phase, setPhase] = useState(skipIntro ? 'play' : 'intro')
+  const calledBack = useRef(false)
   const [state, setState] = useState(null)
   const [gears, setGears] = useState([])
 
@@ -154,6 +155,11 @@ export default function SkyscraperRenderer({ levels, narrative }) {
   // Win detection
   useEffect(() => {
     if (phase !== 'play' || !state?.won) return
+    if (onLevelComplete && !calledBack.current) {
+      calledBack.current = true
+      const t = setTimeout(() => onLevelComplete(levelIndex), 800)
+      return () => clearTimeout(t)
+    }
     const t = setTimeout(() => setPhase('result'), 800)
     return () => clearTimeout(t)
   }, [state?.won, phase])
@@ -175,7 +181,6 @@ export default function SkyscraperRenderer({ levels, narrative }) {
 
   const initLevel = useCallback(() => {
     const s = createState(level)
-    // Place prefilled values
     if (level.prefilled) {
       for (const [r, c, h] of level.prefilled) {
         s.grid[r][c] = h
@@ -184,6 +189,17 @@ export default function SkyscraperRenderer({ levels, narrative }) {
     setState(s)
     setPhase('play')
   }, [level])
+
+  // Auto-init when skipIntro
+  useEffect(() => {
+    if (skipIntro && !state && level) {
+      const s = createState(level)
+      if (level.prefilled) {
+        for (const [r, c, h] of level.prefilled) s.grid[r][c] = h
+      }
+      setState(s)
+    }
+  }, [skipIntro, level])
 
   function nextLevel() {
     const elapsed = (Date.now() - state.startTime) / 1000
@@ -250,7 +266,7 @@ export default function SkyscraperRenderer({ levels, narrative }) {
 
   return (
     <div className="sky-wrapper">
-      <Link to="/" className="sky-exit">Exit</Link>
+      {!onLevelComplete && <Link to="/" className="sky-exit">Exit</Link>}
       <div ref={containerRef} className="sky-canvas" />
 
       {/* Scanlines overlay */}

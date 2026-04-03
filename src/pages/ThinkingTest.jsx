@@ -6,6 +6,7 @@ import TestAnalogies from '../renderers/test/TestAnalogies'
 import TestFlaws from '../renderers/test/TestFlaws'
 import RobotRenderer from '../renderers/test/TestRobot'
 import TestFables from '../renderers/test/TestFables'
+import PirateRenderer from '../renderers/test/TestPirate'
 import rb001 from '../content/robot/rb001.json'
 import './ThinkingTest.css'
 
@@ -152,6 +153,7 @@ export default function ThinkingTest() {
   const [analogyUsedIds, setAnalogyUsedIds] = useState([])
   const [robotLevelIndex, setRobotLevelIndex] = useState(0)
   const [fablesRoundIndex, setFablesRoundIndex] = useState(0)
+  const [pirateLevelIndex, setPirateLevelIndex] = useState(0)
 
   const TOTAL_ROUNDS = GRAVITY_ROUNDS.length
 
@@ -372,6 +374,65 @@ export default function ThinkingTest() {
     setRendererKey(k => k + 1)
     setResult(null)
     setPhase('fables')
+  }
+
+  const PIRATE_ELOS = [1200, 1500, 1800, 2100]
+
+  function startPirates() {
+    setPirateLevelIndex(0)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('pirate')
+  }
+
+  function handlePirateLevelComplete(levelIdx, isOptimal) {
+    const lvlElo = PIRATE_ELOS[levelIdx] || 1500
+    if (isOptimal) {
+      // Optimal = full win
+      const expected = calcExpected(elo, lvlElo)
+      const newElo = Math.round(elo + K_FACTOR * (1 - expected))
+      setHistory(prev => [...prev, {
+        question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
+        correct: true, eloBefore: elo, eloAfter: newElo
+      }])
+      setElo(newElo)
+      setResult('optimal')
+    } else {
+      // Non-optimal = tie, no ELO change
+      setHistory(prev => [...prev, {
+        question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
+        correct: true, eloBefore: elo, eloAfter: elo
+      }])
+      setResult('nonoptimal')
+    }
+    setPirateLevelIndex(levelIdx)
+    setPhase('pirateDone')
+  }
+
+  function handlePirateLevelFail(levelIdx) {
+    const lvlElo = PIRATE_ELOS[levelIdx] || 1500
+    const expected = calcExpected(elo, lvlElo)
+    const newElo = Math.round(elo + K_FACTOR * (0 - expected))
+    setHistory(prev => [...prev, {
+      question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
+      correct: false, eloBefore: elo, eloAfter: newElo
+    }])
+    setElo(newElo)
+    setPirateLevelIndex(levelIdx)
+    setResult('plank')
+    setPhase('pirateDone')
+  }
+
+  function handlePirateNextRound() {
+    const nextIdx = pirateLevelIndex + 1
+    if (nextIdx >= PIRATE_ELOS.length) {
+      setPhase('email')
+      return
+    }
+    setPirateLevelIndex(nextIdx)
+    setRendererKey(k => k + 1)
+    setResult(null)
+    setPhase('pirate')
   }
 
   function handleEmailSubmit() {
@@ -622,7 +683,7 @@ export default function ThinkingTest() {
   if (phase === 'fables') {
     return (
       <>
-        <TestFables key={rendererKey} onRoundResult={handleFablesResult} skipIntro />
+        <TestFables key={rendererKey} onRoundResult={handleFablesResult} skipIntro startRound={fablesRoundIndex} />
 
         <div className="tt-elo-box">
           <div className="tt-elo-label">SCORE</div>
@@ -638,7 +699,7 @@ export default function ThinkingTest() {
     const change = lastEntry ? lastEntry.eloAfter - lastEntry.eloBefore : 0
     return (
       <>
-        <TestFables key={rendererKey} onRoundResult={() => {}} skipIntro />
+        <TestFables key={rendererKey} onRoundResult={() => {}} skipIntro startRound={fablesRoundIndex} />
 
         <div className="tt-elo-box">
           <div className="tt-elo-label">SCORE</div>
@@ -652,11 +713,64 @@ export default function ThinkingTest() {
               {change >= 0 ? '+' : ''}{change} POINTS
             </div>
             {result === 'correct' ? (
-              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? () => setPhase('email') : handleFablesNextRound}>
+              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? startPirates : handleFablesNextRound}>
                 {fablesRoundIndex + 1 >= FABLES_ELOS.length ? 'NEXT GAME' : 'NEXT ROUND'}
               </button>
             ) : (
-              <button className="tt-next-btn" onClick={() => setPhase('email')}>NEXT GAME</button>
+              <button className="tt-next-btn" onClick={startPirates}>NEXT GAME</button>
+            )}
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── SCREWY PIRATES ───
+  if (phase === 'pirate') {
+    return (
+      <>
+        <PirateRenderer
+          key={rendererKey}
+          onLevelComplete={handlePirateLevelComplete}
+          onLevelFail={handlePirateLevelFail}
+          startLevel={pirateLevelIndex}
+        />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+      </>
+    )
+  }
+
+  // ─── PIRATES DONE ───
+  if (phase === 'pirateDone') {
+    const lastEntry = history[history.length - 1]
+    const change = lastEntry ? lastEntry.eloAfter - lastEntry.eloBefore : 0
+    return (
+      <>
+        <PirateRenderer key={rendererKey} startLevel={pirateLevelIndex} onLevelComplete={() => {}} onLevelFail={() => {}} />
+
+        <div className="tt-elo-box">
+          <div className="tt-elo-label">SCORE</div>
+          <div className="tt-elo-value">{elo}</div>
+        </div>
+
+        <div className="tt-feedback-wrap">
+          <div className="tt-feedback-popup">
+            <div className={`tt-feedback-text ${result === 'optimal' ? 'correct' : result === 'plank' ? 'wrong' : ''}`}>
+              {result === 'optimal' ? 'OPTIMAL' : result === 'nonoptimal' ? 'NOT OPTIMAL' : 'WALKED THE PLANK'}
+            </div>
+            <div className={`tt-elo-change ${result === 'optimal' ? 'correct' : result === 'plank' ? 'wrong' : ''}`}>
+              {result === 'optimal' ? `+${change} POINTS` : result === 'plank' ? `${change} POINTS` : '0 POINTS'}
+            </div>
+            {result === 'plank' ? (
+              <button className="tt-next-btn" onClick={() => setPhase('email')}>FINISH</button>
+            ) : (
+              <button className="tt-next-btn" onClick={pirateLevelIndex + 1 >= PIRATE_ELOS.length ? () => setPhase('email') : handlePirateNextRound}>
+                {pirateLevelIndex + 1 >= PIRATE_ELOS.length ? 'FINISH' : 'NEXT ROUND'}
+              </button>
             )}
           </div>
         </div>
@@ -666,21 +780,16 @@ export default function ThinkingTest() {
 
   // ─── EMAIL ───
   if (phase === 'email') {
-    const correct = history.filter(h => h.correct).length
     return (
       <div className="tt-wrapper">
         <div className="tt-scanlines" />
         <div className="tt-content">
           <h1 className="tt-title-sm">TEST COMPLETE</h1>
-          <div className="tt-complete-stats">
-            <span>{correct}/{history.length} ROUNDS CLEARED</span>
-          </div>
-          <div className="tt-email-prompt">ENTER YOUR EMAIL TO SEE YOUR RESULTS</div>
           <input className="tt-email-input" type="email" value={email} placeholder="YOUR@EMAIL.COM"
             onChange={e => { setEmail(e.target.value.toUpperCase()); setError(null) }}
             onKeyDown={e => e.key === 'Enter' && handleEmailSubmit()} />
           {error && <div className="tt-error">{error}</div>}
-          <button className="tt-start-btn" onClick={handleEmailSubmit}>SUBMIT</button>
+          <button className="tt-start-btn" onClick={handleEmailSubmit}>ENTER EMAIL TO SEE RESULTS</button>
         </div>
       </div>
     )

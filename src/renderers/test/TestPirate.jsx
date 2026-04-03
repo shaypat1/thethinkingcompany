@@ -7,6 +7,7 @@ import './TestPirate.css'
 
 const COLORS = ['#cc3333','#3366cc','#33aa55','#9944cc','#ee8833']
 const NAMES = ['Captain', 'Henry', 'Pietro', 'Wookho', 'Rohan']
+const PIRATE_ELOS = [1200, 1500, 1800, 2100]
 
 function getVoteReasoning(pirateCount, proposal, votes, optimal) {
   const isOpt = proposal.every((v, i) => v === optimal[i])
@@ -59,18 +60,21 @@ function CoinSlider({ index, value, onChange, label, color, max }) {
   )
 }
 
-export default function PirateRenderer() {
+export default function PirateRenderer({ onLevelComplete, onLevelFail, startLevel: startLevelProp }) {
   const containerRef = useRef(null)
   const sceneRef = useRef(null)
 
-  const [level, setLevel] = useState(0)
+  const initLevel = startLevelProp || 0
+  const initPirateCount = getLevelData(initLevel).pirateCount
+  const [level, setLevel] = useState(initLevel)
   const [phase, setPhase] = useState('propose')
-  const [proposal, setProposal] = useState([100, 0])
+  const [proposal, setProposal] = useState(() => { const a = new Array(initPirateCount).fill(0); a[0] = TOTAL_GOLD; return a })
   const [votes, setVotes] = useState(null)
   const [feedback, setFeedback] = useState(null)
   const [speechBubbles, setSpeechBubbles] = useState([])
   const [pirateScreenPos, setPirateScreenPos] = useState([])
   const posFrameRef = useRef(null)
+  const calledBack = useRef(false)
 
   // Project pirate 3D positions to 2D screen coords — snapshot once when bubbles appear
   useEffect(() => {
@@ -276,6 +280,7 @@ export default function PirateRenderer() {
   }
 
   function handleNextLevel() {
+    calledBack.current = false
     const next = level + 1
     if (next >= TOTAL_LEVELS) { setPhase('win'); return }
     const nc = getLevelData(next).pirateCount
@@ -285,6 +290,22 @@ export default function PirateRenderer() {
     const s = sceneRef.current
     if (s && s.raftGroup.userData.clearFlyingCoins) s.raftGroup.userData.clearFlyingCoins()
   }
+
+  // Fire test callbacks when result is determined
+  useEffect(() => {
+    if (phase !== 'result' || !votes || calledBack.current) return
+    const opt = getOptimalProposal(pirateCount)
+    const isOpt = votes.passes && proposal.every((v, i) => v === opt[i])
+    if (votes.passes && onLevelComplete) {
+      calledBack.current = true
+      const delay = pirateCount * 800 + 2000
+      setTimeout(() => onLevelComplete(level, isOpt), delay)
+    } else if (!votes.passes && onLevelFail) {
+      calledBack.current = true
+      const delay = pirateCount * 800 + 4000
+      setTimeout(() => onLevelFail(level), delay)
+    }
+  }, [phase, votes])
 
   const captainTrackRef = useRef(null)
 
@@ -357,13 +378,13 @@ export default function PirateRenderer() {
           </div>
         )}
 
-        {phase === 'voting' && (
+        {phase === 'voting' && !onLevelComplete && (
           <div className="pr-bubble-box pr-bubble-compact">
             <div className="pr-voting-text">The pirates are voting...</div>
           </div>
         )}
 
-        {phase === 'result' && votes && (
+        {phase === 'result' && votes && !onLevelComplete && (
           <div className="pr-bubble-box">
             <div className="pr-vote-row">
               {votes.votes.map((v, i) => (
@@ -381,7 +402,7 @@ export default function PirateRenderer() {
             {proposalPassed && !isOptimal && <div className="pr-insight">Passed, but optimal was [{optimal.join(', ')}]</div>}
             <div className="pr-result-actions">
               {proposalPassed ? (
-                <button className="pr-propose-btn" onClick={handleNextLevel}>{level + 1 >= TOTAL_LEVELS ? '🏆 Victory!' : `Next → ${NAMES[pirateCount]} joins`}</button>
+                <button className="pr-propose-btn" onClick={handleNextLevel}>{level + 1 >= TOTAL_LEVELS ? 'Victory!' : `Next → ${NAMES[pirateCount]} joins`}</button>
               ) : (
                 <button className="pr-propose-btn" onClick={resetToStart}>Try Again</button>
               )}
@@ -389,15 +410,15 @@ export default function PirateRenderer() {
           </div>
         )}
 
-        {phase === 'plank' && (
+        {phase === 'plank' && !onLevelFail && (
           <div className="pr-bubble-box pr-bubble-compact">
             <div className="pr-plank-text">Captain walks the plank... 💀</div>
           </div>
         )}
 
-        {phase === 'win' && (
+        {phase === 'win' && !onLevelComplete && (
           <div className="pr-bubble-box">
-            <div className="pr-win-title">🏆 You Survived!</div>
+            <div className="pr-win-title">You Survived!</div>
             <div className="pr-win-sub">All {TOTAL_LEVELS} rounds conquered.</div>
             <button className="pr-propose-btn" onClick={resetToStart}>Play Again</button>
           </div>

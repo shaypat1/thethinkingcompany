@@ -40,7 +40,7 @@
 /* ─── Rules box ─── */
 .pr-rules-box {
   position: fixed;
-  top: 3rem;
+  top: 6rem;
   left: 1.25rem;
   z-index: 15;
   background: rgba(0, 0, 0, 0.8);
