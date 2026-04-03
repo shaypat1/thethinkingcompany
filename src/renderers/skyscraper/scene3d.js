@@ -103,7 +103,8 @@ export function createScene(container, n) {
   platEdge.position.set(cx, PLATFORM_Y, cz)
   scene.add(platEdge)
 
-  // Build grid tiles
+  // Build grid tiles — sit on top of platform
+  const tileY = PLATFORM_Y + 0.05
   const tiles = []
   for (let r = 0; r < n; r++) {
     tiles[r] = []
@@ -114,16 +115,16 @@ export function createScene(container, n) {
       )
       const px = c * (TILE + GAP)
       const pz = r * (TILE + GAP)
-      tile.position.set(px, PLATFORM_Y, pz)
+      tile.position.set(px, tileY, pz)
       tile.receiveShadow = true
       scene.add(tile)
 
-      // Neon edge glow
+      // Neon edge glow — slightly above tile
       const edges = new THREE.LineSegments(
         new THREE.EdgesGeometry(tile.geometry),
         new THREE.LineBasicMaterial({ color: COLORS.tileEdgeDim })
       )
-      edges.position.copy(tile.position)
+      edges.position.set(px, tileY + 0.01, pz)
       scene.add(edges)
 
       tiles[r][c] = { mesh: tile, edges, mat: tile.material }
@@ -138,11 +139,7 @@ export function createScene(container, n) {
     frameGeo,
     new THREE.LineBasicMaterial({ color: COLORS.tileEdge })
   )
-  frame.position.set(
-    (n - 1) * (TILE + GAP) / 2,
-    PLATFORM_Y + 0.01,
-    (n - 1) * (TILE + GAP) / 2
-  )
+  frame.position.set(cx, tileY + 0.02, cz)
   scene.add(frame)
 
   // Snap-to-side view helper
@@ -187,7 +184,9 @@ export function createScene(container, n) {
 // Add clue numbers as 3D sprites around the grid
 export function addClues(scene, clues, n) {
   const step = TILE + GAP
-  const offset = 1.2 // distance from grid edge — sits on the platform sidewalk
+  const gridW = n * step
+  const edgeDist = (gridW + 2.0) / 2 + 0.2 // just outside the platform edge
+  const gridCenter = (n - 1) * step / 2
 
   function makeClueSprite(text) {
     const canvas = document.createElement('canvas')
@@ -201,17 +200,17 @@ export function addClues(scene, clues, n) {
     const tex = new THREE.CanvasTexture(canvas)
     const mat = new THREE.SpriteMaterial({ map: tex, transparent: true })
     const sprite = new THREE.Sprite(mat)
-    sprite.scale.set(0.6, 0.6, 1)
+    sprite.scale.set(0.7, 0.7, 1)
     return sprite
   }
 
-  const clueY = PLATFORM_Y + 0.35 // just above the platform surface, visible
+  const clueY = PLATFORM_Y + 0.4
 
   if (clues.top) {
     clues.top.forEach((v, c) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(c * step, clueY, -offset)
+      s.position.set(c * step, clueY, gridCenter - edgeDist)
       scene.add(s)
     })
   }
@@ -220,7 +219,7 @@ export function addClues(scene, clues, n) {
     clues.bottom.forEach((v, c) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(c * step, clueY, (n - 1) * step + offset)
+      s.position.set(c * step, clueY, gridCenter + edgeDist)
       scene.add(s)
     })
   }
@@ -229,7 +228,7 @@ export function addClues(scene, clues, n) {
     clues.left.forEach((v, r) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(-offset, clueY, r * step)
+      s.position.set(gridCenter - edgeDist, clueY, r * step)
       scene.add(s)
     })
   }
@@ -238,7 +237,7 @@ export function addClues(scene, clues, n) {
     clues.right.forEach((v, r) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set((n - 1) * step + offset, clueY, r * step)
+      s.position.set(gridCenter + edgeDist, clueY, r * step)
       scene.add(s)
     })
   }
