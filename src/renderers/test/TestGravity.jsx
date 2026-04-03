@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import './GravityRenderer.css'
+import './TestGravity.css'
 
 const PLANETS = [
   { name: 'Mercury', base: '#a0a0a0', light: '#c8c8c8', dark: '#707070', glow: '#c0c0c0', detail: 'craters' },

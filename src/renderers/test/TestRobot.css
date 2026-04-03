@@ -1,0 +1,537 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+/* ─── Wrapper ─── */
+.rb-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  background: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+}
+
+/* Scanlines */
+.rb-wrapper::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.012) 2px,
+    rgba(255, 255, 255, 0.012) 4px
+  );
+}
+
+.rb-exit {
+  position: fixed;
+  top: 1rem;
+  right: 1.25rem;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.5rem;
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0.1em;
+  z-index: 15;
+}
+.rb-exit:hover { color: rgba(255, 255, 255, 0.6); }
+
+/* ─── 3D Canvas ─── */
+.rb-canvas {
+  flex: 1;
+  position: relative;
+}
+.rb-canvas canvas { display: block; width: 100% !important; height: 100% !important; }
+
+/* ─── Title ─── */
+.rb-title {
+  position: fixed;
+  top: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 14;
+  font-size: 3.5rem;
+  color: #fff;
+  letter-spacing: 0.12em;
+  text-shadow: 4px 4px 0 rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+}
+
+/* ─── Level info — left side ─── */
+.rb-level-info {
+  position: fixed;
+  top: 5.5rem;
+  left: 1.25rem;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.rb-level-num {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.15em;
+}
+
+.rb-level-par {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.12em;
+}
+
+.rb-level-steps {
+  font-size: 0.7rem;
+  color: rgba(0, 204, 255, 0.7);
+  letter-spacing: 0.12em;
+  margin-top: 0.3rem;
+}
+
+.rb-level-warning {
+  font-size: 0.45rem;
+  color: rgba(224, 48, 48, 0.7);
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* ─── Hint ─── */
+.rb-hint {
+  position: fixed;
+  top: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 14;
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  max-width: 500px;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+
+/* ─── Intro popup overlay ─── */
+.rb-scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.012) 2px,
+    rgba(255, 255, 255, 0.012) 4px
+  );
+  pointer-events: none;
+}
+
+.rb-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(5, 8, 16, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rb-intro-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  padding: 3rem 4rem;
+  max-width: 550px;
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.04);
+}
+
+.rb-intro-heading {
+  font-size: 3rem;
+  color: #fff;
+  letter-spacing: 0.12em;
+  margin: 0;
+  text-shadow: 4px 4px 0 rgba(255, 255, 255, 0.05);
+}
+
+.rb-intro-story {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.rb-intro-story p {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  line-height: 2;
+  margin: 0;
+}
+
+.rb-intro-levels {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.15em;
+}
+
+.rb-intro-btn {
+  padding: 0.8rem 2.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.rb-intro-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.12);
+}
+
+.rb-intro-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Result overlay ─── */
+.rb-result-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 16;
+  background: #0a0e1a;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: center;
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.05);
+}
+
+.rb-result-title {
+  font-size: 1.2rem;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.rb-result-info {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.08em;
+}
+
+.rb-result-suboptimal {
+  font-size: 0.4rem;
+  color: rgba(255, 200, 100, 0.7);
+  max-width: 300px;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+}
+
+.rb-result-gears {
+  font-size: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+/* ─── Bottom panel ─── */
+.rb-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 14;
+  background: rgba(10, 14, 26, 0.95);
+  border-top: 3px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Conveyor */
+.rb-conveyor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rb-belt-label {
+  font-size: 0.4rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.2);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
+.rb-belt {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  min-height: 42px;
+  align-items: center;
+  padding: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rb-belt::-webkit-scrollbar { display: none; }
+
+.rb-belt-empty {
+  font-size: 0.35rem;
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: 0.1em;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+}
+
+/* Belt card (placed in program) */
+.rb-belt-card {
+  padding: 0.35rem 0.6rem;
+  border: 2px solid;
+  border-radius: 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.rb-belt-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+.rb-belt-card-label {
+  font-size: 0.3rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rb-belt-card.executing {
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Hand (available cards) */
+.rb-hand {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.rb-hand::-webkit-scrollbar { display: none; }
+
+.rb-hand-label {
+  font-size: 0.4rem;
+  letter-spacing: 0.15em;
+  color: rgba(255, 255, 255, 0.2);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+}
+
+.rb-hand-card {
+  padding: 0.4rem 0.65rem;
+  border: 2px solid;
+  border-radius: 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+  flex-shrink: 0;
+}
+
+.rb-hand-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.06);
+}
+
+.rb-hand-card:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.rb-hand-card-label {
+  font-size: 0.28rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Controls */
+.rb-controls {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+}
+
+.rb-ctrl-btn {
+  padding: 0.35rem 0.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.35rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.rb-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.rb-ctrl-btn.run {
+  border-color: rgba(80, 200, 80, 0.5);
+  color: rgba(80, 200, 80, 0.8);
+}
+
+.rb-ctrl-btn.run:hover {
+  background: rgba(80, 200, 80, 0.1);
+  color: #50c850;
+}
+
+.rb-ctrl-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Loop editor */
+.rb-loop-editor {
+  background: rgba(10, 14, 26, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  padding: 0.6rem;
+}
+
+.rb-loop-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.rb-loop-label {
+  font-size: 0.4rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.1em;
+}
+
+.rb-loop-count {
+  width: 40px;
+  padding: 0.2rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
+  text-align: center;
+  outline: none;
+}
+
+.rb-loop-count:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.rb-loop-body {
+  display: flex;
+  gap: 4px;
+  min-height: 38px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px;
+  align-items: center;
+}
+
+.rb-if-editor {
+  background: rgba(10, 14, 26, 0.95);
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+  padding: 0.6rem;
+}
+
+.rb-if-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.rb-if-label {
+  font-size: 0.4rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.1em;
+}
+
+.rb-if-select {
+  padding: 0.2rem 0.3rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.35rem;
+  outline: none;
+}
+
+.rb-if-select option {
+  background: #0a0e1a;
+}
+
+.rb-if-branches {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rb-if-branch {
+  flex: 1;
+}
+
+.rb-if-branch-label {
+  font-size: 0.35rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+
+.rb-if-body {
+  display: flex;
+  gap: 4px;
+  min-height: 38px;
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 4px;
+  align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .rb-intro-title { font-size: 1.6rem; }
+  .rb-hand-card { padding: 0.3rem 0.5rem; font-size: 0.8rem; }
+  .rb-belt-card { padding: 0.25rem 0.45rem; font-size: 0.8rem; }
+}

@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.sq-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+
+.sq-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+}
+
+.sq-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: -3rem;
+}
+
+/* Title — high up */
+.sq-title {
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Rules — right under title */
+.sq-rules {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.sq-rules p {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  line-height: 2.2;
+  margin: 0;
+}
+
+/* Level indicator */
+.sq-level {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.2em;
+}
+
+/* Grid — big */
+.sq-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.sq-cell {
+  width: 150px;
+  height: 150px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 0;
+  transition: none;
+}
+
+.sq-cell.lit {
+  background: #e03030;
+  box-shadow: 0 0 25px rgba(224, 48, 48, 0.6), 0 0 50px rgba(224, 48, 48, 0.25);
+}
+
+/* Status text — big */
+.sq-status {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.15em;
+  min-height: 1.5rem;
+}
+
+/* Start button */
+.sq-start-btn {
+  padding: 0.8rem 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.sq-start-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.12);
+}
+
+.sq-start-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Score */
+.sq-score {
+  font-size: 5rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.sq-score-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.12em;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .sq-title { font-size: 1.8rem; }
+  .sq-cell { width: 100px; height: 100px; }
+  .sq-rules p { font-size: 0.45rem; }
+}

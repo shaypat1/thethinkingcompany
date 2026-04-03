@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.tc-wrapper {
+  min-height: 100vh;
+  background: #0a0e1a;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  padding: 2rem;
+  image-rendering: pixelated;
+}
+
+.tc-header {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+}
+
+.tc-back {
+  font-size: 0.5rem;
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  font-family: 'Press Start 2P', monospace;
+  transition: color 0.15s;
+}
+.tc-back:hover { color: rgba(255, 255, 255, 0.6); }
+
+.tc-title {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 1rem 0 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.tc-stats {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.1em;
+}
+
+/* ELO legend */
+.tc-elo-legend {
+  max-width: 900px;
+  margin: 0 auto 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.7rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.4rem;
+  letter-spacing: 0.08em;
+}
+
+.tc-legend-title {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Games grid */
+.tc-games {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.tc-game {
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem;
+}
+
+.tc-game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tc-game-name {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+.tc-game-count {
+  font-size: 0.4rem;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.1em;
+}
+
+.tc-game-desc {
+  font-size: 0.4rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+  line-height: 1.8;
+  margin: 0 0 1rem;
+}
+
+.tc-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tc-level {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.tc-level-num {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.2);
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.tc-level-desc {
+  flex: 1;
+  font-size: 0.42rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+}
+
+.tc-level-elo {
+  font-size: 0.5rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+  min-width: 40px;
+  text-align: right;
+}
+
+.tc-level-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.tc-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem 0.5rem 2.8rem;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.tc-question {
+  font-size: 0.38rem;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  letter-spacing: 0.04em;
+}
+
+/* Try buttons */
+.tc-game-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tc-try-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.4rem;
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.7rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.tc-try-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.08);
+}
+
+.tc-try-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.tc-try-sm {
+  font-size: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Play overlay */
+.tc-play-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tc-play-close-float {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 100;
+}
+
+.tc-play-close {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 100;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 0.8rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.tc-play-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.tc-play-container {
+  width: 100%;
+  max-width: 900px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .tc-wrapper { padding: 1rem; }
+  .tc-title { font-size: 1rem; }
+  .tc-game { padding: 0.8rem; }
+}

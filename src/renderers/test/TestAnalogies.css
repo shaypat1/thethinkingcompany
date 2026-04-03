@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.an-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #0a0e1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+
+.an-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px, rgba(255, 255, 255, 0.015) 4px
+  );
+}
+
+.an-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 98vw;
+  width: 100%;
+  padding: 1.5rem;
+}
+
+.an-wrapper {
+  align-items: flex-start;
+  padding-top: 2rem;
+}
+
+/* Title */
+.an-title {
+  font-size: 5.5rem;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Rules */
+.an-rules p {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  line-height: 2;
+  margin: 0;
+  text-align: center;
+}
+
+/* Progress */
+.an-progress {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.2em;
+}
+
+/* ─── Boxes row ─── */
+.an-boxes, .an-preview-boxes {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12vh;
+}
+
+.an-box {
+  min-width: 20vw;
+  height: 20vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  padding: 0 2.5rem;
+  flex-shrink: 0;
+}
+
+.an-box.filled {
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.an-box.empty, .an-box.drop-target {
+  border: 3px dashed rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  min-width: 22vw;
+}
+
+.an-box.drop-target.hover-ready {
+  border-color: rgba(0, 204, 255, 0.5);
+  background: rgba(0, 204, 255, 0.04);
+  color: rgba(0, 204, 255, 0.4);
+}
+
+.an-box.drop-target.correct {
+  border-color: #00cc66;
+  border-style: solid;
+  color: #00cc66;
+  background: rgba(0, 204, 102, 0.1);
+  box-shadow: 0 0 20px rgba(0, 204, 102, 0.15);
+}
+
+.an-box.drop-target.wrong {
+  border-color: #e03030;
+  border-style: solid;
+  color: #e03030;
+  background: rgba(224, 48, 48, 0.1);
+  box-shadow: 0 0 20px rgba(224, 48, 48, 0.15);
+}
+
+.an-separator {
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.2);
+  padding: 0 0.2rem;
+}
+
+/* ─── Draggable choices tray ─── */
+.an-choices-tray {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.an-drag-choice {
+  padding: 1.8rem 6rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  cursor: grab;
+  transition: all 0.1s;
+  user-select: none;
+}
+
+.an-drag-choice:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.06);
+}
+
+.an-drag-choice:active {
+  cursor: grabbing;
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.an-drag-choice.placed {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.an-drag-choice.answer {
+  border-color: #00cc66;
+  color: #00cc66;
+  background: rgba(0, 204, 102, 0.08);
+}
+
+.an-drag-choice.wrong-pick {
+  border-color: #e03030;
+  color: #e03030;
+  background: rgba(224, 48, 48, 0.08);
+}
+
+.an-drag-choice.dim {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* Feedback */
+.an-feedback {
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+}
+
+.an-feedback.correct { color: #00cc66; }
+.an-feedback.wrong { color: #e03030; }
+
+/* Start button */
+.an-start-btn {
+  padding: 0.8rem 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.1);
+}
+
+.an-start-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.12);
+}
+
+.an-start-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Score */
+.an-score {
+  font-size: 5rem;
+  color: #fff;
+}
+
+.an-score-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.12em;
+}
+
+.an-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.an-dot {
+  width: 12px;
+  height: 12px;
+}
+
+.an-dot.right { background: #00cc66; }
+.an-dot.wrong { background: #e03030; }
+
+/* Responsive */
+@media (max-width: 700px) {
+  .an-title { font-size: 3rem; }
+  .an-box { min-width: 70px; height: 45px; font-size: 0.5rem; }
+  .an-drag-choice { padding: 0.5rem 0.8rem; font-size: 0.45rem; }
+  .an-content { margin-top: -3rem; }
+}
