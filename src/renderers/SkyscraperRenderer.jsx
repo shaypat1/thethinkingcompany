@@ -54,19 +54,36 @@ export default function SkyscraperRenderer({ levels, narrative }) {
       mouse.y = -(e.offsetY / canvas.clientHeight) * 2 + 1
       raycaster.setFromCamera(mouse, s.camera)
 
-      // Raycast against tile meshes
-      const tileMeshes = s.tiles.flat().map(t => t.mesh)
-      const hits = raycaster.intersectObjects(tileMeshes, false)
-      if (hits.length > 0) {
-        const hit = hits[0].object
-        // Find which tile
-        for (let r = 0; r < level.size; r++) {
-          for (let c = 0; c < level.size; c++) {
-            if (s.tiles[r][c].mesh === hit) {
-              handleRef.current?.(r, c)
-              return
-            }
+      // Raycast against tiles AND buildings
+      const allMeshes = []
+      s.tiles.flat().forEach(t => allMeshes.push(t.mesh))
+      Object.entries(buildingsRef.current).forEach(([key, group]) => {
+        group.traverse(child => { if (child.isMesh) allMeshes.push(child) })
+      })
+
+      const hits = raycaster.intersectObjects(allMeshes, false)
+      if (hits.length === 0) return
+
+      const hit = hits[0].object
+
+      // Check if it's a tile
+      for (let r = 0; r < level.size; r++) {
+        for (let c = 0; c < level.size; c++) {
+          if (s.tiles[r][c].mesh === hit) {
+            handleRef.current?.(r, c)
+            return
           }
+        }
+      }
+
+      // Check if it's part of a building
+      for (const [key, group] of Object.entries(buildingsRef.current)) {
+        let isChild = false
+        group.traverse(child => { if (child === hit) isChild = true })
+        if (isChild) {
+          const [r, c] = key.split(',').map(Number)
+          handleRef.current?.(r, c)
+          return
         }
       }
     }
