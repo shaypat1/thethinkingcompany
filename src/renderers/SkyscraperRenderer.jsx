@@ -158,11 +158,9 @@ export default function SkyscraperRenderer({ levels, narrative }) {
     return () => clearTimeout(t)
   }, [state?.won, phase])
 
-  // Click handler ref
+  // Click handler ref — allow selecting any cell (including prefilled for visual feedback)
   handleRef.current = (row, col) => {
     if (phase !== 'play' || !state) return
-    // Don't allow editing prefilled cells
-    if (level.prefilled?.some(([r, c]) => r === row && c === col)) return
     const next = selectCell(state, row, col)
     setState(next)
   }
