@@ -1,157 +1,163 @@
 // Headless Coup simulator — runs full games with bots, no UI, no delays
-// Usage: node simulator.js
 
 import {
   createGame, performAction, resolveChallenge, skipChallenge,
   performCounteraction, skipCounteraction, resolveChallengeCounter,
   skipChallengeCounter, loseCard, performExchange,
-  alivePlayers, alivePlayerIds, ACTIONS, cloneGame,
+  alivePlayers, alivePlayerIds, ACTIONS,
 } from './engine.js'
 import { createEasyBot } from './easyBot.js'
 
-const MAX_TURNS = 200 // safety valve
+const MAX_TURNS = 200
 
 export function runGame(botConfigs, seed) {
   let game = createGame(seed)
   const bots = botConfigs.map((cfg, i) => cfg.create(i, cfg.personality || {}))
 
-  let turns = 0
-  while (!game.winner && turns < MAX_TURNS) {
-    turns++
-    const pid = game.currentPlayer
+  let safety = 0
+  const maxIterations = 2000 // prevent infinite loops
 
-    if (game.phase === 'action') {
-      const bot = bots[pid]
-      const decision = bot.selectAction(game)
-      game = performAction(game, pid, decision.action, decision.target)
-      // Restore rng
-      game.rng = bots[0].__rng || game.rng
-    }
+  while (!game.winner && safety < maxIterations) {
+    safety++
 
-    // Challenge phase
-    if (game.phase === 'challenge' && game.pendingAction) {
-      const pa = game.pendingAction
-      let challenged = false
-      const others = alivePlayerIds(game).filter(id => id !== pa.actor)
+    switch (game.phase) {
+      case 'action': {
+        const pid = game.currentPlayer
+        const bot = bots[pid]
+        const decision = bot.selectAction(game)
+        game = performAction(game, pid, decision.action, decision.target)
+        break
+      }
 
-      for (const oid of others) {
-        if (bots[oid].shouldChallenge(game, { claimedChar: pa.claimsChar, actor: pa.actor })) {
-          game = resolveChallenge(game, oid)
-          challenged = true
-          break
+      case 'challenge': {
+        const pa = game.pendingAction
+        if (!pa) { game.phase = 'action'; break }
+        const others = alivePlayerIds(game).filter(id => id !== pa.actor)
+        let challenged = false
+        for (const oid of others) {
+          if (bots[oid].shouldChallenge(game, { claimedChar: pa.claimsChar, actor: pa.actor })) {
+            game = resolveChallenge(game, oid)
+            challenged = true
+            break
+          }
         }
+        if (!challenged) game = skipChallenge(game)
+        break
       }
 
-      if (!challenged) {
-        game = skipChallenge(game)
-      }
-    }
+      case 'counteraction': {
+        const pa = game.pendingAction
+        if (!pa) { game.phase = 'action'; break }
+        const potentialBlockers = pa.action === 'foreignAid'
+          ? alivePlayerIds(game).filter(id => id !== pa.actor)
+          : pa.target !== null ? [pa.target].filter(id => !game.players[id].eliminated) : []
 
-    // Lose card from challenge
-    if (game.phase === 'loseCard' && game.pendingLoseCard) {
-      const plc = game.pendingLoseCard
-      const p = game.players[plc.playerId]
-      if (p.cards.length > 0) {
-        const cardIdx = bots[plc.playerId].selectCardToLose(p.cards)
-        game = loseCard(game, plc.playerId, cardIdx)
-      }
-    }
-
-    // Counteraction phase
-    if (game.phase === 'counteraction' && game.pendingAction) {
-      const pa = game.pendingAction
-      const action = ACTIONS[pa.action]
-      let blocked = false
-
-      // Who can counter? For Foreign Aid, anyone. For targeted actions, the target.
-      const potentialBlockers = pa.action === 'foreignAid'
-        ? alivePlayerIds(game).filter(id => id !== pa.actor)
-        : pa.target !== null ? [pa.target].filter(id => !game.players[id].eliminated) : []
-
-      for (const bid of potentialBlockers) {
-        const decision = bots[bid].shouldCounteract(game, pa)
-        if (decision.counteract) {
-          game = performCounteraction(game, bid, decision.claimedChar)
-          blocked = true
-          break
+        let blocked = false
+        for (const bid of potentialBlockers) {
+          const decision = bots[bid].shouldCounteract(game, pa)
+          if (decision.counteract) {
+            game = performCounteraction(game, bid, decision.claimedChar)
+            blocked = true
+            break
+          }
         }
+        if (!blocked) game = skipCounteraction(game)
+        break
       }
 
-      if (!blocked) {
-        game = skipCounteraction(game)
+      case 'challengeCounter': {
+        const pc = game.pendingCounter
+        const pa = game.pendingAction
+        if (!pc || !pa) { game.phase = 'action'; break }
+        if (bots[pa.actor].shouldChallengeCounter(game, pc)) {
+          game = resolveChallengeCounter(game, pa.actor)
+        } else {
+          game = skipChallengeCounter(game)
+        }
+        break
       }
+
+      case 'loseCard': {
+        const plc = game.pendingLoseCard
+        if (!plc) { game.phase = 'action'; break }
+        const p = game.players[plc.playerId]
+        if (p.cards.length > 0) {
+          const cardIdx = bots[plc.playerId].selectCardToLose(p.cards)
+          game = loseCard(game, plc.playerId, cardIdx)
+        } else {
+          // Already eliminated, skip
+          game.pendingLoseCard = null
+          game.phase = 'action'
+        }
+        break
+      }
+
+      case 'exchange': {
+        const pa = game.pendingAction
+        if (!pa) { game.phase = 'action'; break }
+        const p = game.players[pa.actor]
+        if (p.cards.length > 2) {
+          const keepIndices = bots[pa.actor].selectExchangeCards(p.cards)
+          game = performExchange(game, pa.actor, keepIndices)
+        } else {
+          game = performExchange(game, pa.actor, Array.from({ length: p.cards.length }, (_, i) => i))
+        }
+        break
+      }
+
+      case 'gameOver':
+        break
+
+      default:
+        game.phase = 'action'
+        break
     }
 
-    // Challenge counteraction
-    if (game.phase === 'challengeCounter' && game.pendingCounter) {
-      const pc = game.pendingCounter
-      const pa = game.pendingAction
-      // The action actor can challenge the block
-      if (bots[pa.actor].shouldChallengeCounter(game, pc)) {
-        game = resolveChallengeCounter(game, pa.actor)
-      } else {
-        game = skipChallengeCounter(game)
-      }
-    }
+    if (game.phase === 'gameOver') break
+  }
 
-    // Lose card from counter-challenge
-    if (game.phase === 'loseCard' && game.pendingLoseCard) {
-      const plc = game.pendingLoseCard
-      const p = game.players[plc.playerId]
-      if (p.cards.length > 0) {
-        const cardIdx = bots[plc.playerId].selectCardToLose(p.cards)
-        game = loseCard(game, plc.playerId, cardIdx)
-      }
-    }
+  // Track bluff and challenge stats
+  let totalClaims = 0, totalChallenges = 0, challengeSuccesses = 0
 
-    // Exchange phase
-    if (game.phase === 'exchange') {
-      const pa = game.pendingAction
-      const p = game.players[pa.actor]
-      if (p.cards.length > 2) {
-        const keepIndices = bots[pa.actor].selectExchangeCards(p.cards)
-        game = performExchange(game, pa.actor, keepIndices)
-      } else {
-        // Didn't draw enough — just advance
-        game = performExchange(game, pa.actor, [0, 1].slice(0, p.cards.length))
+  for (const a of game.actionHistory) {
+    if (a.claimsChar) {
+      totalClaims++
+      if (a.challengeResult) {
+        totalChallenges++
+        if (!a.challengeResult.actorHadCard) challengeSuccesses++
       }
     }
   }
 
   return {
     winner: game.winner,
-    turns,
-    eliminationOrder: game.players
-      .filter(p => p.eliminated)
-      .map(p => p.id),
-    actionHistory: game.actionHistory,
+    turns: game.turnNumber,
     players: game.players.map(p => ({
-      id: p.id,
-      coins: p.coins,
-      cards: p.cards,
-      revealedCards: p.revealedCards,
-      eliminated: p.eliminated,
+      id: p.id, coins: p.coins, cards: p.cards,
+      revealedCards: p.revealedCards, eliminated: p.eliminated,
     })),
+    actionHistory: game.actionHistory,
+    stats: { totalClaims, totalChallenges, challengeSuccesses },
   }
 }
 
 // ── Batch runner ──
 
 export function runBatch(botConfigs, numGames, startSeed = 1) {
-  const results = []
   const wins = {}
   let totalTurns = 0
   const actionCounts = {}
+  let totalClaims = 0, totalChallenges = 0, challengeSuccesses = 0
 
   for (let i = 0; i < numGames; i++) {
-    const result = runGame(botConfigs, startSeed + i)
-    results.push(result)
-    totalTurns += result.turns
+    const r = runGame(botConfigs, startSeed + i)
+    totalTurns += r.turns
+    wins[r.winner] = (wins[r.winner] || 0) + 1
+    totalClaims += r.stats.totalClaims
+    totalChallenges += r.stats.totalChallenges
+    challengeSuccesses += r.stats.challengeSuccesses
 
-    const w = result.winner
-    wins[w] = (wins[w] || 0) + 1
-
-    for (const a of result.actionHistory) {
+    for (const a of r.actionHistory) {
       actionCounts[a.action] = (actionCounts[a.action] || 0) + 1
     }
   }
@@ -160,30 +166,47 @@ export function runBatch(botConfigs, numGames, startSeed = 1) {
 
   return {
     games: numGames,
-    avgTurns: totalTurns / numGames,
+    avgTurns: (totalTurns / numGames).toFixed(1),
     winRates: Object.fromEntries(
-      Object.entries(wins).map(([k, v]) => [k, (v / numGames * 100).toFixed(1) + '%'])
+      Array.from({ length: 6 }, (_, i) => [i, ((wins[i] || 0) / numGames * 100).toFixed(1) + '%'])
     ),
-    actionDistribution: Object.fromEntries(
-      Object.entries(actionCounts).map(([k, v]) => [k, (v / totalActions * 100).toFixed(1) + '%'])
+    actionDist: Object.fromEntries(
+      Object.entries(actionCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([k, v]) => [k, (v / totalActions * 100).toFixed(1) + '%'])
     ),
+    challengeRate: totalClaims > 0 ? (totalChallenges / totalClaims * 100).toFixed(1) + '%' : '0%',
+    challengeSuccess: totalChallenges > 0 ? (challengeSuccesses / totalChallenges * 100).toFixed(1) + '%' : '0%',
   }
 }
 
-// ── CLI runner ──
+// ── CLI ──
 if (typeof process !== 'undefined' && process.argv?.[1]?.includes('simulator')) {
   console.log('=== Coup Simulator ===\n')
 
-  const easyConfig = { create: createEasyBot, personality: { name: 'default' } }
-  const configs = Array(6).fill(easyConfig)
+  const easy = { create: createEasyBot, personality: { name: 'default' } }
 
-  console.log('Running 1000 games: 6 Easy bots...')
+  console.log('Test 1: 1000 games — 6 Easy bots')
   const t0 = performance.now()
-  const report = runBatch(configs, 1000)
-  const elapsed = ((performance.now() - t0) / 1000).toFixed(2)
+  const r1 = runBatch(Array(6).fill(easy), 1000)
+  console.log(`  ${((performance.now() - t0) / 1000).toFixed(2)}s`)
+  console.log(`  Avg turns: ${r1.avgTurns} (target: 25-60)`)
+  console.log(`  Win rates:`, r1.winRates)
+  console.log(`  Actions:`, r1.actionDist)
+  console.log(`  Challenge rate: ${r1.challengeRate} (target: 10-25%)`)
+  console.log(`  Challenge success: ${r1.challengeSuccess} (target: 40-60%)`)
 
-  console.log(`Done in ${elapsed}s`)
-  console.log(`Avg game length: ${report.avgTurns.toFixed(1)} turns`)
-  console.log(`Win rates:`, report.winRates)
-  console.log(`Action distribution:`, report.actionDistribution)
+  // Target checks
+  const turns = parseFloat(r1.avgTurns)
+  const checks = [
+    ['Game length', turns >= 25 && turns <= 60, `${r1.avgTurns}`],
+    ['Income < 25%', parseFloat(r1.actionDist.income || '0') <= 25, r1.actionDist.income],
+    ['Tax < 35%', parseFloat(r1.actionDist.tax || '0') <= 35, r1.actionDist.tax],
+    ['Coup 15-25%', parseFloat(r1.actionDist.coup || '0') >= 15 && parseFloat(r1.actionDist.coup || '0') <= 25, r1.actionDist.coup],
+    ['Assassinate 5-15%', parseFloat(r1.actionDist.assassinate || '0') >= 5 && parseFloat(r1.actionDist.assassinate || '0') <= 15, r1.actionDist.assassinate],
+  ]
+  console.log('\n  Health checks:')
+  for (const [name, pass, val] of checks) {
+    console.log(`    ${pass ? '✅' : '❌'} ${name}: ${val}`)
+  }
 }

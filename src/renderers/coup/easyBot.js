@@ -4,9 +4,9 @@
 import { ACTIONS, getLegalActions, alivePlayerIds, CHARACTERS } from './engine.js'
 
 const CARD_TIER = { Duke: 5, Assassin: 4, Captain: 3, Contessa: 2, Ambassador: 1 }
-const BLUFF_RATE = 0.1
-const BASE_CHALLENGE_RATE = 0.05
-const REVEALED_CHALLENGE_BOOST = 0.25
+const BLUFF_RATE = 0.12
+const BASE_CHALLENGE_RATE = 0.10
+const REVEALED_CHALLENGE_BOOST = 0.30
 
 export function createEasyBot(playerId, personality = {}) {
   const mods = {
@@ -30,8 +30,8 @@ export function createEasyBot(playerId, personality = {}) {
         return { action: 'coup', target: pickTarget(game, playerId, rng, mods) }
       }
 
-      // Prefer coup at 7+
-      if (me.coins >= 7 && rng() < 0.6 + mods.aggressiveMod * 0.1) {
+      // Strongly prefer coup at 7+
+      if (me.coins >= 7 && rng() < 0.92 + mods.aggressiveMod * 0.05) {
         return { action: 'coup', target: pickTarget(game, playerId, rng, mods) }
       }
 
@@ -41,38 +41,38 @@ export function createEasyBot(playerId, personality = {}) {
       if (!shouldBluff) {
         // Honest plays based on hand
         if (me.cards.includes('Duke')) {
-          if (rng() < 0.8) return { action: 'tax' }
+          if (rng() < 0.75) return { action: 'tax' }
         }
-        if (me.cards.includes('Assassin') && me.coins >= 3) {
-          if (rng() < 0.5 + mods.aggressiveMod * 0.15) {
+        if (me.cards.includes('Assassin') && me.coins >= 3 && me.coins < 7) {
+          if (rng() < 0.55 + mods.aggressiveMod * 0.15) {
             return { action: 'assassinate', target: pickTarget(game, playerId, rng, mods) }
           }
         }
         if (me.cards.includes('Captain')) {
           const stealTargets = alivePlayerIds(game).filter(id => id !== playerId && game.players[id].coins > 0)
-          if (stealTargets.length > 0 && rng() < 0.5) {
+          if (stealTargets.length > 0 && rng() < 0.6) {
             return { action: 'steal', target: stealTargets[Math.floor(rng() * stealTargets.length)] }
           }
         }
-        if (me.cards.includes('Ambassador') && rng() < 0.2) {
+        if (me.cards.includes('Ambassador') && rng() < 0.15) {
           return { action: 'exchange' }
         }
       } else {
         // Bluff — pick a random character action (poorly)
         const bluffChar = CHARACTERS[Math.floor(rng() * CHARACTERS.length)]
         if (bluffChar === 'Duke') return { action: 'tax' }
+        if (bluffChar === 'Assassin' && me.coins >= 3) {
+          return { action: 'assassinate', target: pickTarget(game, playerId, rng, mods) }
+        }
         if (bluffChar === 'Captain') {
           const targets = alivePlayerIds(game).filter(id => id !== playerId && game.players[id].coins > 0)
           if (targets.length > 0) return { action: 'steal', target: targets[Math.floor(rng() * targets.length)] }
         }
-        if (bluffChar === 'Assassin' && me.coins >= 3) {
-          return { action: 'assassinate', target: pickTarget(game, playerId, rng, mods) }
-        }
         if (bluffChar === 'Ambassador') return { action: 'exchange' }
       }
 
-      // Fallback: income or foreign aid
-      return rng() < 0.6 ? { action: 'income' } : { action: 'foreignAid' }
+      // Fallback: prefer foreign aid (faster) over income
+      return rng() < 0.35 ? { action: 'income' } : { action: 'foreignAid' }
     },
 
     shouldChallenge(game, claim) {
