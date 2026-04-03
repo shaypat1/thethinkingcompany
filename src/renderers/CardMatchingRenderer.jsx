@@ -77,7 +77,7 @@ export default function CardMatchingRenderer() {
   }
 
   const matched = cards.filter(c => c.matched).length
-  const cardSize = Math.max(48, Math.min(68, 380 / Math.max(cols, rows)))
+  const cardSize = Math.max(56, Math.min(80, 450 / Math.max(cols, rows)))
 
   return (
     <div className="game-hero">

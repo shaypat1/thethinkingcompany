@@ -93,7 +93,7 @@ export default function VisualMemoryRenderer() {
 
   return (
     <div className="game-hero">
-      <div className="game-badge" style={{ marginBottom: '1rem' }}>Level {level}</div>
+      <div className="game-info">Level {level} · {tileCount} tiles to find</div>
       <div className="game-grid" style={{
         gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
         width: cellSize * gridSize + (gridSize - 1) * 6,

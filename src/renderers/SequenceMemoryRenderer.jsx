@@ -91,12 +91,12 @@ export default function SequenceMemoryRenderer() {
 
   return (
     <div className="game-hero">
-      <div className="game-badge" style={{ marginBottom: '1rem' }}>Level {level}</div>
-      <div className="game-grid" style={{ gridTemplateColumns: `repeat(${GRID}, 1fr)`, width: 240 }}>
+      <div className="game-info">Level {level} · {phase === 'showing' ? 'Watch the pattern' : 'Replay it'}</div>
+      <div className="game-grid" style={{ gridTemplateColumns: `repeat(${GRID}, 1fr)`, width: 320 }}>
         {Array.from({ length: GRID * GRID }).map((_, i) => (
           <div key={i} className={`game-cell ${showIdx === i || flashCell === i ? 'active' : ''}`}
             onClick={() => handleCellClick(i)}
-            style={{ width: 72, height: 72, cursor: phase === 'input' ? 'pointer' : 'default' }} />
+            style={{ width: 96, height: 96, cursor: phase === 'input' ? 'pointer' : 'default', fontSize: '1.2rem' }} />
         ))}
       </div>
       <div className="game-feedback" style={{ marginTop: '1rem' }}>
