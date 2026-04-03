@@ -20,6 +20,7 @@ import bs001 from './backwardsspan/bs001.json'
 import rb001 from './robot/rb001.json'
 import rb002 from './robot/rb002.json'
 import rb003 from './robot/rb003.json'
+import hanoi001 from './hanoi/hanoi001.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -35,6 +36,7 @@ const content = {
   verbalmemory: { vb001 },
   backwardsspan: { bs001 },
   robot: { rb001, rb002, rb003 },
+  hanoi: { hanoi001 },
 }
 
 export function getDay(dayNumber) {

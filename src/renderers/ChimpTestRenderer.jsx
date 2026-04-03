@@ -88,8 +88,8 @@ export default function ChimpTestRenderer() {
   const showNumbers = phase === 'flash'
   return (
     <div className="game-hero">
-      <div className="game-badge" style={{ marginBottom: '1rem' }}>Level {level}</div>
-      <div className="game-grid" style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`, width: '100%', maxWidth: 420 }}>
+      <div className="game-info">Level {level} · Can you beat a chimp?</div>
+      <div className="game-grid" style={{ gridTemplateColumns: `repeat(${GRID_COLS}, 1fr)`, width: '100%', maxWidth: 520 }}>
         {Array.from({ length: TOTAL }).map((_, i) => {
           const isPos = posMap[i] !== undefined
           const isClicked = clickOrder.includes(i)
