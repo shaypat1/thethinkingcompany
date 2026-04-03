@@ -107,10 +107,7 @@
   max-width: 45vw;
   object-fit: contain;
   user-select: none;
-  background: #fff;
-  border-radius: 12px;
   padding: 0.8rem;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
 }
 
 /* Answer option cards */
@@ -126,7 +123,7 @@
   width: 110px;
   border: 2px solid var(--border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.95);
+  background: transparent;
   cursor: pointer;
   display: flex;
   flex-direction: column;
