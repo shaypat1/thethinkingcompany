@@ -68,7 +68,7 @@ export function createScene(container, n) {
 
   // Ground plane — dark void (at y=0)
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(gridW * 4, gridW * 4),
+    new THREE.PlaneGeometry(200, 200),
     new THREE.MeshStandardMaterial({ color: COLORS.void, roughness: 0.95, flatShading: true })
   )
   ground.rotation.x = -Math.PI / 2
