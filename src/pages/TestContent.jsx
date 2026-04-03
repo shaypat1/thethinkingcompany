@@ -7,6 +7,7 @@ import RobotRenderer from '../renderers/test/TestRobot'
 import PirateRenderer from '../renderers/test/TestPirate'
 import AnalogiesRenderer from '../renderers/test/TestAnalogies'
 import FablesRenderer from '../renderers/test/TestFables'
+import FlawsRenderer from '../renderers/test/TestFlaws'
 import rb001 from '../content/robot/rb001.json'
 import rb002 from '../content/robot/rb002.json'
 import rb003 from '../content/robot/rb003.json'
@@ -22,6 +23,7 @@ const GAME_RENDERERS = {
   pirate: PirateRenderer,
   analogies: AnalogiesRenderer,
   fables: FablesRenderer,
+  aiflaws: FlawsRenderer,
 }
 
 // ─── Question Bank with ELO ratings ───
@@ -63,6 +65,18 @@ const QUESTION_BANK = {
       { round: 2, elo: 1200, description: 'The Collapsed Tent' },
       { round: 3, elo: 1500, description: 'The Missing Firewood' },
       { round: 4, elo: 1800, description: 'The Dead Car Battery' },
+    ],
+  },
+  aiflaws: {
+    name: 'AI FLAWS',
+    description: 'Read an AI argument. Find the flaw in the reasoning.',
+    levels: [
+      { round: 1, elo: 800, description: 'Appeal to Authority — AI consensus as truth' },
+      { round: 2, elo: 1000, description: 'Cherry-Picking — selective colonial narrative' },
+      { round: 3, elo: 1200, description: 'Correlation vs. Causation — ice cream and drowning' },
+      { round: 4, elo: 1400, description: 'False Dichotomy — all-or-nothing AI adoption' },
+      { round: 5, elo: 1600, description: 'Hasty Generalization — 3-school AI study' },
+      { round: 6, elo: 1800, description: 'The Confidence Trap — fluency vs. accuracy' },
     ],
   },
   analogies: {
@@ -189,7 +203,7 @@ export default function TestContent() {
     }
 
     // Fullscreen games (position:fixed), others need a wrapper
-    if (playing.type === 'gravity' || playing.type === 'robotgolf' || playing.type === 'pirate' || playing.type === 'analogies' || playing.type === 'fables') {
+    if (playing.type === 'gravity' || playing.type === 'robotgolf' || playing.type === 'pirate' || playing.type === 'analogies' || playing.type === 'fables' || playing.type === 'aiflaws') {
       return (
         <>
           <div className="tc-play-close-float">
