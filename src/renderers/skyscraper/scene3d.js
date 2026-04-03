@@ -16,7 +16,7 @@ const COLORS = {
   wallGlow: 0xe03030,
 }
 
-const PLATFORM_Y = 0.4 // thin platform — just enough to see clue numbers on the side
+const PLATFORM_Y = 1.0 // tall enough that clue numbers sit on the wall below the buildings
 
 export { TILE, GAP, PLATFORM_Y }
 
@@ -148,28 +148,31 @@ export function createScene(container, n) {
     PLATFORM_Y + 0.5,
     (n - 1) * (TILE + GAP) / 2
   )
-  const viewDist = gridW * 1.8
+  // Snap views keep same distance from center — just rotate around, no zoom change
+  const isoDist = camera.position.distanceTo(center)
 
   function snapToView(side) {
-    // side: 'top' | 'bottom' | 'left' | 'right' | 'iso'
     const target = center.clone()
     let pos
+    // Same distance as iso view, just different angle — slightly above platform level
+    const eyeHeight = PLATFORM_Y + 1.5
     switch (side) {
-      case 'top':    pos = new THREE.Vector3(center.x, PLATFORM_Y + 1, center.z - viewDist); break
-      case 'bottom': pos = new THREE.Vector3(center.x, PLATFORM_Y + 1, center.z + viewDist); break
-      case 'left':   pos = new THREE.Vector3(center.x - viewDist, PLATFORM_Y + 1, center.z); break
-      case 'right':  pos = new THREE.Vector3(center.x + viewDist, PLATFORM_Y + 1, center.z); break
-      default: // iso
-        pos = new THREE.Vector3(center.x + gridW, PLATFORM_Y + camDist * 0.6, center.z + gridW * 0.8)
+      case 'top':    pos = new THREE.Vector3(center.x, eyeHeight, center.z - isoDist); break
+      case 'bottom': pos = new THREE.Vector3(center.x, eyeHeight, center.z + isoDist); break
+      case 'left':   pos = new THREE.Vector3(center.x - isoDist, eyeHeight, center.z); break
+      case 'right':  pos = new THREE.Vector3(center.x + isoDist, eyeHeight, center.z); break
+      default: // iso — return to original position
+        pos = camera.position.clone().copy(
+          new THREE.Vector3(gridW * 0.5, camDist * 0.7, gridW * 0.5 + camDist * 0.55)
+        )
         break
     }
-    // Animate smoothly
     const startPos = camera.position.clone()
     const startTarget = controls.target.clone()
     let t = 0
     function step() {
       t += 0.04
-      if (t >= 1) { t = 1 }
+      if (t >= 1) t = 1
       camera.position.lerpVectors(startPos, pos, t)
       controls.target.lerpVectors(startTarget, target, t)
       controls.update()
@@ -185,7 +188,7 @@ export function createScene(container, n) {
 export function addClues(scene, clues, n) {
   const step = TILE + GAP
   const gridW = n * step
-  const edgeDist = (gridW + 2.0) / 2 + 0.2 // just outside the platform edge
+  const edgeDist = (gridW + 2.0) / 2 + 0.05 // flush with the platform wall face
   const gridCenter = (n - 1) * step / 2
 
   function makeClueSprite(text) {
@@ -204,7 +207,7 @@ export function addClues(scene, clues, n) {
     return sprite
   }
 
-  const clueY = PLATFORM_Y + 0.4
+  const clueY = PLATFORM_Y * 0.5 // halfway up the platform wall — below the buildings
 
   if (clues.top) {
     clues.top.forEach((v, c) => {
