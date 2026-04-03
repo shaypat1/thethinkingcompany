@@ -254,68 +254,162 @@ export function tileCenter(row, col) {
   }
 }
 
-// Create a building mesh at given height (1..N)
+// Create a building — each height has unique character
 export function createBuilding(height, maxHeight) {
-  const h = height * 0.5
+  const h = height * 0.55
   const colorIdx = (height - 1) % COLORS.building.length
   const color = COLORS.building[colorIdx]
-
+  const w = TILE * 0.72
   const group = new THREE.Group()
 
   const mat = new THREE.MeshStandardMaterial({
-    color,
-    roughness: 0.7,
-    metalness: 0.15,
-    flatShading: true,
-    emissive: color,
-    emissiveIntensity: 0.15,
+    color, roughness: 0.7, metalness: 0.15, flatShading: true,
+    emissive: color, emissiveIntensity: 0.12,
   })
+  const darkMat = new THREE.MeshStandardMaterial({
+    color: 0x0a0e18, roughness: 0.5, flatShading: true,
+  })
+  const neonEdge = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.5 })
+  const windowMat = new THREE.MeshBasicMaterial({ color: 0xffeeaa })
+  const windowDimMat = new THREE.MeshBasicMaterial({ color: 0x334455 })
 
-  // Main tower
-  const tower = new THREE.Mesh(new THREE.BoxGeometry(TILE * 0.75, h, TILE * 0.75), mat)
-  tower.position.y = h / 2 + 0.04
+  // ── Base block (all buildings) ──
+  const baseH = Math.min(h * 0.3, 0.25)
+  const base = new THREE.Mesh(new THREE.BoxGeometry(w + 0.04, baseH, w + 0.04), darkMat)
+  base.position.y = baseH / 2 + 0.04
+  base.castShadow = true
+  group.add(base)
+
+  // ── Main tower — shape varies by height ──
+  const towerH = h - baseH
+  let towerW = w
+  if (height >= 4) towerW = w * 0.85 // taller = slightly narrower, more elegant
+  const tower = new THREE.Mesh(new THREE.BoxGeometry(towerW, towerH, towerW), mat)
+  tower.position.y = baseH + towerH / 2 + 0.04
   tower.castShadow = true
   tower.receiveShadow = true
   group.add(tower)
 
-  // Roof cap
-  const roofMat = new THREE.MeshStandardMaterial({
-    color: 0x111122,
-    roughness: 0.5,
-    flatShading: true,
-  })
-  const roof = new THREE.Mesh(new THREE.BoxGeometry(TILE * 0.8, 0.06, TILE * 0.8), roofMat)
-  roof.position.y = h + 0.07
-  roof.castShadow = true
+  // Neon edges on tower
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(tower.geometry), neonEdge)
+  edges.position.copy(tower.position)
+  group.add(edges)
+
+  // ── Setback / stepped top (height 3+) ──
+  if (height >= 3) {
+    const stepH = 0.12
+    const stepW = towerW * 0.7
+    const step = new THREE.Mesh(new THREE.BoxGeometry(stepW, stepH, stepW), mat)
+    step.position.y = baseH + towerH + stepH / 2 + 0.04
+    step.castShadow = true
+    group.add(step)
+    group.add(new THREE.LineSegments(new THREE.EdgesGeometry(step.geometry), neonEdge).translateY(step.position.y))
+  }
+
+  // ── Roof details ──
+  const roofY = h + 0.08
+
+  // Flat roof cap
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(towerW + 0.06, 0.04, towerW + 0.06), darkMat)
+  roof.position.y = roofY
   group.add(roof)
 
-  // Neon edge lines on the building
-  const edgeMat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.6 })
-  const edgeLines = new THREE.LineSegments(new THREE.EdgesGeometry(tower.geometry), edgeMat)
-  edgeLines.position.copy(tower.position)
-  group.add(edgeLines)
+  // Height 2+: AC unit boxes on roof
+  if (height >= 2) {
+    const ac = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), darkMat)
+    ac.position.set(towerW * 0.2, roofY + 0.06, -towerW * 0.15)
+    group.add(ac)
+  }
 
-  // Window lights — small emissive squares on the front face
-  const windowMat = new THREE.MeshBasicMaterial({ color: 0xffeeaa })
-  const windowsPerFloor = Math.min(height, 3)
-  const floorH = h / height
-  for (let f = 0; f < height; f++) {
-    for (let wi = 0; wi < windowsPerFloor; wi++) {
-      const win = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.06), windowMat)
-      win.position.set(
-        -TILE * 0.2 + wi * TILE * 0.2,
-        f * floorH + floorH * 0.5 + 0.04,
-        TILE * 0.375 + 0.01
-      )
-      group.add(win)
+  // Height 4+: antenna mast
+  if (height >= 4) {
+    const antMat = new THREE.MeshStandardMaterial({ color: 0x556677, flatShading: true, metalness: 0.4 })
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.02, 0.3, 4), antMat)
+    ant.position.y = roofY + 0.19
+    group.add(ant)
+    // Blinking light on top
+    const bulb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.03, 4, 4),
+      new THREE.MeshBasicMaterial({ color: 0xff2222 })
+    )
+    bulb.position.y = roofY + 0.36
+    group.add(bulb)
+  }
+
+  // Height 5+: satellite dish
+  if (height >= 5) {
+    const dishMat = new THREE.MeshStandardMaterial({ color: 0x888899, flatShading: true, metalness: 0.3 })
+    const dish = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.05, 6), dishMat)
+    dish.position.set(-towerW * 0.2, roofY + 0.08, towerW * 0.2)
+    dish.rotation.x = -0.5
+    group.add(dish)
+  }
+
+  // Tallest building: helipad + beacon
+  if (height === maxHeight) {
+    // Helipad circle on roof
+    const pad = new THREE.Mesh(
+      new THREE.CylinderGeometry(towerW * 0.25, towerW * 0.25, 0.02, 8),
+      new THREE.MeshBasicMaterial({ color: 0x224400 })
+    )
+    pad.position.y = roofY + 0.03
+    group.add(pad)
+    // H marking
+    const hMark = new THREE.Mesh(
+      new THREE.BoxGeometry(towerW * 0.15, 0.01, 0.03),
+      new THREE.MeshBasicMaterial({ color: 0xffcc00 })
+    )
+    hMark.position.y = roofY + 0.04
+    group.add(hMark)
+    // Beacon glow
+    const glow = new THREE.PointLight(color, 0.5, 4)
+    glow.position.y = roofY + 0.5
+    group.add(glow)
+  }
+
+  // ── Windows on all 4 faces ──
+  const floorH = towerH / Math.max(height, 1)
+  const wpc = Math.min(height, 3) // windows per column
+  const faces = [
+    { axis: 'z', sign: 1 },  // front
+    { axis: 'z', sign: -1 }, // back
+    { axis: 'x', sign: 1 },  // right
+    { axis: 'x', sign: -1 }, // left
+  ]
+
+  for (const face of faces) {
+    for (let f = 0; f < height; f++) {
+      for (let wi = 0; wi < wpc; wi++) {
+        const lit = Math.random() > 0.3 // 70% windows lit
+        const win = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.07, 0.05),
+          lit ? windowMat : windowDimMat
+        )
+        const fy = baseH + f * floorH + floorH * 0.5 + 0.04
+        const spread = (wi - (wpc - 1) / 2) * 0.14
+        if (face.axis === 'z') {
+          win.position.set(spread, fy, face.sign * (towerW / 2 + 0.005))
+          if (face.sign < 0) win.rotation.y = Math.PI
+        } else {
+          win.position.set(face.sign * (towerW / 2 + 0.005), fy, spread)
+          win.rotation.y = face.sign * Math.PI / 2
+        }
+        group.add(win)
+      }
     }
   }
 
-  // Point light glow at top
-  if (height === maxHeight) {
-    const glow = new THREE.PointLight(color, 0.3, 3)
-    glow.position.y = h + 0.3
-    group.add(glow)
+  // ── Neon accent strip at base ──
+  const stripMat = new THREE.MeshBasicMaterial({ color })
+  for (const z of [-1, 1]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(w + 0.06, 0.02, 0.02), stripMat)
+    strip.position.set(0, baseH + 0.05, z * (w / 2 + 0.01))
+    group.add(strip)
+  }
+  for (const x of [-1, 1]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.02, w + 0.06), stripMat)
+    strip.position.set(x * (w / 2 + 0.01), baseH + 0.05, 0)
+    group.add(strip)
   }
 
   group.userData = { height }
