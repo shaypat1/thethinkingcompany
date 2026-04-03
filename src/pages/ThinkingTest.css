@@ -338,6 +338,309 @@
   .tt-title-top { font-size: 2.5rem; }
   .tt-title-bottom { font-size: 4rem; }
 }
+/* ─── ELO box ─── */
+.tt-elo-box {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  padding: 0.6rem 1rem;
+  text-align: center;
+}
+
+.tt-elo-label {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.3rem;
+}
+
+.tt-elo-value {
+  font-size: 1.5rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+/* Progress box */
+.tt-progress-box {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+
+.tt-progress-text {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.15em;
+}
+
+/* Game content */
+.tt-content-game {
+  margin-top: -4rem;
+  gap: 1rem;
+}
+
+.tt-q-type {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2em;
+  text-align: center;
+}
+
+.tt-q-elo {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+/* Analogy boxes */
+.tt-analogy-boxes {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  flex-wrap: nowrap;
+  margin: 1rem 0;
+}
+
+.tt-a-box {
+  min-width: 12vw;
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.85rem;
+  color: #fff;
+  padding: 0 1.2rem;
+  flex-shrink: 0;
+}
+
+.tt-a-empty {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.25);
+  min-width: 14vw;
+}
+
+.tt-a-sep {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Flaw */
+.tt-flaw-title {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.tt-flaw-argument {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 2.4;
+  padding: 1rem 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: center;
+}
+
+/* Choices */
+.tt-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.tt-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.7rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all 0.1s;
+  font-family: 'Press Start 2P', monospace;
+  text-align: left;
+}
+
+.tt-choice:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translate(-2px, -2px);
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.05);
+}
+
+.tt-choice-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  width: 16px;
+}
+
+.tt-choice-text {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.04em;
+  line-height: 2;
+}
+
+.tt-choice.correct { border-color: #00cc66; background: rgba(0,204,102,0.08); }
+.tt-choice.correct .tt-choice-label, .tt-choice.correct .tt-choice-text { color: #00cc66; }
+.tt-choice.wrong { border-color: #e03030; background: rgba(224,48,48,0.08); }
+.tt-choice.wrong .tt-choice-label, .tt-choice.wrong .tt-choice-text { color: #e03030; }
+.tt-choice.dim { opacity: 0.2; pointer-events: none; }
+
+/* Feedback bar */
+.tt-feedback-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.tt-feedback-text {
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+}
+.tt-feedback-text.correct { color: #00cc66; }
+.tt-feedback-text.wrong { color: #e03030; }
+
+.tt-elo-change {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+.tt-elo-change.correct { color: #00cc66; }
+.tt-elo-change.wrong { color: #e03030; }
+
+.tt-next-btn {
+  padding: 0.5rem 1.5rem;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0a0e1a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.08);
+}
+.tt-next-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 rgba(255,255,255,0.1); }
+
+/* ─── Email page ─── */
+.tt-title-sm {
+  font-size: 2rem;
+  color: #fff;
+  letter-spacing: 0.1em;
+  margin: 0 0 1rem;
+}
+
+.tt-complete-stats {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  margin-bottom: 1.5rem;
+}
+
+.tt-email-prompt {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.tt-email-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  padding: 0.9rem 1rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.65rem;
+  color: #fff;
+  outline: none;
+  width: 100%;
+  max-width: 400px;
+  letter-spacing: 0.05em;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+.tt-email-input::placeholder { color: rgba(255,255,255,0.15); }
+.tt-email-input:focus { border-color: rgba(255,255,255,0.5); }
+
+/* ─── Results page ─── */
+.tt-final-elo {
+  font-size: 6rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+  margin: 0.5rem 0;
+}
+
+.tt-final-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+}
+
+.tt-final-stats {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.12em;
+  margin-bottom: 1.5rem;
+}
+
+.tt-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1.5rem;
+}
+
+.tt-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.4rem;
+  letter-spacing: 0.06em;
+}
+
+.tt-history-item.correct { border-left: 3px solid #00cc66; }
+.tt-history-item.wrong { border-left: 3px solid #e03030; }
+
+.tt-history-num {
+  color: rgba(255, 255, 255, 0.25);
+  width: 16px;
+}
+
+.tt-history-type {
+  color: rgba(255, 255, 255, 0.5);
+  flex: 1;
+}
+
+.tt-history-result {
+  width: 60px;
+}
+.tt-history-item.correct .tt-history-result { color: #00cc66; }
+.tt-history-item.wrong .tt-history-result { color: #e03030; }
+
+.tt-history-elo {
+  color: rgba(255, 255, 255, 0.3);
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 500px) {
   .tt-title-top { font-size: 1.8rem; }
   .tt-title-bottom { font-size: 2.8rem; }
