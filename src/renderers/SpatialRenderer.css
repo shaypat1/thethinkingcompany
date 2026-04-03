@@ -103,8 +103,8 @@
 }
 
 .sp-shape-img {
-  max-height: 100%;
-  max-width: 55%;
+  max-height: 55vh;
+  max-width: 45vw;
   object-fit: contain;
   user-select: none;
   background: #fff;

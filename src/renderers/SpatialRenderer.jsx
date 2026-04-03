@@ -92,7 +92,7 @@ export default function SpatialRenderer({ questions, narrative }) {
 
       {/* Net / unfolded pattern */}
       <div className="sp-shape-area">
-        <img src={`/spatial/${qId}/net.png`} alt="Unfolded net" className="sp-shape-img" draggable={false} />
+        <img src={`/spatial/${qId}/net.svg`} alt="Unfolded net" className="sp-shape-img" draggable={false} />
       </div>
 
       {/* Answer options */}
@@ -106,7 +106,7 @@ export default function SpatialRenderer({ questions, narrative }) {
           }
           return (
             <button key={letter} className={cls} onClick={() => pickAnswer(letter)} disabled={selected !== null}>
-              <img src={`/spatial/${qId}/${letter}.png`} alt={letter} className="sp-option-img" draggable={false} />
+              <img src={`/spatial/${qId}/${letter}.svg`} alt={letter} className="sp-option-img" draggable={false} />
               <span className="sp-option-letter">{letter}</span>
             </button>
           )
