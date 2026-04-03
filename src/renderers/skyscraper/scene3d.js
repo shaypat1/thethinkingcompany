@@ -16,7 +16,9 @@ const COLORS = {
   wallGlow: 0xe03030,
 }
 
-export { TILE, GAP }
+const PLATFORM_Y = 1.5 // lift the whole city up so clues sit at platform level
+
+export { TILE, GAP, PLATFORM_Y }
 
 export function createScene(container, n) {
   const gridW = n * (TILE + GAP)
@@ -64,15 +66,30 @@ export function createScene(container, n) {
   neon.position.set(gridW * 0.5, -0.5, gridW * 0.5)
   scene.add(neon)
 
-  // Ground plane — dark void
+  // Ground plane — dark void (at y=0)
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(gridW * 4, gridW * 4),
     new THREE.MeshStandardMaterial({ color: COLORS.void, roughness: 0.95, flatShading: true })
   )
   ground.rotation.x = -Math.PI / 2
-  ground.position.set(gridW * 0.45, -0.05, gridW * 0.45)
+  ground.position.set(gridW * 0.45, 0, gridW * 0.45)
   ground.receiveShadow = true
   scene.add(ground)
+
+  // Platform base — raised slab under the city
+  const platMat = new THREE.MeshStandardMaterial({ color: 0x0d1520, roughness: 0.8, flatShading: true })
+  const platform = new THREE.Mesh(
+    new THREE.BoxGeometry(gridW + 1.5, PLATFORM_Y, gridW + 1.5),
+    platMat
+  )
+  platform.position.set(
+    (n - 1) * (TILE + GAP) / 2,
+    PLATFORM_Y / 2,
+    (n - 1) * (TILE + GAP) / 2
+  )
+  platform.receiveShadow = true
+  platform.castShadow = true
+  scene.add(platform)
 
   // Build grid tiles
   const tiles = []
@@ -85,7 +102,7 @@ export function createScene(container, n) {
       )
       const px = c * (TILE + GAP)
       const pz = r * (TILE + GAP)
-      tile.position.set(px, 0, pz)
+      tile.position.set(px, PLATFORM_Y, pz)
       tile.receiveShadow = true
       scene.add(tile)
 
@@ -111,12 +128,48 @@ export function createScene(container, n) {
   )
   frame.position.set(
     (n - 1) * (TILE + GAP) / 2,
-    0.01,
+    PLATFORM_Y + 0.01,
     (n - 1) * (TILE + GAP) / 2
   )
   scene.add(frame)
 
-  return { scene, camera, renderer, controls, tiles, gridW }
+  // Snap-to-side view helper
+  const center = new THREE.Vector3(
+    (n - 1) * (TILE + GAP) / 2,
+    PLATFORM_Y + 0.5,
+    (n - 1) * (TILE + GAP) / 2
+  )
+  const viewDist = gridW * 1.8
+
+  function snapToView(side) {
+    // side: 'top' | 'bottom' | 'left' | 'right' | 'iso'
+    const target = center.clone()
+    let pos
+    switch (side) {
+      case 'top':    pos = new THREE.Vector3(center.x, PLATFORM_Y + 1, center.z - viewDist); break
+      case 'bottom': pos = new THREE.Vector3(center.x, PLATFORM_Y + 1, center.z + viewDist); break
+      case 'left':   pos = new THREE.Vector3(center.x - viewDist, PLATFORM_Y + 1, center.z); break
+      case 'right':  pos = new THREE.Vector3(center.x + viewDist, PLATFORM_Y + 1, center.z); break
+      default: // iso
+        pos = new THREE.Vector3(center.x + gridW, PLATFORM_Y + camDist * 0.6, center.z + gridW * 0.8)
+        break
+    }
+    // Animate smoothly
+    const startPos = camera.position.clone()
+    const startTarget = controls.target.clone()
+    let t = 0
+    function step() {
+      t += 0.04
+      if (t >= 1) { t = 1 }
+      camera.position.lerpVectors(startPos, pos, t)
+      controls.target.lerpVectors(startTarget, target, t)
+      controls.update()
+      if (t < 1) requestAnimationFrame(step)
+    }
+    step()
+  }
+
+  return { scene, camera, renderer, controls, tiles, gridW, snapToView }
 }
 
 // Add clue numbers as 3D sprites around the grid
@@ -140,42 +193,40 @@ export function addClues(scene, clues, n) {
     return sprite
   }
 
-  // Top clues (above the grid, looking down columns)
+  const clueY = PLATFORM_Y * 0.5 // halfway up the platform side
+
   if (clues.top) {
     clues.top.forEach((v, c) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(c * step, 0.3, -offset)
+      s.position.set(c * step, clueY, -offset)
       scene.add(s)
     })
   }
 
-  // Bottom clues (below the grid)
   if (clues.bottom) {
     clues.bottom.forEach((v, c) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(c * step, 0.3, (n - 1) * step + offset)
+      s.position.set(c * step, clueY, (n - 1) * step + offset)
       scene.add(s)
     })
   }
 
-  // Left clues (left of the grid, looking across rows)
   if (clues.left) {
     clues.left.forEach((v, r) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set(-offset, 0.3, r * step)
+      s.position.set(-offset, clueY, r * step)
       scene.add(s)
     })
   }
 
-  // Right clues (right of the grid)
   if (clues.right) {
     clues.right.forEach((v, r) => {
       if (!v) return
       const s = makeClueSprite(v)
-      s.position.set((n - 1) * step + offset, 0.3, r * step)
+      s.position.set((n - 1) * step + offset, clueY, r * step)
       scene.add(s)
     })
   }
@@ -184,7 +235,7 @@ export function addClues(scene, clues, n) {
 export function tileCenter(row, col) {
   return {
     x: col * (TILE + GAP),
-    y: 0,
+    y: PLATFORM_Y,
     z: row * (TILE + GAP),
   }
 }

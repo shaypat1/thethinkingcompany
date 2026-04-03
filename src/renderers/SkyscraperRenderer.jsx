@@ -263,6 +263,15 @@ export default function SkyscraperRenderer({ levels, narrative }) {
         <span className="sky-hud-size">{n}×{n}</span>
       </div>
 
+      {/* View snap buttons */}
+      <div className="sky-views">
+        <button className="sky-view-btn" onClick={() => sceneRef.current?.snapToView('top')}>N</button>
+        <button className="sky-view-btn" onClick={() => sceneRef.current?.snapToView('left')}>W</button>
+        <button className="sky-view-btn sky-view-iso" onClick={() => sceneRef.current?.snapToView('iso')}>●</button>
+        <button className="sky-view-btn" onClick={() => sceneRef.current?.snapToView('right')}>E</button>
+        <button className="sky-view-btn" onClick={() => sceneRef.current?.snapToView('bottom')}>S</button>
+      </div>
+
       {/* Clue display */}
       <div className="sky-clues">
         {state?.clues && (
