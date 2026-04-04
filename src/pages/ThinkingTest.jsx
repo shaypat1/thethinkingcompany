@@ -862,15 +862,40 @@ export default function ThinkingTest() {
   // ─── RESULTS ───
   if (phase === 'results') {
     const correct = history.filter(h => h.correct).length
+    const pct = getPercentile(elo)
+    const shareEmojis = history.map(h => h.correct ? '🟩' : '🟥').join('')
+
+    function shareResults() {
+      const shareText = `🧠 The Thinking Test\n\nScore: ${elo} (Top ${pct}%)\n${correct}/${history.length} rounds cleared\n\n${shareEmojis}\n\nthethinkingtest.com`
+      if (navigator.share) {
+        navigator.share({ text: shareText }).catch(() => {})
+      } else {
+        navigator.clipboard?.writeText(shareText)
+        alert('Copied to clipboard!')
+      }
+    }
+
     return (
       <div className="tt-wrapper">
         <div className="tt-scanlines" />
-        <div className="tt-content">
-          <h1 className="tt-title-sm">YOUR RESULTS</h1>
-          <div className="tt-final-elo">{elo}</div>
-          <div className="tt-final-label">THINKING SCORE</div>
-          <div className="tt-final-percentile">TOP {getPercentile(elo)}%</div>
-          <div className="tt-final-stats">{correct}/{history.length} ROUNDS CLEARED</div>
+        <div className="tt-content tt-results-content">
+          <div className="tt-results-hero">
+            <div className="tt-results-label">YOUR THINKING SCORE</div>
+            <div className="tt-final-elo">{elo}</div>
+            <div className="tt-final-percentile">TOP {pct}%</div>
+            <div className="tt-results-bar">
+              {history.map((h, i) => (
+                <div key={i} className={`tt-results-block ${h.correct ? 'correct' : 'wrong'}`} />
+              ))}
+            </div>
+            <div className="tt-final-stats">{correct}/{history.length} ROUNDS CLEARED</div>
+          </div>
+
+          <div className="tt-results-actions">
+            <button className="tt-share-btn" onClick={shareResults}>📤 SHARE RESULTS</button>
+            <button className="tt-retake-btn" onClick={() => { setPhase('landing'); setAge(''); setEmail('') }}>RETAKE TEST</button>
+          </div>
+
           <div className="tt-history">
             {history.map((h, i) => (
               <div key={i} className={`tt-history-item ${h.correct ? 'correct' : 'wrong'}`}>
@@ -881,9 +906,6 @@ export default function ThinkingTest() {
               </div>
             ))}
           </div>
-          <button className="tt-start-btn" onClick={() => { setPhase('landing'); setAge(''); setEmail('') }}>
-            RETAKE TEST
-          </button>
         </div>
       </div>
     )
