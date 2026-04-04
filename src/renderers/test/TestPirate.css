@@ -400,4 +400,14 @@
   .pr-speech-bubble { font-size: 0.5rem; max-width: 150px; }
   .pr-bubble-box { padding: 0.6rem 0.8rem; gap: 0.3rem; }
   .pr-propose-btn { font-size: 0.55rem; padding: 0.45rem 1.2rem; }
+  .pr-bottom-bubble-wrap {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 0.5rem;
+    box-sizing: border-box;
+  }
 }
