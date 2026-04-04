@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { createTestTracker } from '../lib/testTracker'
 import GravityRenderer from '../renderers/test/TestGravity'
 import TestSequenceMemory from '../renderers/test/TestSequenceMemory'
 import TestChimpTest from '../renderers/test/TestChimpTest'
@@ -156,12 +157,15 @@ export default function ThinkingTest() {
   const [robotLevelIndex, setRobotLevelIndex] = useState(0)
   const [fablesRoundIndex, setFablesRoundIndex] = useState(0)
   const [pirateLevelIndex, setPirateLevelIndex] = useState(0)
+  const tracker = useRef(null)
 
   const TOTAL_ROUNDS = GRAVITY_ROUNDS.length
 
   function handleStart() {
     if (!age || parseInt(age) < 1) { setError('SELECT YOUR AGE'); return }
     setError(null)
+    tracker.current = createTestTracker()
+    tracker.current.setAge(parseInt(age))
     const startElo = calcStartElo(parseInt(age))
     setElo(startElo)
     setRoundIndex(0)
@@ -174,6 +178,7 @@ export default function ThinkingTest() {
     setCurrentRound(first)
     setUsedIds([first.id])
     setRendererKey(k => k + 1)
+    tracker.current?.startGame('gravity')
     setPhase('gravity')
   }
 
@@ -181,6 +186,7 @@ export default function ThinkingTest() {
     const expected = calcExpected(elo, currentRound.elo)
     const newElo = Math.round(elo + K_FACTOR * ((passed ? 1 : 0) - expected))
 
+    tracker.current?.recordRound({ correct: passed, scoreBefore: elo, scoreAfter: newElo, label: currentRound.label, elo: currentRound.elo })
     setResult(passed ? 'correct' : 'wrong')
     setHistory(prev => [...prev, { question: currentRound, correct: passed, eloBefore: elo, eloAfter: newElo }])
     setElo(newElo)
@@ -190,11 +196,12 @@ export default function ThinkingTest() {
   function handleNextRound() {
     const nextIdx = roundIndex + 1
     if (nextIdx >= TOTAL_ROUNDS) {
+      tracker.current?.endGame()
       startMemoryGame()
       return
     }
     const next = pickClosest(elo, GRAVITY_ROUNDS, usedIds)
-    if (!next) { startMemoryGame(); return }
+    if (!next) { tracker.current?.endGame(); startMemoryGame(); return }
     setCurrentRound(next)
     setUsedIds(prev => [...prev, next.id])
     setRoundIndex(nextIdx)
@@ -204,6 +211,7 @@ export default function ThinkingTest() {
   }
 
   function handleNextGame() {
+    tracker.current?.endGame()
     startMemoryGame()
   }
 
@@ -213,6 +221,7 @@ export default function ThinkingTest() {
     setMemoryStartElo(elo)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startGame(type)
     setPhase('memory')
   }
 
@@ -243,6 +252,12 @@ export default function ThinkingTest() {
       correct: false, eloBefore: runningElo, eloAfter: finalElo
     })
 
+    // Record all rounds to tracker
+    newHistory.forEach(h => {
+      tracker.current?.recordRound({ correct: h.correct, scoreBefore: h.eloBefore, scoreAfter: h.eloAfter, label: h.question.label, elo: h.question.elo })
+    })
+    tracker.current?.endGame()
+
     setHistory(prev => [...prev, ...newHistory])
     setElo(finalElo)
     setResult(finalElo > elo ? 'correct' : 'wrong')
@@ -250,13 +265,13 @@ export default function ThinkingTest() {
   }
 
   function startAnalogies() {
-    // Pick the analogy just above current ELO
     const sorted = [...ANALOGY_QUESTIONS].sort((a, b) => a.elo - b.elo)
     const justAbove = sorted.find(q => q.elo >= elo) || sorted[sorted.length - 1]
     setAnalogyQuestion(justAbove)
     setAnalogyUsedIds([justAbove.id])
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startGame('analogies')
     setPhase('analogyIntro')
   }
 
@@ -264,6 +279,7 @@ export default function ThinkingTest() {
     const expected = calcExpected(elo, analogyQuestion.elo)
     const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
 
+    tracker.current?.recordRound({ correct, scoreBefore: elo, scoreAfter: newElo, label: 'ANALOGY', elo: analogyQuestion.elo })
     setResult(correct ? 'correct' : 'wrong')
     setHistory(prev => [...prev, {
       question: { label: 'ANALOGY', elo: analogyQuestion.elo },
@@ -284,7 +300,7 @@ export default function ThinkingTest() {
     }
 
     if (!nextQ) {
-      // No more higher questions — move to next game
+      tracker.current?.endGame()
       startRobotGolf()
       return
     }
@@ -300,14 +316,15 @@ export default function ThinkingTest() {
     setRobotLevelIndex(0)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startGame('robotgolf')
     setPhase('robot')
   }
 
   function handleRobotLevelComplete() {
-    // Passed this level
     const lvlElo = 600 + (robotLevelIndex + 1) * 100
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (1 - expected))
+    tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo })
     setHistory(prev => [...prev, {
       question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
       correct: true, eloBefore: elo, eloAfter: newElo
@@ -318,10 +335,11 @@ export default function ThinkingTest() {
   }
 
   function handleRobotGameOver() {
-    // Failed this level
     const lvlElo = 600 + (robotLevelIndex + 1) * 100
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (0 - expected))
+    tracker.current?.recordRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo })
+    tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
       correct: false, eloBefore: elo, eloAfter: newElo
@@ -334,7 +352,8 @@ export default function ThinkingTest() {
   function handleRobotNextRound() {
     const nextIdx = robotLevelIndex + 1
     if (nextIdx >= rb001.levels.length) {
-      setPhase('email')
+      tracker.current?.endGame()
+      startFables()
       return
     }
     setRobotLevelIndex(nextIdx)
@@ -349,6 +368,7 @@ export default function ThinkingTest() {
     setFablesRoundIndex(0)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startGame('fables')
     setPhase('fablesIntro')
   }
 
@@ -356,6 +376,8 @@ export default function ThinkingTest() {
     const roundElo = FABLES_ELOS[roundIdx] || 1000
     const expected = calcExpected(elo, roundElo)
     const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
+    tracker.current?.recordRound({ correct, scoreBefore: elo, scoreAfter: newElo, label: `FABLES RND ${roundIdx + 1}`, elo: roundElo })
+    if (!correct) tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `FABLES RND ${roundIdx + 1}`, elo: roundElo },
       correct, eloBefore: elo, eloAfter: newElo
@@ -369,7 +391,8 @@ export default function ThinkingTest() {
   function handleFablesNextRound() {
     const nextIdx = fablesRoundIndex + 1
     if (nextIdx >= FABLES_ELOS.length) {
-      setPhase('email')
+      tracker.current?.endGame()
+      startPirates()
       return
     }
     setFablesRoundIndex(nextIdx)
@@ -384,15 +407,16 @@ export default function ThinkingTest() {
     setPirateLevelIndex(0)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startGame('pirates')
     setPhase('pirate')
   }
 
   function handlePirateLevelComplete(levelIdx, isOptimal) {
     const lvlElo = PIRATE_ELOS[levelIdx] || 1500
     if (isOptimal) {
-      // Optimal = full win
       const expected = calcExpected(elo, lvlElo)
       const newElo = Math.round(elo + K_FACTOR * (1 - expected))
+      tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { optimal: true } })
       setHistory(prev => [...prev, {
         question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
         correct: true, eloBefore: elo, eloAfter: newElo
@@ -400,7 +424,7 @@ export default function ThinkingTest() {
       setElo(newElo)
       setResult('optimal')
     } else {
-      // Non-optimal = tie, no ELO change
+      tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: elo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { optimal: false } })
       setHistory(prev => [...prev, {
         question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
         correct: true, eloBefore: elo, eloAfter: elo
@@ -415,6 +439,8 @@ export default function ThinkingTest() {
     const lvlElo = PIRATE_ELOS[levelIdx] || 1500
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (0 - expected))
+    tracker.current?.recordRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { walkedPlank: true } })
+    tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
       correct: false, eloBefore: elo, eloAfter: newElo
@@ -428,6 +454,7 @@ export default function ThinkingTest() {
   function handlePirateNextRound() {
     const nextIdx = pirateLevelIndex + 1
     if (nextIdx >= PIRATE_ELOS.length) {
+      tracker.current?.endGame()
       setPhase('email')
       return
     }
@@ -442,6 +469,7 @@ export default function ThinkingTest() {
     const raw = email.trim().toLowerCase()
     if (!raw || !emailRegex.test(raw)) { setError('ENTER A VALID EMAIL ADDRESS'); return }
     setError(null)
+    tracker.current?.submit(email, elo)
     setPhase('results')
   }
 
@@ -622,7 +650,7 @@ export default function ThinkingTest() {
               {result === 'correct' ? (
                 <button className="tt-next-btn" onClick={handleAnalogyNextRound}>NEXT ROUND</button>
               ) : (
-                <button className="tt-next-btn" onClick={startRobotGolf}>NEXT GAME</button>
+                <button className="tt-next-btn" onClick={() => { tracker.current?.endGame(); startRobotGolf() }}>NEXT GAME</button>
               )}
             </div>
           </div>
@@ -676,7 +704,7 @@ export default function ThinkingTest() {
               {change >= 0 ? '+' : ''}{change} POINTS
             </div>
             {result === 'correct' ? (
-              <button className="tt-next-btn" onClick={robotLevelIndex + 1 >= rb001.levels.length ? startFables : handleRobotNextRound}>
+              <button className="tt-next-btn" onClick={robotLevelIndex + 1 >= rb001.levels.length ? () => { tracker.current?.endGame(); startFables() } : handleRobotNextRound}>
                 {robotLevelIndex + 1 >= rb001.levels.length ? 'NEXT GAME' : 'NEXT ROUND'}
               </button>
             ) : (
@@ -736,7 +764,7 @@ export default function ThinkingTest() {
               {change >= 0 ? '+' : ''}{change} POINTS
             </div>
             {result === 'correct' ? (
-              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? startPirates : handleFablesNextRound}>
+              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? () => { tracker.current?.endGame(); startPirates() } : handleFablesNextRound}>
                 {fablesRoundIndex + 1 >= FABLES_ELOS.length ? 'NEXT GAME' : 'NEXT ROUND'}
               </button>
             ) : (
