@@ -331,24 +331,6 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
       <Link to="/" className="pr-exit-btn">&larr; Exit</Link>
       <button className="pr-restart-btn" onClick={resetToStart}>Restart</button>
 
-      {/* Rules box */}
-      <div className="pr-rules-box">
-        <div className="pr-rules-heading">Rules <span className="pr-level-badge">Level {level + 1}/{TOTAL_LEVELS} · {pirateCount} pirates</span></div>
-        <ol className="pr-rules-list">
-          <li>The <strong>Captain</strong> proposes how to split 100 gold</li>
-          <li>All pirates vote — need at least {Math.ceil(pirateCount / 2)} of {pirateCount} votes</li>
-          <li>Rejected? Captain walks the plank, <strong>{RANKS[1]}</strong> becomes Captain</li>
-          <li>Pirates are rational: survive first, maximize gold second</li>
-        </ol>
-        <div className="pr-rank-list">
-          {Array.from({ length: pirateCount }, (_, i) => (
-            <span key={i} className="pr-rank-tag" style={{ borderColor: COLORS[i], color: COLORS[i] }}>
-              {RANKS[i]}: {NAMES[i]}
-            </span>
-          ))}
-        </div>
-      </div>
-
       {/* Speech bubbles anchored to pirate heads */}
       {speechBubbles.map((bubble) => {
         const pos = pirateScreenPos[bubble.index]
@@ -366,6 +348,24 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
 
       {/* 3D Scene */}
       <div ref={containerRef} className="pr-scene" />
+
+      {/* Rules box — after scene so it flows below on mobile */}
+      <div className="pr-rules-box">
+        <div className="pr-rules-heading">Rules <span className="pr-level-badge">Level {level + 1}/{TOTAL_LEVELS} · {pirateCount} pirates</span></div>
+        <ol className="pr-rules-list">
+          <li>The <strong>Captain</strong> proposes how to split 100 gold</li>
+          <li>All pirates vote — need at least {Math.ceil(pirateCount / 2)} of {pirateCount} votes</li>
+          <li>Rejected? Captain walks the plank, <strong>{RANKS[1]}</strong> becomes Captain</li>
+          <li>Pirates are rational: survive first, maximize gold second</li>
+        </ol>
+        <div className="pr-rank-list">
+          {Array.from({ length: pirateCount }, (_, i) => (
+            <span key={i} className="pr-rank-tag" style={{ borderColor: COLORS[i], color: COLORS[i] }}>
+              {RANKS[i]}: {NAMES[i]}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* Bottom bubble box */}
       <div className="pr-bottom-bubble-wrap">

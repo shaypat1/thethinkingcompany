@@ -372,15 +372,25 @@
   .pr-rules-bar { display: none; }
   .pr-coin-sliders { flex-direction: column; gap: 0.3rem; }
   .coin-slot { min-width: unset; }
+  .pr-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .pr-scene {
+    flex: none;
+    height: 38vh;
+    min-height: 250px;
+  }
   .pr-rules-box {
-    position: fixed;
+    position: relative;
     top: auto;
-    bottom: 42%;
-    left: 0.5rem;
-    right: 0.5rem;
+    bottom: auto;
+    left: auto;
+    right: auto;
     max-width: 100%;
-    border-radius: 8px;
-    padding: 0.5rem 0.7rem;
+    border-radius: 0;
+    padding: 0.6rem 0.8rem;
+    margin: 0;
   }
   .pr-rules-heading { font-size: 0.75rem; }
   .pr-rules-list { font-size: 0.55rem; padding-left: 0.8rem; margin: 0; line-height: 1.8; }
