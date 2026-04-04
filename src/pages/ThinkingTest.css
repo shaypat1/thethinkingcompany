@@ -391,6 +391,9 @@
 }
 @media (max-width: 500px) {
   .tt-q-elo-float { display: none; }
+  .tt-feedback-popup { padding: 1.5rem 1rem; max-width: 90vw; box-sizing: border-box; }
+  .tt-feedback-text { font-size: 1.2rem; }
+  .tt-intro-rules p { font-size: 0.42rem; letter-spacing: 0.04em; }
 }
 
 /* ─── Feedback popup (centered box) ─── */
@@ -442,7 +445,9 @@
 
 /* Intro popup variant */
 .tt-intro-popup {
-  min-width: 550px;
+  min-width: min(550px, 90vw);
+  max-width: 90vw;
+  box-sizing: border-box;
 }
 
 .tt-intro-rules {
