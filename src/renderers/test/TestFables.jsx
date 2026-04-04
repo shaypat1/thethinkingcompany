@@ -49,14 +49,13 @@ const ROUNDS = [
 const CHAR_NAMES = ['PIETRO', 'WOOKHO', 'ROHAN']
 
 function createForestScene(container) {
+  const isMobile = container.clientWidth < 500
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x040808)
-  scene.fog = new THREE.FogExp2(0x040a06, 0.012)
-
-  const isMobile = container.clientWidth < 500
-  const camera = new THREE.PerspectiveCamera(isMobile ? 65 : 50, container.clientWidth / container.clientHeight, 0.1, 500)
-  camera.position.set(0, isMobile ? 45 : 35, isMobile ? 75 : 55)
-  camera.lookAt(0, 2, -5)
+  scene.fog = new THREE.FogExp2(0x040a06, isMobile ? 0.005 : 0.012)
+  const camera = new THREE.PerspectiveCamera(isMobile ? 75 : 50, container.clientWidth / container.clientHeight, 0.1, 500)
+  camera.position.set(0, isMobile ? 70 : 35, isMobile ? 90 : 55)
+  camera.lookAt(0, isMobile ? 0 : 2, isMobile ? -10 : -5)
 
   const renderer = new THREE.WebGLRenderer({ antialias: false })
   renderer.setPixelRatio(1)
