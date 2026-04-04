@@ -374,23 +374,20 @@
   .coin-slot { min-width: unset; }
   .pr-rules-box {
     position: fixed;
-    top: 3.5rem;
+    top: auto;
+    bottom: 42%;
     left: 0.5rem;
     right: 0.5rem;
-    bottom: auto;
     max-width: 100%;
     border-radius: 8px;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.45rem;
-    max-height: 30vh;
-    overflow-y: auto;
+    padding: 0.5rem 0.7rem;
   }
-  .pr-rules-heading { font-size: 0.65rem; }
-  .pr-rules-list { font-size: 0.45rem; padding-left: 0.8rem; margin: 0; }
-  .pr-rules-list li { margin-bottom: 0.1rem; }
+  .pr-rules-heading { font-size: 0.75rem; }
+  .pr-rules-list { font-size: 0.55rem; padding-left: 0.8rem; margin: 0; line-height: 1.8; }
+  .pr-rules-list li { margin-bottom: 0.15rem; }
   .pr-rank-list { gap: 0.2rem; }
-  .pr-rank-tag { font-size: 0.45rem; padding: 0.1rem 0.25rem; }
-  .pr-speech-bubble { font-size: 0.4rem; max-width: 140px; }
+  .pr-rank-tag { font-size: 0.5rem; padding: 0.12rem 0.3rem; }
+  .pr-speech-bubble { font-size: 0.5rem; max-width: 150px; }
   .pr-bubble-box { padding: 0.6rem 0.8rem; gap: 0.3rem; }
-  .pr-propose-btn { font-size: 0.5rem; padding: 0.4rem 1rem; }
+  .pr-propose-btn { font-size: 0.55rem; padding: 0.45rem 1.2rem; }
 }
