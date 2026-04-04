@@ -375,11 +375,12 @@
   .pr-wrapper {
     overflow-y: auto;
     overflow-x: hidden;
+    height: 100vh;
   }
   .pr-scene {
     flex: none;
-    height: 38vh;
-    min-height: 250px;
+    height: 45vh;
+    min-height: 280px;
   }
   .pr-rules-box {
     position: relative;
