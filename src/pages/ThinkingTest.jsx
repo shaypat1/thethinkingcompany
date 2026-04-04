@@ -22,7 +22,7 @@ const GRAVITY_ROUNDS = [
     ]},
   { id: 'gv3', type: 'gravity', elo: 1000, label: 'MULTIPLICATION & DIVISION',
     questions: [
-      { q: '8 x 9', a: '72' }, { q: '54 x 8', a: '432' }, { q: '56 / 8', a: '7' }, { q: '260 / 6', a: '43 r 2' },
+      { q: '8 x 9', a: '72' }, { q: '54 x 8', a: '432' }, { q: '56 / 8', a: '7' }, { q: '264 / 6', a: '44' },
     ]},
   { id: 'gv4', type: 'gravity', elo: 1100, label: 'MULTI-DIGIT',
     questions: [
