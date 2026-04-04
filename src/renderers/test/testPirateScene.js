@@ -147,7 +147,7 @@ function createRaft(scene) {
   })
 
   function showPirates(count) {
-    const spacing = isMobile ? 55 : 80
+    const spacing = (window.innerWidth < 500) ? 55 : 80
     const startX = -(count - 1) * spacing / 2
     for (let i = 0; i < 5; i++) {
       if (!pirates[i]) continue
