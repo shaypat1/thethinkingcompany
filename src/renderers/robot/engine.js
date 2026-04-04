@@ -162,7 +162,9 @@ function checkWin(state, level) {
       for (let y = 0; y < level.height; y++)
         for (let x = 0; x < level.width; x++)
           if (level.grid[y][x] === 'L') lights.push(`${x},${y}`)
-      return lights.every((l) => state.litTiles.has(l))
+      if (!lights.every((l) => state.litTiles.has(l))) return false
+      if (level.target) return state.x === level.target[0] && state.y === level.target[1]
+      return true
     }
     default:
       return false
