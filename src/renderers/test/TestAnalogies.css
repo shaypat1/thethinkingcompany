@@ -253,8 +253,13 @@
 
 /* Responsive */
 @media (max-width: 700px) {
-  .an-title { font-size: 3rem; }
+  .an-title { font-size: 2.5rem; }
   .an-box { min-width: 70px; height: 45px; font-size: 0.5rem; }
   .an-drag-choice { padding: 0.5rem 0.8rem; font-size: 0.45rem; }
   .an-content { margin-top: -3rem; }
+}
+@media (max-width: 420px) {
+  .an-title { font-size: 1.6rem; letter-spacing: 0.05em; }
+  .an-box { min-width: 55px; height: 38px; font-size: 0.45rem; }
+  .an-drag-choice { padding: 0.4rem 0.6rem; font-size: 0.4rem; }
 }

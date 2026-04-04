@@ -330,11 +330,15 @@ export function createScene(container) {
     const tex = new THREE.CanvasTexture(c)
     tex.minFilter = THREE.NearestFilter
     tex.magFilter = THREE.NearestFilter
+    // Scale plane based on viewport width for mobile
+    const isMobile = window.innerWidth < 500
+    const planeW = isMobile ? 1200 : 2200
+    const planeH = isMobile ? 330 : 600
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(2200, 600),
+      new THREE.PlaneGeometry(planeW, planeH),
       new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0.7 })
     )
-    plane.position.set(0, 350, -2500)
+    plane.position.set(0, isMobile ? 280 : 350, -2500)
     scene.add(plane)
   }
   // Delay to let font load

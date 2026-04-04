@@ -27,7 +27,7 @@
 }
 
 .fb-title-line {
-  font-size: 3.5rem;
+  font-size: clamp(1rem, 4.5vw, 3.5rem);
   color: #fff;
   letter-spacing: 0.08em;
   text-shadow: 3px 3px 0 rgba(255,255,255,0.05);
