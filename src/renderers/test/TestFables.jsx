@@ -53,8 +53,9 @@ function createForestScene(container) {
   scene.background = new THREE.Color(0x040808)
   scene.fog = new THREE.FogExp2(0x040a06, 0.012)
 
-  const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 500)
-  camera.position.set(0, 35, 55)
+  const isMobile = container.clientWidth < 500
+  const camera = new THREE.PerspectiveCamera(isMobile ? 65 : 50, container.clientWidth / container.clientHeight, 0.1, 500)
+  camera.position.set(0, isMobile ? 45 : 35, isMobile ? 75 : 55)
   camera.lookAt(0, 2, -5)
 
   const renderer = new THREE.WebGLRenderer({ antialias: false })

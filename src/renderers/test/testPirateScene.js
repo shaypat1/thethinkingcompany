@@ -147,7 +147,7 @@ function createRaft(scene) {
   })
 
   function showPirates(count) {
-    const spacing = 80
+    const spacing = isMobile ? 55 : 80
     const startX = -(count - 1) * spacing / 2
     for (let i = 0; i < 5; i++) {
       if (!pirates[i]) continue
@@ -255,8 +255,9 @@ export function createScene(container) {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x050810)
 
-  const camera = new THREE.PerspectiveCamera(55, container.clientWidth / container.clientHeight, 1, 20000)
-  camera.position.set(0, 110, 300)
+  const isMobile = container.clientWidth < 500
+  const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 55, container.clientWidth / container.clientHeight, 1, 20000)
+  camera.position.set(0, isMobile ? 160 : 110, isMobile ? 420 : 300)
   camera.lookAt(0, 25, 0)
 
   // Lighting — bright, even, no harsh shadows on characters
