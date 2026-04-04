@@ -189,4 +189,43 @@
 @media (max-width: 500px) {
   .gv-screen-title { font-size: 1.8rem; }
   .gv-input { width: 240px; font-size: 0.55rem; }
+  .gv-input-area { bottom: 10.5rem; }
+}
+
+/* Mobile numpad — replaces virtual keyboard */
+.gv-numpad {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  padding: 4px;
+  background: rgba(5, 8, 16, 0.95);
+  z-index: 30;
+}
+
+.gv-numpad-btn {
+  padding: 0.7rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  background: rgba(20, 25, 40, 0.9);
+  color: #00ccff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.6rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.gv-numpad-btn:active {
+  background: rgba(0, 204, 255, 0.2);
+}
+
+.gv-numpad-enter {
+  background: rgba(0, 80, 40, 0.9);
+  color: #00ff66;
+  border-color: rgba(0, 255, 102, 0.3);
 }

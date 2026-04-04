@@ -33,6 +33,7 @@ export default function GravityRenderer({ questions, onRoundComplete, autoStart 
   const canvasRef = useRef(null)
   const gameRef = useRef(null)
   const inputRef = useRef(null)
+  const [isMobile] = useState(() => 'ontouchstart' in window || window.innerWidth < 500)
   const [input, setInput] = useState('')
   const [gameState, setGameState] = useState(autoStart ? 'playing' : 'ready') // ready | playing | gameOver | won
   const [level, setLevel] = useState(0)
@@ -631,18 +632,42 @@ export default function GravityRenderer({ questions, onRoundComplete, autoStart 
       <canvas ref={canvasRef} className="gv-canvas" />
 
       {playing && (
-        <form className="gv-input-area" onSubmit={handleSubmit}>
-          <input
-            ref={inputRef}
-            className="gv-input"
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="TYPE ANSWER..."
-            autoComplete="off"
-            autoFocus
-          />
-        </form>
+        <>
+          <form className="gv-input-area" onSubmit={handleSubmit}>
+            <input
+              ref={inputRef}
+              className="gv-input"
+              type="text"
+              inputMode="none"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              readOnly={isMobile}
+              placeholder="TYPE ANSWER..."
+              autoComplete="off"
+              autoFocus={!isMobile}
+            />
+          </form>
+          {isMobile && (
+            <div className="gv-numpad">
+              {['1','2','3','4','5','6','7','8','9','−','0','⌫'].map(k => (
+                <button key={k} className="gv-numpad-btn" type="button" onPointerDown={(e) => {
+                  e.preventDefault()
+                  if (k === '⌫') setInput(prev => prev.slice(0, -1))
+                  else if (k === '−') setInput(prev => prev + '-')
+                  else setInput(prev => prev + k)
+                }}>{k}</button>
+              ))}
+              {['/','r',' ','x','.','↵'].map(k => (
+                <button key={k} className={`gv-numpad-btn ${k === '↵' ? 'gv-numpad-enter' : ''}`} type="button" onPointerDown={(e) => {
+                  e.preventDefault()
+                  if (k === '↵') handleSubmit(e)
+                  else if (k === ' ') setInput(prev => prev + ' ')
+                  else setInput(prev => prev + k)
+                }}>{k === ' ' ? '␣' : k === '↵' ? 'GO' : k}</button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {gameState === 'ready' && (
