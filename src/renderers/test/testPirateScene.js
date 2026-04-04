@@ -256,9 +256,9 @@ export function createScene(container) {
   scene.background = new THREE.Color(0x050810)
 
   const isMobile = container.clientWidth < 500
-  const camera = new THREE.PerspectiveCamera(isMobile ? 70 : 55, container.clientWidth / container.clientHeight, 1, 20000)
-  camera.position.set(0, isMobile ? 160 : 110, isMobile ? 420 : 300)
-  camera.lookAt(0, 25, 0)
+  const camera = new THREE.PerspectiveCamera(isMobile ? 60 : 55, container.clientWidth / container.clientHeight, 1, 20000)
+  camera.position.set(0, isMobile ? 80 : 110, isMobile ? 250 : 300)
+  camera.lookAt(0, isMobile ? 15 : 25, 0)
 
   // Lighting — bright, even, no harsh shadows on characters
   scene.add(new THREE.AmbientLight(0x667788, 2.5))
