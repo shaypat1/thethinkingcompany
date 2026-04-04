@@ -777,11 +777,11 @@ export default function ThinkingTest() {
               {change >= 0 ? '+' : ''}{change} POINTS
             </div>
             {result === 'correct' ? (
-              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? () => { tracker.current?.endGame(); startPirates() } : handleFablesNextRound}>
-                {fablesRoundIndex + 1 >= FABLES_ELOS.length ? 'NEXT GAME' : 'NEXT ROUND'}
+              <button className="tt-next-btn" onClick={fablesRoundIndex + 1 >= FABLES_ELOS.length ? () => { tracker.current?.endGame(); setPhase('email') } : handleFablesNextRound}>
+                {fablesRoundIndex + 1 >= FABLES_ELOS.length ? 'FINISH' : 'NEXT ROUND'}
               </button>
             ) : (
-              <button className="tt-next-btn" onClick={startPirates}>NEXT GAME</button>
+              <button className="tt-next-btn" onClick={() => { tracker.current?.endGame(); setPhase('email') }}>FINISH</button>
             )}
           </div>
         </div>
