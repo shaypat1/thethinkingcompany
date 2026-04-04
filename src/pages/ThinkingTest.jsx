@@ -165,7 +165,7 @@ export default function ThinkingTest() {
     if (!age || parseInt(age) < 1) { setError('SELECT YOUR AGE'); return }
     setError(null)
     tracker.current = createTestTracker()
-    tracker.current.setAge(parseInt(age))
+    tracker.current.init(parseInt(age))
     const startElo = calcStartElo(parseInt(age))
     setElo(startElo)
     setRoundIndex(0)

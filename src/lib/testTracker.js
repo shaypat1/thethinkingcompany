@@ -20,91 +20,87 @@ async function getAttemptNumber(ip) {
 export function createTestTracker() {
   let ip = null
   let attemptNumber = null
-  let age = null
-  const sessionStart = Date.now()
-
-  // Current game tracking
+  let sessionId = null
   let currentGameType = null
-  let currentGameStart = null
-  let currentRoundStart = null
-  let pendingRounds = [] // rounds to insert on submit
+  let currentRoundStart = Date.now()
+  let roundCounter = 0
 
-  // Fetch IP immediately
-  const ipPromise = getIP().then(async (fetchedIp) => {
-    ip = fetchedIp
-    attemptNumber = await getAttemptNumber(ip)
-  })
+  // Resolves when session is created in DB
+  let sessionReady = null
 
   return {
-    setAge(a) { age = a },
+    // Called immediately on START — creates session row in DB
+    async init(age) {
+      if (!supabase) { console.log('No Supabase configured'); return }
+
+      ip = await getIP()
+      attemptNumber = await getAttemptNumber(ip)
+
+      const { data, error } = await supabase
+        .from('test_sessions')
+        .insert({
+          ip_address: ip,
+          attempt_number: attemptNumber,
+          age,
+          started_at: new Date().toISOString(),
+        })
+        .select('id')
+        .single()
+
+      if (error) { console.error('Session create error:', error); return }
+      sessionId = data.id
+    },
 
     startGame(type) {
       currentGameType = type
-      currentGameStart = Date.now()
       currentRoundStart = Date.now()
     },
 
-    // Call when a round/level within the current game produces a result
-    recordRound({ correct, scoreBefore, scoreAfter, label, elo, actions }) {
+    // Saves round to DB immediately
+    async recordRound({ correct, scoreBefore, scoreAfter, label, elo, actions }) {
       const now = Date.now()
-      pendingRounds.push({
-        game_type: currentGameType,
-        round_index: pendingRounds.filter(r => r.game_type === currentGameType).length,
-        label,
-        started_at: new Date(currentRoundStart).toISOString(),
-        time_taken_ms: now - currentRoundStart,
-        correct,
-        elo_before: scoreBefore,
-        elo_after: scoreAfter,
-        round_elo: elo,
-        actions: actions || {},
-      })
-      currentRoundStart = now // next round starts now
+      const timeTaken = now - currentRoundStart
+
+      if (supabase && ip) {
+        const { error } = await supabase.from('game_rounds').insert({
+          ip_address: ip,
+          attempt_number: attemptNumber,
+          game_type: currentGameType,
+          round_index: roundCounter,
+          label,
+          started_at: new Date(currentRoundStart).toISOString(),
+          time_taken_ms: timeTaken,
+          correct,
+          elo_before: scoreBefore,
+          elo_after: scoreAfter,
+          round_elo: elo,
+          actions: actions || {},
+        })
+        if (error) console.error('Round insert error:', error)
+      }
+
+      roundCounter++
+      currentRoundStart = now
     },
 
     endGame() {
       currentGameType = null
-      currentGameStart = null
-      currentRoundStart = null
     },
 
+    // Updates session with email + final score
     async submit(email, finalScore) {
-      await ipPromise // make sure IP is resolved
+      if (!supabase || !sessionId) return
 
-      if (!supabase) {
-        console.log('No Supabase — data not saved', { ip, attemptNumber, email, finalScore, rounds: pendingRounds })
-        return
-      }
+      const { error } = await supabase
+        .from('test_sessions')
+        .update({
+          email,
+          final_score: finalScore,
+          ended_at: new Date().toISOString(),
+        })
+        .eq('id', sessionId)
 
-      try {
-        // Insert session
-        const { error: sessErr } = await supabase
-          .from('test_sessions')
-          .insert({
-            ip_address: ip,
-            attempt_number: attemptNumber,
-            email,
-            age,
-            final_score: finalScore,
-            started_at: new Date(sessionStart).toISOString(),
-            ended_at: new Date().toISOString(),
-          })
-
-        if (sessErr) console.error('Session insert error:', sessErr)
-
-        // Insert all rounds
-        if (pendingRounds.length > 0) {
-          const rows = pendingRounds.map(r => ({
-            ip_address: ip,
-            attempt_number: attemptNumber,
-            ...r,
-          }))
-          const { error: roundErr } = await supabase.from('game_rounds').insert(rows)
-          if (roundErr) console.error('Round insert error:', roundErr)
-        }
-      } catch (err) {
-        console.error('Supabase save error:', err)
-      }
+      if (error) console.error('Session update error:', error)
     },
   }
 }
