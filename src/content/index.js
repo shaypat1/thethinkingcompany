@@ -24,6 +24,7 @@ import hanoi001 from './hanoi/hanoi001.json'
 import ld001 from './logicdetective/ld001.json'
 import ld002 from './logicdetective/ld002.json'
 import ld003 from './logicdetective/ld003.json'
+import coup001 from './coup/coup001.json'
 
 const days = [day001, day002, day003, day004, day005]
 
@@ -41,6 +42,7 @@ const content = {
   robot: { rb001, rb002, rb003 },
   hanoi: { hanoi001 },
   logicdetective: { ld001, ld002, ld003 },
+  coup: { coup001 },
 }
 
 export function getDay(dayNumber) {

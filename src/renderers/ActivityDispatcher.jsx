@@ -12,6 +12,7 @@ import BackwardsSpanRenderer from './BackwardsSpanRenderer'
 import RobotRenderer from './RobotRenderer'
 import HanoiRenderer from './HanoiRenderer'
 import LogicDetectiveRenderer from './LogicDetectiveRenderer'
+import CoupRenderer from './CoupRenderer'
 
 export default function ActivityDispatcher({ type, content, label }) {
   switch (type) {
@@ -50,6 +51,8 @@ export default function ActivityDispatcher({ type, content, label }) {
       }
       return <LogicDetectiveRenderer cases={cases} />
     }
+    case 'coup':
+      return <CoupRenderer narrative={content?.narrative} />
     default:
       return <PlaceholderRenderer label={label} />
   }

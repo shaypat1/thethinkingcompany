@@ -1,0 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+.coup-wrapper {
+  position: fixed;
+  inset: 0;
+  background: #050810;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  image-rendering: pixelated;
+}
+
+.coup-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+}
+
+.coup-exit {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 0.45rem;
+  z-index: 20;
+}
+
+/* ── Intro ── */
+.coup-intro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.coup-logo {
+  font-size: clamp(2.5rem, 12vw, 5rem);
+  color: #ffcc00;
+  text-shadow: 4px 4px 0 #cc3333, 0 0 30px rgba(255,204,0,0.3);
+  letter-spacing: 0.15em;
+  margin: 0;
+}
+
+.coup-tagline {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.2em;
+}
+
+.coup-desc {
+  font-size: 0.45rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 400px;
+  line-height: 2;
+}
+
+.coup-diff-select {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.coup-diff-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 2px;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-family: inherit;
+  font-size: 0.4rem;
+  cursor: pointer;
+}
+.coup-diff-btn.active {
+  border-color: #ffcc00;
+  color: #ffcc00;
+  background: rgba(255,204,0,0.1);
+}
+
+.coup-start-btn {
+  padding: 0.7rem 1.5rem;
+  border: 2px solid #ffcc00;
+  border-radius: 2px;
+  background: transparent;
+  color: #ffcc00;
+  font-family: inherit;
+  font-size: 0.55rem;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+}
+.coup-start-btn:hover { background: rgba(255,204,0,0.1); }
+
+/* ── Table ── */
+.coup-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  gap: 0.3rem;
+  overflow-y: auto;
+}
+
+/* ── Opponents ── */
+.coup-opponents {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.coup-player-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  min-width: 100px;
+  text-align: center;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.coup-player-card.active { border-color: #ffcc00; box-shadow: 0 0 10px rgba(255,204,0,0.15); }
+.coup-player-card.dead { opacity: 0.3; }
+
+.coup-player-name { font-size: 0.5rem; font-weight: 400; }
+.coup-player-personality { font-size: 0.3rem; color: rgba(255,255,255,0.2); margin-top: 0.1rem; }
+.coup-player-coins { font-size: 0.35rem; color: #ffcc00; margin: 0.15rem 0; }
+.coup-player-cards { display: flex; gap: 0.2rem; justify-content: center; }
+.coup-eliminated { font-size: 0.35rem; color: #e03030; margin-top: 0.15rem; }
+
+/* ── Cards ── */
+.coup-card {
+  width: 38px;
+  height: 52px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.35rem;
+  gap: 0.1rem;
+  position: relative;
+}
+
+.coup-card.facedown {
+  background: linear-gradient(135deg, #1a1a3a 25%, #0d0d2a 75%);
+  color: rgba(255,255,255,0.15);
+  font-size: 0.8rem;
+}
+
+.coup-card.revealed {
+  background: rgba(0,0,0,0.5);
+  opacity: 0.5;
+}
+
+.coup-card.mycard {
+  width: 65px;
+  height: 90px;
+  font-size: 0.4rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  box-shadow: 0 0 12px rgba(var(--glow), 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.coup-card.mycard:hover { transform: translateY(-4px); box-shadow: 0 4px 20px rgba(255,255,255,0.1); }
+.coup-card.mycard.selected { border-width: 3px; transform: translateY(-6px); }
+
+.coup-card-icon { font-size: 1.2em; }
+.coup-card-name { font-size: 0.3rem; opacity: 0.7; }
+.coup-card-lose-hint { position: absolute; bottom: 2px; font-size: 0.2rem; color: #e03030; animation: pulse 1s infinite; }
+.coup-card-keep { position: absolute; bottom: 2px; font-size: 0.25rem; color: #00cc66; }
+
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ── Game log ── */
+.coup-log {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  min-height: 60px;
+  max-height: 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.coup-log-entry {
+  font-size: 0.35rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+/* ── My area ── */
+.coup-my-area {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  padding: 0.4rem;
+  transition: border-color 0.3s;
+}
+.coup-my-area.my-turn { border-color: #00ccff; box-shadow: 0 0 15px rgba(0,204,255,0.1); }
+
+.coup-my-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.coup-my-name { font-size: 0.6rem; }
+.coup-my-coins { font-size: 0.4rem; color: #ffcc00; }
+
+.coup-my-cards {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+/* ── Action buttons ── */
+.coup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.coup-action-btn {
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.38rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
+  transition: background 0.15s, transform 0.1s;
+}
+.coup-action-btn:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+.coup-action-name { font-size: 0.4rem; }
+.coup-action-claim { font-size: 0.28rem; opacity: 0.5; }
+.coup-action-cost { font-size: 0.28rem; color: #ffcc00; }
+
+/* ── Prompts ── */
+.coup-prompt {
+  background: rgba(0,0,0,0.85);
+  border: 2px solid #ffcc00;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  text-align: center;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.coup-prompt-text { font-size: 0.4rem; line-height: 1.8; margin-bottom: 0.4rem; }
+.coup-prompt-btns { display: flex; gap: 0.3rem; justify-content: center; flex-wrap: wrap; }
+
+.coup-btn {
+  padding: 0.35rem 0.7rem;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 3px;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.38rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+.coup-btn:hover { background: rgba(255,255,255,0.06); }
+.coup-btn.challenge { border-color: #e03030; color: #e03030; }
+.coup-btn.challenge:hover { background: rgba(224,48,48,0.1); }
+.coup-btn.block { border-color: #00cc66; color: #00cc66; }
+.coup-btn.block:hover { background: rgba(0,204,102,0.1); }
+.coup-btn.pass { color: rgba(255,255,255,0.4); }
+
+/* ── Target select ── */
+.coup-target-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.coup-target-title { font-size: 0.38rem; color: rgba(255,255,255,0.5); width: 100%; text-align: center; margin-bottom: 0.2rem; }
+
+.coup-btn.target { font-size: 0.4rem; }
+
+/* ── Exchange ── */
+.coup-exchange {
+  text-align: center;
+  padding: 0.5rem;
+}
+.coup-exchange-cards { display: flex; gap: 0.4rem; justify-content: center; margin: 0.4rem 0; flex-wrap: wrap; }
+
+/* ── Game over ── */
+.coup-gameover {
+  position: absolute;
+  inset: 0;
+  background: rgba(5,8,16,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.coup-gameover-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.coup-gameover-title {
+  font-size: clamp(1.2rem, 6vw, 2.5rem);
+  color: #ffcc00;
+  text-shadow: 3px 3px 0 #cc3333;
+}
+.coup-gameover-sub { font-size: 0.5rem; color: rgba(255,255,255,0.4); }
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .coup-player-card { min-width: 70px; padding: 0.2rem 0.3rem; }
+  .coup-player-name { font-size: 0.38rem; }
+  .coup-player-coins { font-size: 0.3rem; }
+  .coup-card { width: 30px; height: 42px; font-size: 0.28rem; }
+  .coup-card.mycard { width: 55px; height: 75px; }
+  .coup-action-btn { padding: 0.3rem 0.45rem; font-size: 0.33rem; }
+  .coup-log { max-height: 55px; }
+  .coup-log-entry { font-size: 0.28rem; }
+  .coup-prompt-text { font-size: 0.35rem; }
+}

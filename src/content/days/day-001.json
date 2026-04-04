@@ -6,6 +6,7 @@
     { "type": "pirate", "id": "pirate001", "label": "Screwy Pirates" },
     { "type": "verbalmemory", "id": "vb001", "label": "Verbal Memory" },
     { "type": "gravity", "id": "gv001", "label": "Gravity" },
-    { "type": "robot", "id": "rb001", "label": "Robot Workshop" }
+    { "type": "robot", "id": "rb001", "label": "Robot Workshop" },
+    { "type": "coup", "id": "coup001", "label": "Coup" }
   ]
 }
