@@ -264,8 +264,8 @@
 }
 @media (max-width: 420px) {
   .an-title { font-size: 1.1rem; letter-spacing: 0.02em; }
-  .an-box { min-width: 50px !important; height: 35px !important; font-size: 0.38rem !important; padding: 0 0.3rem !important; }
-  .an-drag-choice { padding: 0.35rem 0.5rem; font-size: 0.35rem; }
-  .an-boxes { margin-top: 12vh; gap: 0.15rem; }
-  .an-separator { font-size: 0.45rem !important; }
+  .an-box { min-width: 18vw !important; height: 12vw !important; font-size: 0.5rem !important; padding: 0 0.4rem !important; }
+  .an-drag-choice { padding: 0.55rem 0.8rem; font-size: 0.45rem; }
+  .an-boxes { margin-top: 25vh; gap: 0.2rem; flex-wrap: wrap; }
+  .an-separator { font-size: 0.5rem !important; }
 }
