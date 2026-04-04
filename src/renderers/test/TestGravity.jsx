@@ -12,7 +12,7 @@ const PLANETS = [
 ]
 
 const QUESTIONS_PER_LEVEL = 4
-const BASE_SPEED = 1.35
+const BASE_SPEED = 1
 const SPAWN_INTERVAL_BASE = 90 // frames between spawns
 const MAX_LIVES = 3
 
