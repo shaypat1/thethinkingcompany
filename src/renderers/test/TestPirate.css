@@ -373,14 +373,13 @@
   .pr-coin-sliders { flex-direction: column; gap: 0.3rem; }
   .coin-slot { min-width: unset; }
   .pr-wrapper {
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
     height: 100vh;
+    height: 100dvh;
   }
   .pr-scene {
-    flex: none;
-    height: 45vh;
-    min-height: 280px;
+    flex: 1;
+    min-height: 0;
   }
   .pr-rules-box {
     position: relative;
