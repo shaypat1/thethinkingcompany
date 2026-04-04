@@ -455,10 +455,20 @@ export default function RobotRenderer({ levels, narrative, onComplete, onGameOve
 
       {/* Bottom panel */}
       <div className="rb-bottom">
+        {/* Card hand — moved above program strip */}
+        <div className="rb-hand">
+          {availableCards.map((card) => (
+            <button key={card.id} className="rb-card" style={{ '--card-color': card.color }} onClick={() => addCard(card.id)} disabled={phase !== 'build'}>
+              <span className="rb-card-sym" style={{ color: card.color }}>{card.sym}</span>
+              <span className="rb-card-name">{card.name}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Program strip */}
         <div className="rb-conveyor">
           <div className="rb-belt">
-            {program.length === 0 && <span className="rb-belt-empty">Tap cards below to build your program</span>}
+            {/* empty state — no text needed */}
             {program.map((item, i) => {
               if (typeof item === 'string') {
                 return (
@@ -564,15 +574,6 @@ export default function RobotRenderer({ levels, narrative, onComplete, onGameOve
           </div>
         </div>
 
-        {/* Card hand */}
-        <div className="rb-hand">
-          {availableCards.map((card) => (
-            <button key={card.id} className="rb-card" style={{ '--card-color': card.color }} onClick={() => addCard(card.id)} disabled={phase !== 'build'}>
-              <span className="rb-card-sym" style={{ color: card.color }}>{card.sym}</span>
-              <span className="rb-card-name">{card.name}</span>
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   )
