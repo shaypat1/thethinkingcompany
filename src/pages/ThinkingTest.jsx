@@ -438,9 +438,30 @@ export default function ThinkingTest() {
   }
 
   function handleEmailSubmit() {
-    if (!email.trim() || !email.includes('@')) { setError('ENTER A VALID EMAIL'); return }
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/
+    const raw = email.trim().toLowerCase()
+    if (!raw || !emailRegex.test(raw)) { setError('ENTER A VALID EMAIL ADDRESS'); return }
     setError(null)
     setPhase('results')
+  }
+
+  function getPercentile(eloScore) {
+    // Approximate percentile based on ELO distribution
+    // Assuming normal distribution centered ~1000, stddev ~200
+    // ELO 600 = bottom 2%, 800 = 16%, 1000 = 50%, 1200 = 84%, 1400 = 98%, 1600+ = 99.5%+
+    if (eloScore >= 1800) return 0.1
+    if (eloScore >= 1600) return 0.5
+    if (eloScore >= 1500) return 1
+    if (eloScore >= 1400) return 2
+    if (eloScore >= 1300) return 5
+    if (eloScore >= 1200) return 10
+    if (eloScore >= 1100) return 20
+    if (eloScore >= 1000) return 35
+    if (eloScore >= 900) return 50
+    if (eloScore >= 800) return 65
+    if (eloScore >= 700) return 80
+    if (eloScore >= 600) return 90
+    return 95
   }
 
   // ─── LANDING ───
@@ -807,6 +828,7 @@ export default function ThinkingTest() {
           <h1 className="tt-title-sm">YOUR RESULTS</h1>
           <div className="tt-final-elo">{elo}</div>
           <div className="tt-final-label">THINKING SCORE</div>
+          <div className="tt-final-percentile">TOP {getPercentile(elo)}%</div>
           <div className="tt-final-stats">{correct}/{history.length} ROUNDS CLEARED</div>
           <div className="tt-history">
             {history.map((h, i) => (

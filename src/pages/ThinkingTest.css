@@ -522,7 +522,15 @@
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.35);
   letter-spacing: 0.15em;
+  margin-bottom: 0.3rem;
+}
+
+.tt-final-percentile {
+  font-size: 1.1rem;
+  color: #00ff66;
+  letter-spacing: 0.1em;
   margin-bottom: 1rem;
+  text-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
 }
 
 .tt-final-stats {
