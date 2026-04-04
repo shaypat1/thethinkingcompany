@@ -179,6 +179,7 @@ export default function ThinkingTest() {
     setUsedIds([first.id])
     setRendererKey(k => k + 1)
     tracker.current?.startGame('gravity')
+    tracker.current?.startRound({ label: first.label, elo: first.elo, setup: { questions: first.questions } })
     setPhase('gravity')
   }
 
@@ -186,7 +187,7 @@ export default function ThinkingTest() {
     const expected = calcExpected(elo, currentRound.elo)
     const newElo = Math.round(elo + K_FACTOR * ((passed ? 1 : 0) - expected))
 
-    tracker.current?.recordRound({ correct: passed, scoreBefore: elo, scoreAfter: newElo, label: currentRound.label, elo: currentRound.elo })
+    tracker.current?.completeRound({ correct: passed, scoreBefore: elo, scoreAfter: newElo, response: { passed } })
     setResult(passed ? 'correct' : 'wrong')
     setHistory(prev => [...prev, { question: currentRound, correct: passed, eloBefore: elo, eloAfter: newElo }])
     setElo(newElo)
@@ -207,6 +208,7 @@ export default function ThinkingTest() {
     setRoundIndex(nextIdx)
     setResult(null)
     setRendererKey(k => k + 1)
+    tracker.current?.startRound({ label: next.label, elo: next.elo, setup: { questions: next.questions } })
     setPhase('gravity')
   }
 
@@ -225,7 +227,7 @@ export default function ThinkingTest() {
     setPhase('memory')
   }
 
-  function handleMemoryComplete(levelsCompleted) {
+  async function handleMemoryComplete(levelsCompleted) {
     setMemoryLevels(levelsCompleted)
     const label = memoryType === 'sequence' ? 'SEQUENCE' : 'CHIMP TEST'
     const newHistory = []
@@ -252,10 +254,10 @@ export default function ThinkingTest() {
       correct: false, eloBefore: runningElo, eloAfter: finalElo
     })
 
-    // Record all rounds to tracker
-    newHistory.forEach(h => {
-      tracker.current?.recordRound({ correct: h.correct, scoreBefore: h.eloBefore, scoreAfter: h.eloAfter, label: h.question.label, elo: h.question.elo })
-    })
+    // Record all rounds to tracker (memory games happen inside renderer, so no startRound)
+    for (const h of newHistory) {
+      await tracker.current?.completeRound({ correct: h.correct, scoreBefore: h.eloBefore, scoreAfter: h.eloAfter, response: { levelsCompleted, label: h.question.label } })
+    }
     tracker.current?.endGame()
 
     setHistory(prev => [...prev, ...newHistory])
@@ -272,6 +274,7 @@ export default function ThinkingTest() {
     setRendererKey(k => k + 1)
     setResult(null)
     tracker.current?.startGame('analogies')
+    tracker.current?.startRound({ label: 'ANALOGY', elo: justAbove.elo, setup: { words: justAbove.words, choices: justAbove.choices } })
     setPhase('analogyIntro')
   }
 
@@ -279,7 +282,7 @@ export default function ThinkingTest() {
     const expected = calcExpected(elo, analogyQuestion.elo)
     const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
 
-    tracker.current?.recordRound({ correct, scoreBefore: elo, scoreAfter: newElo, label: 'ANALOGY', elo: analogyQuestion.elo })
+    tracker.current?.completeRound({ correct, scoreBefore: elo, scoreAfter: newElo, response: { correct, words: analogyQuestion.words } })
     setResult(correct ? 'correct' : 'wrong')
     setHistory(prev => [...prev, {
       question: { label: 'ANALOGY', elo: analogyQuestion.elo },
@@ -309,6 +312,7 @@ export default function ThinkingTest() {
     setAnalogyUsedIds(prev => [...prev, nextQ.id])
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startRound({ label: 'ANALOGY', elo: nextQ.elo, setup: { words: nextQ.words, choices: nextQ.choices } })
     setPhase('analogy')
   }
 
@@ -317,6 +321,7 @@ export default function ThinkingTest() {
     setRendererKey(k => k + 1)
     setResult(null)
     tracker.current?.startGame('robotgolf')
+    tracker.current?.startRound({ label: `ROBOT GOLF LVL 1`, elo: 700, setup: { levelName: rb001.levels[0]?.name, par: rb001.levels[0]?.par } })
     setPhase('robot')
   }
 
@@ -324,7 +329,7 @@ export default function ThinkingTest() {
     const lvlElo = 600 + (robotLevelIndex + 1) * 100
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (1 - expected))
-    tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo })
+    tracker.current?.completeRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, response: { passed: true } })
     setHistory(prev => [...prev, {
       question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
       correct: true, eloBefore: elo, eloAfter: newElo
@@ -338,7 +343,7 @@ export default function ThinkingTest() {
     const lvlElo = 600 + (robotLevelIndex + 1) * 100
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (0 - expected))
-    tracker.current?.recordRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo })
+    tracker.current?.completeRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, response: { failed: true } })
     tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `ROBOT GOLF LVL ${robotLevelIndex + 1}`, elo: lvlElo },
@@ -359,6 +364,8 @@ export default function ThinkingTest() {
     setRobotLevelIndex(nextIdx)
     setRendererKey(k => k + 1)
     setResult(null)
+    const lvl = rb001.levels[nextIdx]
+    tracker.current?.startRound({ label: `ROBOT GOLF LVL ${nextIdx + 1}`, elo: 600 + (nextIdx + 1) * 100, setup: { levelName: lvl?.name, par: lvl?.par } })
     setPhase('robot')
   }
 
@@ -369,6 +376,7 @@ export default function ThinkingTest() {
     setRendererKey(k => k + 1)
     setResult(null)
     tracker.current?.startGame('fables')
+    tracker.current?.startRound({ label: 'FABLES RND 1', elo: FABLES_ELOS[0], setup: { round: 1 } })
     setPhase('fablesIntro')
   }
 
@@ -376,7 +384,7 @@ export default function ThinkingTest() {
     const roundElo = FABLES_ELOS[roundIdx] || 1000
     const expected = calcExpected(elo, roundElo)
     const newElo = Math.round(elo + K_FACTOR * ((correct ? 1 : 0) - expected))
-    tracker.current?.recordRound({ correct, scoreBefore: elo, scoreAfter: newElo, label: `FABLES RND ${roundIdx + 1}`, elo: roundElo })
+    tracker.current?.completeRound({ correct, scoreBefore: elo, scoreAfter: newElo, response: { round: roundIdx + 1, correct } })
     if (!correct) tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `FABLES RND ${roundIdx + 1}`, elo: roundElo },
@@ -398,6 +406,7 @@ export default function ThinkingTest() {
     setFablesRoundIndex(nextIdx)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startRound({ label: `FABLES RND ${nextIdx + 1}`, elo: FABLES_ELOS[nextIdx], setup: { round: nextIdx + 1 } })
     setPhase('fables')
   }
 
@@ -408,6 +417,7 @@ export default function ThinkingTest() {
     setRendererKey(k => k + 1)
     setResult(null)
     tracker.current?.startGame('pirates')
+    tracker.current?.startRound({ label: 'PIRATES RND 1', elo: PIRATE_ELOS[0], setup: { pirateCount: 2 } })
     setPhase('pirate')
   }
 
@@ -416,7 +426,7 @@ export default function ThinkingTest() {
     if (isOptimal) {
       const expected = calcExpected(elo, lvlElo)
       const newElo = Math.round(elo + K_FACTOR * (1 - expected))
-      tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { optimal: true } })
+      tracker.current?.completeRound({ correct: true, scoreBefore: elo, scoreAfter: newElo, response: { optimal: true } })
       setHistory(prev => [...prev, {
         question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
         correct: true, eloBefore: elo, eloAfter: newElo
@@ -424,7 +434,7 @@ export default function ThinkingTest() {
       setElo(newElo)
       setResult('optimal')
     } else {
-      tracker.current?.recordRound({ correct: true, scoreBefore: elo, scoreAfter: elo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { optimal: false } })
+      tracker.current?.completeRound({ correct: true, scoreBefore: elo, scoreAfter: elo, response: { optimal: false } })
       setHistory(prev => [...prev, {
         question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
         correct: true, eloBefore: elo, eloAfter: elo
@@ -439,7 +449,7 @@ export default function ThinkingTest() {
     const lvlElo = PIRATE_ELOS[levelIdx] || 1500
     const expected = calcExpected(elo, lvlElo)
     const newElo = Math.round(elo + K_FACTOR * (0 - expected))
-    tracker.current?.recordRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo, actions: { walkedPlank: true } })
+    tracker.current?.completeRound({ correct: false, scoreBefore: elo, scoreAfter: newElo, response: { walkedPlank: true } })
     tracker.current?.endGame()
     setHistory(prev => [...prev, {
       question: { label: `PIRATES RND ${levelIdx + 1}`, elo: lvlElo },
@@ -461,6 +471,7 @@ export default function ThinkingTest() {
     setPirateLevelIndex(nextIdx)
     setRendererKey(k => k + 1)
     setResult(null)
+    tracker.current?.startRound({ label: `PIRATES RND ${nextIdx + 1}`, elo: PIRATE_ELOS[nextIdx], setup: { pirateCount: nextIdx + 2 } })
     setPhase('pirate')
   }
 

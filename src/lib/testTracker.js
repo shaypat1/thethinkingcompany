@@ -22,14 +22,12 @@ export function createTestTracker() {
   let attemptNumber = null
   let sessionId = null
   let currentGameType = null
-  let currentRoundStart = Date.now()
+  let currentRoundId = null
+  let currentRoundStartTime = null
+  let currentRoundSetup = null
   let roundCounter = 0
 
-  // Resolves when session is created in DB
-  let sessionReady = null
-
   return {
-    // Called immediately on START — creates session row in DB
     async init(age) {
       if (!supabase) { console.log('No Supabase configured'); return }
 
@@ -53,41 +51,82 @@ export function createTestTracker() {
 
     startGame(type) {
       currentGameType = type
-      currentRoundStart = Date.now()
     },
 
-    // Saves round to DB immediately
-    async recordRound({ correct, scoreBefore, scoreAfter, label, elo, actions }) {
-      const now = Date.now()
-      const timeTaken = now - currentRoundStart
+    // BEFORE — inserts row with question/setup, result TBD
+    async startRound({ label, elo, setup }) {
+      currentRoundId = null
+      currentRoundStartTime = Date.now()
+      currentRoundSetup = setup || {}
 
-      if (supabase && ip) {
-        const { error } = await supabase.from('game_rounds').insert({
+      if (!supabase || !ip) return
+
+      const { data, error } = await supabase
+        .from('game_rounds')
+        .insert({
           ip_address: ip,
           attempt_number: attemptNumber,
           game_type: currentGameType,
           round_index: roundCounter,
           label,
-          started_at: new Date(currentRoundStart).toISOString(),
+          round_elo: elo,
+          started_at: new Date(currentRoundStartTime).toISOString(),
+          correct: null,
+          elo_before: null,
+          elo_after: null,
+          time_taken_ms: null,
+          actions: { setup: currentRoundSetup },
+        })
+        .select('id')
+        .single()
+
+      if (error) { console.error('Round start error:', error); return }
+      currentRoundId = data.id
+    },
+
+    // AFTER — updates that row with answer, result, timing
+    async completeRound({ correct, scoreBefore, scoreAfter, response }) {
+      const timeTaken = currentRoundStartTime ? Date.now() - currentRoundStartTime : 0
+
+      if (supabase && currentRoundId) {
+        const { error } = await supabase
+          .from('game_rounds')
+          .update({
+            correct,
+            elo_before: scoreBefore,
+            elo_after: scoreAfter,
+            time_taken_ms: timeTaken,
+            actions: { setup: currentRoundSetup, response: response || {} },
+          })
+          .eq('id', currentRoundId)
+
+        if (error) console.error('Round complete error:', error)
+      } else if (supabase && ip) {
+        // Fallback: no startRound was called, insert complete row
+        await supabase.from('game_rounds').insert({
+          ip_address: ip,
+          attempt_number: attemptNumber,
+          game_type: currentGameType,
+          round_index: roundCounter,
+          started_at: new Date(currentRoundStartTime || Date.now()).toISOString(),
           time_taken_ms: timeTaken,
           correct,
           elo_before: scoreBefore,
           elo_after: scoreAfter,
-          round_elo: elo,
-          actions: actions || {},
+          actions: { setup: currentRoundSetup, response: response || {} },
         })
-        if (error) console.error('Round insert error:', error)
       }
 
       roundCounter++
-      currentRoundStart = now
+      currentRoundId = null
+      currentRoundStartTime = null
+      currentRoundSetup = null
     },
 
     endGame() {
       currentGameType = null
     },
 
-    // Updates session with email + final score
     async submit(email, finalScore) {
       if (!supabase || !sessionId) return
 

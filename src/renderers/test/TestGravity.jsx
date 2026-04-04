@@ -12,8 +12,8 @@ const PLANETS = [
 ]
 
 const QUESTIONS_PER_LEVEL = 4
-const BASE_SPEED = 0.9
-const SPAWN_INTERVAL_BASE = 150 // frames between spawns
+const BASE_SPEED = 1.8
+const SPAWN_INTERVAL_BASE = 90 // frames between spawns
 const MAX_LIVES = 3
 
 function normalize(str) {
