@@ -138,7 +138,9 @@ function pickClosest(playerElo, pool, usedIds) {
 }
 
 export default function ThinkingTest() {
-  const [phase, setPhase] = useState('landing') // landing | gravity | feedback | memory | memoryDone | email | results
+  // ?phase=pirate to skip straight to a game for testing
+  const debugPhase = new URLSearchParams(window.location.search).get('phase')
+  const [phase, setPhase] = useState(debugPhase || 'landing')
   const [age, setAge] = useState('')
   const [error, setError] = useState(null)
   const [elo, setElo] = useState(800)
