@@ -166,18 +166,19 @@ export default function TestChimpTest({ onComplete, autoStart }) {
           })}
         </div>
 
-        {/* Timer bar — underneath the grid */}
-        {phase === 'flash' && (
-          <div className="ct-timer-bar">
-            {Array.from({ length: TICK_COUNT }).map((_, i) => (
-              <div key={i} className={`ct-timer-tick ${i < timerTicks ? 'on' : 'off'}`} />
-            ))}
+        {/* Timer + status — fixed height container so grid doesn't shift */}
+        <div className="ct-timer-status">
+          {phase === 'flash' && (
+            <div className="ct-timer-bar">
+              {Array.from({ length: TICK_COUNT }).map((_, i) => (
+                <div key={i} className={`ct-timer-tick ${i < timerTicks ? 'on' : 'off'}`} />
+              ))}
+            </div>
+          )}
+          <div className="ct-status">
+            {phase === 'flash' && 'MEMORIZE...'}
+            {phase === 'hidden' && 'YOUR TURN'}
           </div>
-        )}
-
-        <div className="ct-status">
-          {phase === 'flash' && 'MEMORIZE...'}
-          {phase === 'hidden' && 'YOUR TURN'}
         </div>
       </div>
     </div>
