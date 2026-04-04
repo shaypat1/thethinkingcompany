@@ -389,6 +389,9 @@
   color: rgba(255, 255, 255, 0.25);
   letter-spacing: 0.1em;
 }
+@media (max-width: 500px) {
+  .tt-q-elo-float { display: none; }
+}
 
 /* ─── Feedback popup (centered box) ─── */
 .tt-feedback-wrap {
