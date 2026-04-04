@@ -226,6 +226,8 @@
 @media (max-width: 420px) {
   .fb-title-line { font-size: 0.8rem; letter-spacing: 0.02em; }
   .fb-start-heading { font-size: 0.9rem; }
-  .fb-speech { max-width: 120px; }
-  .fb-speech-text { font-size: 0.3rem; }
+  .fb-speech { max-width: 110px; padding: 0.6rem 0.5rem; }
+  .fb-speech-text { font-size: 0.28rem; }
+  .fb-speech-name { font-size: 0.55rem; }
+  .fb-accuse-btn { font-size: 0.35rem; padding: 0.3rem 0.5rem; }
 }

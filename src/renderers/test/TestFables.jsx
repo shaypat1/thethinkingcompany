@@ -327,8 +327,10 @@ export default function TestFables({ onRoundResult, skipIntro, startRound: start
             if (phase === 'result' && selected === i && result === 'wrong') cls += ' wrong-pick'
             if (phase === 'result' && i !== currentRound.liar && selected !== i) cls += ' truthful'
             const offsetX = i === 0 ? -40 : i === 2 ? 40 : 0
+            const rawLeft = pos.x + offsetX
+            const clampedLeft = Math.max(60, Math.min(rawLeft, window.innerWidth - 60))
             return (
-              <div key={i} className={cls} style={{ left: pos.x + offsetX, top: pos.y }}>
+              <div key={i} className={cls} style={{ left: clampedLeft, top: pos.y }}>
                 <div className="fb-speech-name">{stmt.name}</div>
                 <div className="fb-speech-text">{stmt.text}</div>
                 {phase === 'playing' && (
