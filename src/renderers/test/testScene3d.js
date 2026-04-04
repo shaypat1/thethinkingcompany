@@ -15,12 +15,12 @@ export function createScene(container, level) {
   const gridH = level.height * (TILE_SIZE + TILE_GAP)
   const maxDim = Math.max(gridW, gridH)
   const isMobile = container.clientWidth < 500
-  const camDist = maxDim * (isMobile ? 2.2 : 1.5) + 3
+  const camDist = maxDim * (isMobile ? 2.8 : 1.5) + 3
 
-  const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100)
+  const camera = new THREE.PerspectiveCamera(isMobile ? 50 : 38, container.clientWidth / container.clientHeight, 0.1, 100)
   const camCx = (level.width - 1) * (TILE_SIZE + TILE_GAP) / 2
   const camCz = (level.height - 1) * (TILE_SIZE + TILE_GAP) / 2
-  camera.position.set(camCx, camDist * 0.9, camCz + camDist * 0.4)
+  camera.position.set(camCx, camDist * (isMobile ? 1.0 : 0.9), camCz + camDist * 0.4)
   camera.lookAt(camCx, 0, camCz)
 
   // Renderer — no tone mapping for flat retro look
