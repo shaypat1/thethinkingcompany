@@ -17,7 +17,7 @@ export default function App() {
       <BrowserRouter>
         <div className="app-content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ThinkingTest />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/activity/:dayId/:nodeIndex" element={<Activity />} />
