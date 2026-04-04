@@ -3,13 +3,22 @@
 .coup-wrapper {
   position: fixed;
   inset: 0;
-  background: #050810;
+  background: #030508;
   color: #fff;
   font-family: 'Press Start 2P', monospace;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
   image-rendering: pixelated;
+}
+
+.coup-3d {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.coup-3d canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .coup-scanlines {
@@ -100,13 +109,17 @@
 
 /* ── Table ── */
 .coup-table {
-  flex: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   padding: 0.4rem;
   gap: 0.3rem;
   overflow-y: auto;
+  pointer-events: none;
 }
+.coup-table > * { pointer-events: auto; }
 
 /* ── Opponents ── */
 .coup-opponents {
@@ -117,7 +130,8 @@
 }
 
 .coup-player-card {
-  background: rgba(255,255,255,0.03);
+  background: rgba(5,8,16,0.75);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 4px;
   padding: 0.3rem 0.4rem;
@@ -182,7 +196,8 @@
 
 /* ── Game log ── */
 .coup-log {
-  background: rgba(0,0,0,0.4);
+  background: rgba(5,8,16,0.7);
+  backdrop-filter: blur(4px);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 4px;
   padding: 0.3rem 0.5rem;
@@ -206,6 +221,9 @@
   border-radius: 4px;
   padding: 0.4rem;
   transition: border-color 0.3s;
+  background: rgba(5,8,16,0.7);
+  backdrop-filter: blur(4px);
+  margin-top: auto;
 }
 .coup-my-area.my-turn { border-color: #00ccff; box-shadow: 0 0 15px rgba(0,204,255,0.1); }
 

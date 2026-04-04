@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { createOrchestrator } from './coup/orchestrator'
 import { ACTIONS, getLegalActions, alivePlayerIds, CHARACTERS } from './coup/engine'
+import { createCoupScene } from './coup/scene3d'
 import './CoupRenderer.css'
 
 const CARD_ICONS = { Duke: '♛', Assassin: '🗡', Ambassador: '🕊', Captain: '⚓', Contessa: '♕' }
@@ -13,6 +14,8 @@ export default function CoupRenderer({ narrative }) {
   const [gameState, setGameState] = useState(null)
   const [difficulty, setDifficulty] = useState('medium')
   const orchRef = useRef(null)
+  const sceneContainerRef = useRef(null)
+  const sceneRef = useRef(null)
 
   const startGame = useCallback(() => {
     orchRef.current?.destroy()
@@ -26,6 +29,57 @@ export default function CoupRenderer({ narrative }) {
   }, [difficulty])
 
   useEffect(() => { return () => orchRef.current?.destroy() }, [])
+
+  // 3D scene
+  useEffect(() => {
+    if (phase !== 'playing' || !sceneContainerRef.current) return
+    const el = sceneContainerRef.current
+    while (el.firstChild?.tagName === 'CANVAS') el.removeChild(el.firstChild)
+
+    const s = createCoupScene(el)
+    el.insertBefore(s.renderer.domElement, el.firstChild)
+    sceneRef.current = s
+
+    let clock = 0
+    let frame
+    const animate = () => {
+      clock += 0.016
+      // Gentle camera sway
+      s.camera.position.x = Math.sin(clock * 0.15) * 0.5
+      s.camera.position.z = 10 + Math.cos(clock * 0.1) * 0.3
+      s.camera.lookAt(0, 0, 0)
+      s.renderer.render(s.scene, s.camera)
+      frame = requestAnimationFrame(animate)
+    }
+    animate()
+
+    const onResize = () => {
+      s.camera.aspect = el.clientWidth / el.clientHeight
+      s.camera.updateProjectionMatrix()
+      s.renderer.setSize(el.clientWidth, el.clientHeight)
+    }
+    window.addEventListener('resize', onResize)
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('resize', onResize); s.renderer.dispose() }
+  }, [phase === 'playing'])
+
+  // Sync 3D scene with game state
+  useEffect(() => {
+    const s = sceneRef.current
+    if (!s || !gameState?.game) return
+    const { game } = gameState
+    for (let i = 0; i < 6; i++) {
+      const p = game.players[i]
+      s.updateCoins(i, p.coins)
+      s.highlightSeat(i, game.currentPlayer === i)
+      if (p.eliminated) s.eliminateSeat(i)
+      // Update card visuals
+      for (let ci = 0; ci < 2; ci++) {
+        if (ci < p.cards.length) s.updateCard(i, ci, 'facedown')
+        else if (ci < p.cards.length + p.revealedCards.length) s.updateCard(i, ci, 'revealed')
+        else s.updateCard(i, ci, 'empty')
+      }
+    }
+  }, [gameState])
 
   if (phase === 'intro') {
     return (
@@ -55,9 +109,11 @@ export default function CoupRenderer({ narrative }) {
 
   return (
     <div className="coup-wrapper">
+      {/* 3D scene — full screen behind everything */}
+      <div ref={sceneContainerRef} className="coup-3d" />
       <div className="coup-scanlines" />
 
-      {/* Table layout */}
+      {/* Table layout — HTML overlay on top of 3D */}
       <div className="coup-table">
         {/* Other players around the top */}
         <div className="coup-opponents">
