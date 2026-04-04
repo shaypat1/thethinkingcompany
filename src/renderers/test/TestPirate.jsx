@@ -7,6 +7,7 @@ import './TestPirate.css'
 
 const COLORS = ['#cc3333','#3366cc','#33aa55','#9944cc','#ee8833']
 const NAMES = ['Captain', 'Henry', 'Pietro', 'Wookho', 'Rohan']
+const RANKS = ['Captain', '1st Mate', '2nd Mate', '3rd Mate', '4th Mate']
 const PIRATE_ELOS = [1200, 1500, 1800, 2100]
 
 function getVoteReasoning(pirateCount, proposal, votes, optimal) {
@@ -141,8 +142,8 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
     }
     tryShow()
     if (!done) {
-      const interval = setInterval(() => { tryShow(); if (done) clearInterval(interval) }, 300)
-      setTimeout(() => clearInterval(interval), 5000)
+      const interval = setInterval(() => { tryShow(); if (done) clearInterval(interval) }, 200)
+      setTimeout(() => clearInterval(interval), 10000) // 10s timeout for slow model loading
       return () => clearInterval(interval)
     }
   }, [pirateCount])
@@ -334,10 +335,18 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
       <div className="pr-rules-box">
         <div className="pr-rules-heading">Rules <span className="pr-level-badge">Level {level + 1}/{TOTAL_LEVELS} · {pirateCount} pirates</span></div>
         <ol className="pr-rules-list">
-          <li>Captain proposes how to split the treasure</li>
-          <li>All pirates vote — need at least half</li>
-          <li>Rejected? Captain walks the plank</li>
+          <li>The <strong>Captain</strong> proposes how to split 100 gold</li>
+          <li>All pirates vote — need at least {Math.ceil(pirateCount / 2)} of {pirateCount} votes</li>
+          <li>Rejected? Captain walks the plank, <strong>{RANKS[1]}</strong> becomes Captain</li>
+          <li>Pirates are rational: survive first, maximize gold second</li>
         </ol>
+        <div className="pr-rank-list">
+          {Array.from({ length: pirateCount }, (_, i) => (
+            <span key={i} className="pr-rank-tag" style={{ borderColor: COLORS[i], color: COLORS[i] }}>
+              {RANKS[i]}: {NAMES[i]}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Speech bubbles anchored to pirate heads */}
@@ -390,6 +399,7 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
               {votes.votes.map((v, i) => (
                 <div key={i} className={`pr-vote-chip ${v ? 'yes' : 'no'}`}>
                   <span style={{ color: COLORS[i], fontWeight: 600 }}>{NAMES[i]}</span>
+                  <span className="pr-vote-rank">{RANKS[i]}</span>
                   <span>{v ? '✓' : '✗'}</span>
                   <span className="pr-vote-coins">{proposal[i]}</span>
                 </div>

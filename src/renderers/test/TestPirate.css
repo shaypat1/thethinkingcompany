@@ -80,6 +80,26 @@
   margin-bottom: 0.15rem;
 }
 
+.pr-rank-list {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-top: 0.4rem;
+}
+
+.pr-rank-tag {
+  font-size: 0.55rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.pr-vote-rank {
+  font-size: 0.5rem;
+  opacity: 0.5;
+}
+
 /* ─── 3D Scene container ─── */
 .pr-scene {
   flex: 1;

@@ -53,8 +53,8 @@
 }
 
 .sq-rules p {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
   letter-spacing: 0.1em;
   line-height: 2.2;
   margin: 0;
@@ -100,10 +100,16 @@
 
 /* Status text — big */
 .sq-status {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: 0.15em;
   min-height: 1.5rem;
+  animation: sq-pulse 1s ease-in-out infinite;
+}
+
+@keyframes sq-pulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.5; }
 }
 
 /* Start button */

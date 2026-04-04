@@ -20,13 +20,13 @@ const GRAVITY_ROUNDS = [
     questions: [
       { q: '13 + 5', a: '18' }, { q: '6 + 17', a: '23' }, { q: '28 + 9', a: '37' }, { q: '14 - 9', a: '5' },
     ]},
-  { id: 'gv3', type: 'gravity', elo: 1000, label: 'MULTI-DIGIT',
-    questions: [
-      { q: '39 + 45', a: '84' }, { q: '225 + 375', a: '600' }, { q: '403 - 136', a: '267' }, { q: '235 - 118', a: '117' },
-    ]},
-  { id: 'gv4', type: 'gravity', elo: 1100, label: 'MULTIPLICATION & DIVISION',
+  { id: 'gv3', type: 'gravity', elo: 1000, label: 'MULTIPLICATION & DIVISION',
     questions: [
       { q: '8 x 9', a: '72' }, { q: '54 x 8', a: '432' }, { q: '56 / 8', a: '7' }, { q: '260 / 6', a: '43 r 2' },
+    ]},
+  { id: 'gv4', type: 'gravity', elo: 1100, label: 'MULTI-DIGIT',
+    questions: [
+      { q: '39 + 45', a: '84' }, { q: '225 + 375', a: '600' }, { q: '403 - 136', a: '267' }, { q: '235 - 118', a: '117' },
     ]},
   { id: 'gv5', type: 'gravity', elo: 1200, label: 'LONG MULTIPLY/DIVIDE',
     questions: [
@@ -62,8 +62,10 @@ const ANALOGY_QUESTIONS = [
   { id: 'an4', type: 'analogy', elo: 1100, words: ['PEN','INK','BRUSH'], choices: ['CANVAS','PAINT','STROKE','COLOR'], answer: 1 },
   { id: 'an5', type: 'analogy', elo: 1300, words: ['ARCHIPELAGO','ISLAND','CONSTELLATION'], choices: ['GALAXY','STAR','PLANET','SKY'], answer: 1 },
   { id: 'an6', type: 'analogy', elo: 1500, words: ['FAMINE','HUNGER','DELUGE'], choices: ['RAIN','DROUGHT','FLOOD','STORM'], answer: 2 },
-  { id: 'an7', type: 'analogy', elo: 1700, words: ['SYCOPHANT','FLATTERY','ASCETIC'], choices: ['POVERTY','SELF-DENIAL','MEDITATION','WORSHIP'], answer: 1 },
-  { id: 'an8', type: 'analogy', elo: 1900, words: ['APOGEE','NADIR','ZENITH'], choices: ['SUMMIT','PERIGEE','MERIDIAN','ECLIPSE'], answer: 1 },
+  { id: 'an7', type: 'analogy', elo: 1700, words: ['LADDER','HEIGHT','EDUCATION'], choices: ['SCHOOL','BOOKS','KNOWLEDGE','TEACHER'], answer: 2 },
+  { id: 'an8', type: 'analogy', elo: 1800, words: ['SMOKE','FIRE','LIMP'], choices: ['WALKING','LEG','INJURY','PAIN'], answer: 2 },
+  { id: 'an9', type: 'analogy', elo: 1900, words: ['MIRROR','APPEARANCE','DEBATE'], choices: ['ARGUMENT','WINNING','BELIEFS','LOGIC'], answer: 2 },
+  { id: 'an10', type: 'analogy', elo: 2000, words: ['TRANSLATION','MEANING','SURGERY'], choices: ['DOCTOR','HEALING','FUNCTION','SCALPEL'], answer: 2 },
 ]
 
 const FLAW_QUESTIONS = [
