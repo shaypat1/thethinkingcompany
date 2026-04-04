@@ -372,4 +372,19 @@
   .pr-rules-bar { display: none; }
   .pr-coin-sliders { flex-direction: column; }
   .coin-slot { min-width: unset; }
+  .pr-rules-box {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    border-radius: 10px 10px 0 0;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.5rem;
+  }
+  .pr-rules-heading { font-size: 0.6rem; }
+  .pr-rules-list { font-size: 0.4rem; padding-left: 0.8rem; }
+  .pr-rank-list { gap: 0.2rem; }
+  .pr-rank-tag { font-size: 0.4rem; padding: 0.1rem 0.25rem; }
+  .pr-speech-bubble { font-size: 0.4rem; }
 }

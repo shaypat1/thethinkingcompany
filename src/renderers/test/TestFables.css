@@ -218,8 +218,14 @@
 
 /* Responsive */
 @media (max-width: 700px) {
-  .fb-title-line { font-size: 1.4rem; }
+  .fb-title-line { font-size: 1.2rem; letter-spacing: 0.03em; }
   .fb-speech { max-width: 160px; }
   .fb-speech-text { font-size: 0.35rem; }
-  .fb-start-heading { font-size: 1.5rem; }
+  .fb-start-heading { font-size: 1.2rem; }
+}
+@media (max-width: 420px) {
+  .fb-title-line { font-size: 0.8rem; letter-spacing: 0.02em; }
+  .fb-start-heading { font-size: 0.9rem; }
+  .fb-speech { max-width: 120px; }
+  .fb-speech-text { font-size: 0.3rem; }
 }

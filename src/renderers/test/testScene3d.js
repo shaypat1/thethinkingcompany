@@ -14,7 +14,8 @@ export function createScene(container, level) {
   const gridW = level.width * (TILE_SIZE + TILE_GAP)
   const gridH = level.height * (TILE_SIZE + TILE_GAP)
   const maxDim = Math.max(gridW, gridH)
-  const camDist = maxDim * 1.5 + 3
+  const isMobile = container.clientWidth < 500
+  const camDist = maxDim * (isMobile ? 2.2 : 1.5) + 3
 
   const camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100)
   const camCx = (level.width - 1) * (TILE_SIZE + TILE_GAP) / 2

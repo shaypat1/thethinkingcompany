@@ -531,7 +531,10 @@
 
 /* Responsive */
 @media (max-width: 600px) {
+  .rb-title { font-size: 1.2rem; letter-spacing: 0.05em; }
   .rb-intro-title { font-size: 1.6rem; }
   .rb-hand-card { padding: 0.3rem 0.5rem; font-size: 0.8rem; }
   .rb-belt-card { padding: 0.25rem 0.45rem; font-size: 0.8rem; }
+  .rb-level-info { font-size: 0.5rem; }
+  .rb-hint { font-size: 0.35rem; max-width: 80vw; }
 }
