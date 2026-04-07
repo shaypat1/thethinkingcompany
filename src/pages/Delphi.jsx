@@ -9,7 +9,7 @@ export default function Delphi() {
         <div className="delphi-nav-links">
           <a href="#features" className="delphi-nav-link">Features</a>
           <a href="#how-it-works" className="delphi-nav-link">How It Works</a>
-          <a href="mailto:shay@delphimarkets.com?subject=Delphi%20%E2%80%94%20Interested%20in%20learning%20more&body=Hi%20Shay%2C%0A%0AI%E2%80%99d%20love%20to%20learn%20more%20about%20Delphi%20for%20my%20child.%0A%0AMy%20child%E2%80%99s%20age%3A%20%0ABest%20time%20to%20chat%3A%20%0A%0AThanks!" className="delphi-nav-cta">Book a Call</a>
+          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-nav-cta">Book a Call</a>
         </div>
       </nav>
 
@@ -31,7 +31,7 @@ export default function Delphi() {
             curriculum increases critical thinking and quantitative skills
             by ~80% across the board.
           </p>
-          <a href="mailto:shay@delphimarkets.com?subject=Delphi%20%E2%80%94%20Interested%20in%20learning%20more&body=Hi%20Shay%2C%0A%0AI%E2%80%99d%20love%20to%20learn%20more%20about%20Delphi%20for%20my%20child.%0A%0AMy%20child%E2%80%99s%20age%3A%20%0ABest%20time%20to%20chat%3A%20%0A%0AThanks!" className="delphi-hero-cta">Book a Call</a>
+          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-hero-cta">Book a Call</a>
         </div>
       </section>
 
@@ -178,7 +178,7 @@ export default function Delphi() {
             Critical thinking develops best between ages 8 and 13.
             Book a call to learn how Delphi can work for your child.
           </p>
-          <a href="mailto:shay@delphimarkets.com?subject=Delphi%20%E2%80%94%20Interested%20in%20learning%20more&body=Hi%20Shay%2C%0A%0AI%E2%80%99d%20love%20to%20learn%20more%20about%20Delphi%20for%20my%20child.%0A%0AMy%20child%E2%80%99s%20age%3A%20%0ABest%20time%20to%20chat%3A%20%0A%0AThanks!" className="delphi-cta-btn">Book a Call</a>
+          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-cta-btn">Book a Call</a>
         </div>
       </section>
 
