@@ -579,6 +579,173 @@
   color: rgba(244, 245, 248, 0.7);
 }
 
+/* ── Form Modal ── */
+
+.delphi-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: delphi-fade-in 0.25s ease;
+}
+
+@keyframes delphi-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.delphi-modal {
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  animation: delphi-slide-up 0.35s ease;
+}
+
+@keyframes delphi-slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.delphi-modal-left {
+  background: var(--navy-deep);
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.delphi-modal-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+}
+
+.delphi-modal-tagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.delphi-modal-right {
+  background: var(--navy);
+  padding: 2.5rem 3rem 3rem;
+  position: relative;
+}
+
+.delphi-modal-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.delphi-modal-close:hover {
+  opacity: 0.7;
+}
+
+.delphi-modal-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.5rem;
+}
+
+.delphi-modal-heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 2rem;
+  letter-spacing: -0.02em;
+}
+
+.delphi-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.delphi-modal-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.delphi-modal-label input {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.delphi-modal-label input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.delphi-modal-label input:focus {
+  border-color: var(--accent);
+}
+
+.delphi-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.delphi-modal-submit {
+  background: var(--accent);
+  border: none;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.7rem 2rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.delphi-modal-submit:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.delphi-modal-success {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 3rem 0;
+}
+
 /* ── Responsive ── */
 
 @media (max-width: 768px) {
@@ -641,5 +808,17 @@
     gap: 1.5rem;
     text-align: center;
     padding: 2rem 1.5rem;
+  }
+
+  .delphi-modal {
+    grid-template-columns: 1fr;
+  }
+
+  .delphi-modal-left {
+    display: none;
+  }
+
+  .delphi-modal-right {
+    padding: 2rem 1.5rem 2.5rem;
   }
 }

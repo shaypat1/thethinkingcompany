@@ -1,6 +1,28 @@
+import { useState } from 'react'
 import './Delphi.css'
 
 export default function Delphi() {
+  const [showForm, setShowForm] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  function handleSubmit(e) {
+    e.preventDefault()
+    const form = e.target
+    fetch('https://formsubmit.co/ajax/shay@delphimarkets.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        name: form.name.value,
+        email: form.email.value,
+        phone: form.phone.value,
+        _subject: 'Delphi — New Access Request',
+      }),
+    }).then(() => {
+      setSubmitted(true)
+      setTimeout(() => { setShowForm(false); setSubmitted(false) }, 3000)
+    })
+  }
+
   return (
     <div className="delphi">
       {/* ── Nav ── */}
@@ -9,7 +31,7 @@ export default function Delphi() {
         <div className="delphi-nav-links">
           <a href="#features" className="delphi-nav-link">Features</a>
           <a href="#how-it-works" className="delphi-nav-link">How It Works</a>
-          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-nav-cta">Book a Call</a>
+          <button onClick={() => setShowForm(true)} className="delphi-nav-cta">Request Access</button>
         </div>
       </nav>
 
@@ -31,7 +53,7 @@ export default function Delphi() {
             curriculum increases critical thinking and quantitative skills
             by ~80% across the board.
           </p>
-          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-hero-cta">Book a Call</a>
+          <button onClick={() => setShowForm(true)} className="delphi-hero-cta">Request Access</button>
         </div>
       </section>
 
@@ -176,9 +198,9 @@ export default function Delphi() {
           <h2>The best investment in how they think</h2>
           <p>
             Critical thinking develops best between ages 8 and 13.
-            Book a call to learn how Delphi can work for your child.
+            Request access to learn how Delphi can work for your child.
           </p>
-          <a href="https://cal.com/shay-delphi" target="_blank" rel="noopener noreferrer" className="delphi-cta-btn">Book a Call</a>
+          <button onClick={() => setShowForm(true)} className="delphi-cta-btn">Request Access</button>
         </div>
       </section>
 
@@ -189,6 +211,45 @@ export default function Delphi() {
           <span className="delphi-footer-link">&copy; {new Date().getFullYear()} Delphi</span>
         </div>
       </footer>
+
+      {/* ── Form Modal ── */}
+      {showForm && (
+        <div className="delphi-modal-overlay" onClick={() => setShowForm(false)}>
+          <div className="delphi-modal" onClick={e => e.stopPropagation()}>
+            <div className="delphi-modal-left">
+              <span className="delphi-modal-logo">DELPHI</span>
+              <span className="delphi-modal-tagline">Teaching your child to think.</span>
+            </div>
+            <div className="delphi-modal-right">
+              <button className="delphi-modal-close" onClick={() => setShowForm(false)}>CLOSE</button>
+              <div className="delphi-modal-eyebrow">( REQUEST ACCESS )</div>
+              {submitted ? (
+                <div className="delphi-modal-success">
+                  Thank you! We'll be in touch soon.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="delphi-modal-form">
+                  <label className="delphi-modal-label">
+                    NAME
+                    <input type="text" name="name" placeholder="Your name" required />
+                  </label>
+                  <label className="delphi-modal-label">
+                    EMAIL
+                    <input type="email" name="email" placeholder="you@email.com" required />
+                  </label>
+                  <label className="delphi-modal-label">
+                    PHONE
+                    <input type="tel" name="phone" placeholder="(555) 123-4567" />
+                  </label>
+                  <div className="delphi-modal-actions">
+                    <button type="submit" className="delphi-modal-submit">SUBMIT</button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
