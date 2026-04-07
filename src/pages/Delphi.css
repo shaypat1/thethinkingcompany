@@ -16,7 +16,7 @@
   --text-dim: #8b93a3;
   --border-color: rgba(21, 44, 74, 0.11);
 
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Lato', 'Inter', system-ui, -apple-system, sans-serif;
   color: var(--text-primary);
   background: #fff;
   overflow-x: hidden;
@@ -211,7 +211,7 @@
 }
 
 .delphi-hero h1 {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Lato', system-ui, sans-serif;
   font-size: clamp(2.8rem, 6vw, 4.2rem);
   font-weight: 800;
   line-height: 1.1;
@@ -237,7 +237,7 @@
   display: inline-block;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--navy);
+  color: #fff;
   background: var(--accent);
   border: none;
   border-radius: 100px;
@@ -483,7 +483,7 @@
 .delphi-step::before {
   content: counter(step, decimal-leading-zero);
   display: block;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Lato', system-ui, sans-serif;
   font-size: 2rem;
   font-weight: 800;
   color: var(--accent);
@@ -591,6 +591,7 @@
   }
 
   .delphi-hero {
+    min-height: 100vh;
     padding: 7rem 1.5rem 4rem;
   }
 

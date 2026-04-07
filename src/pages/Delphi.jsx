@@ -23,12 +23,13 @@ export default function Delphi() {
         <div className="delphi-hero-content">
           <div className="delphi-pill">
             <span className="delphi-pill-dot" />
-            Screen time you can feel good about
+            Built by psychologists. Trusted by educators.
           </div>
-          <h1>Teach your child to <em>think</em></h1>
+          <h1>Teaching your child to <em>think</em></h1>
           <p className="delphi-hero-sub">
-            Children who play Delphi develop reasoning skills that set them
-            apart. No worksheets. Just an adventure they can't put down.
+            Technology has decimated our kids' cognitive abilities. Our
+            curriculum increases critical thinking and quantitative skills
+            by ~80% across the board.
           </p>
           <a href="mailto:shay@delphimarkets.com?subject=Delphi%20%E2%80%94%20Interested%20in%20learning%20more&body=Hi%20Shay%2C%0A%0AI%E2%80%99d%20love%20to%20learn%20more%20about%20Delphi%20for%20my%20child.%0A%0AMy%20child%E2%80%99s%20age%3A%20%0ABest%20time%20to%20chat%3A%20%0A%0AThanks!" className="delphi-hero-cta">Book a Call</a>
         </div>
@@ -77,7 +78,7 @@ export default function Delphi() {
       {/* ── Features ── */}
       <section className="delphi-section" id="features">
         <div className="delphi-section-eyebrow">What Your Child Will Gain</div>
-        <h2>Real skills, not rote memorization</h2>
+        <h2>Real skills, it's SIMPLE really!</h2>
         <p className="delphi-section-desc">
           Every challenge is designed around the same reasoning skills taught
           at top universities, reimagined so children build intuition naturally
