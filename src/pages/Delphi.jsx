@@ -27,9 +27,8 @@ export default function Delphi() {
           </div>
           <h1>Teach your child to <em>think</em></h1>
           <p className="delphi-hero-sub">
-            Children who play Delphi develop reasoning, math, and strategy
-            skills that set them apart in school and beyond. No worksheets.
-            No lectures. Just an adventure they can't put down.
+            Children who play Delphi develop reasoning skills that set them
+            apart. No worksheets. Just an adventure they can't put down.
           </p>
           <a href="mailto:shay@delphimarkets.com?subject=Delphi%20%E2%80%94%20Interested%20in%20learning%20more&body=Hi%20Shay%2C%0A%0AI%E2%80%99d%20love%20to%20learn%20more%20about%20Delphi%20for%20my%20child.%0A%0AMy%20child%E2%80%99s%20age%3A%20%0ABest%20time%20to%20chat%3A%20%0A%0AThanks!" className="delphi-hero-cta">Book a Call</a>
         </div>
@@ -42,7 +41,7 @@ export default function Delphi() {
           <div className="delphi-stat-label">Built for how kids actually learn</div>
         </div>
         <div className="delphi-stat">
-          <div className="delphi-stat-value">6 skills</div>
+          <div className="delphi-stat-value">40+ skills</div>
           <div className="delphi-stat-label">That transfer directly to school</div>
         </div>
         <div className="delphi-stat">
