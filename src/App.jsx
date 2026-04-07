@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './ThemeContext'
 import ThemeBackground from './components/ThemeBackground'
 import Home from './pages/Home'
+import Delphi from './pages/Delphi'
 import Profile from './pages/Profile'
 import Leaderboard from './pages/Leaderboard'
 import Activity from './pages/Activity'
@@ -17,7 +18,7 @@ export default function App() {
       <BrowserRouter>
         <div className="app-content">
           <Routes>
-            <Route path="/" element={<ThinkingTest />} />
+            <Route path="/" element={<Delphi />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/activity/:dayId/:nodeIndex" element={<Activity />} />

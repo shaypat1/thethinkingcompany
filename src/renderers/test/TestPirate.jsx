@@ -328,7 +328,7 @@ export default function PirateRenderer({ onLevelComplete, onLevelFail, startLeve
 
   return (
     <div className="pr-wrapper">
-      <Link to="/" className="pr-exit-btn">&larr; Exit</Link>
+      <Link to="/test" className="pr-exit-btn">&larr; Exit</Link>
       <button className="pr-restart-btn" onClick={resetToStart}>Restart</button>
 
       {/* Speech bubbles anchored to pirate heads */}
