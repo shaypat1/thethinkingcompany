@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { initAnalytics, trackClick } from '../analytics'
 import './Delphi.css'
 
 export default function Delphi() {
   const [showForm, setShowForm] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => { initAnalytics() }, [])
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -18,6 +21,7 @@ export default function Delphi() {
         _subject: 'Delphi — New Access Request',
       }),
     }).then(() => {
+      trackClick('form-submitted')
       setSubmitted(true)
       setTimeout(() => { setShowForm(false); setSubmitted(false) }, 3000)
     })
@@ -31,12 +35,12 @@ export default function Delphi() {
         <div className="delphi-nav-links">
           <a href="#features" className="delphi-nav-link">Features</a>
           <a href="#how-it-works" className="delphi-nav-link">How It Works</a>
-          <button onClick={() => setShowForm(true)} className="delphi-nav-cta">Request Access</button>
+          <button onClick={() => { trackClick('nav-request-access'); setShowForm(true) }} className="delphi-nav-cta">Request Access</button>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="delphi-hero">
+      <section className="delphi-hero" data-track="hero">
         <div className="delphi-hero-bg">
           <div className="delphi-blob delphi-blob--1" />
           <div className="delphi-blob delphi-blob--2" />
@@ -53,7 +57,7 @@ export default function Delphi() {
             curriculum increases critical thinking and quantitative skills
             by ~80% across the board.
           </p>
-          <button onClick={() => setShowForm(true)} className="delphi-hero-cta">Request Access</button>
+          <button onClick={() => { trackClick('hero-request-access'); setShowForm(true) }} className="delphi-hero-cta">Request Access</button>
         </div>
       </section>
 
@@ -74,7 +78,7 @@ export default function Delphi() {
       </div>
 
       {/* ── Bold Statement ── */}
-      <section className="delphi-statement">
+      <section className="delphi-statement" data-track="statement">
         <p>
           Critical thinking can take your child to <span>great places</span>.
           And it all starts with play.
@@ -82,7 +86,7 @@ export default function Delphi() {
       </section>
 
       {/* ── Testimonial ── */}
-      <section className="delphi-testimonial">
+      <section className="delphi-testimonial" data-track="testimonial">
         <blockquote className="delphi-testimonial-quote">
           "My son used to fight me on anything educational. Now he asks to play
           Delphi after dinner. Last week his teacher told me he's started
@@ -98,7 +102,7 @@ export default function Delphi() {
       </section>
 
       {/* ── Features ── */}
-      <section className="delphi-section" id="features">
+      <section className="delphi-section" id="features" data-track="features">
         <div className="delphi-section-eyebrow">What Your Child Will Gain</div>
         <h2>Real skills, it's SIMPLE really!</h2>
         <p className="delphi-section-desc">
@@ -159,7 +163,7 @@ export default function Delphi() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="delphi-section" id="how-it-works">
+      <section className="delphi-section" id="how-it-works" data-track="how-it-works">
         <div className="delphi-section-eyebrow">How It Works</div>
         <h2>An adventure that adapts to your child</h2>
         <p className="delphi-section-desc">
@@ -193,14 +197,14 @@ export default function Delphi() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="delphi-section delphi-section--dark" id="contact">
+      <section className="delphi-section delphi-section--dark" id="contact" data-track="cta">
         <div className="delphi-cta-section">
           <h2>The best investment in how they think</h2>
           <p>
             Critical thinking develops best between ages 8 and 13.
             Request access to learn how Delphi can work for your child.
           </p>
-          <button onClick={() => setShowForm(true)} className="delphi-cta-btn">Request Access</button>
+          <button onClick={() => { trackClick('cta-request-access'); setShowForm(true) }} className="delphi-cta-btn">Request Access</button>
         </div>
       </section>
 
