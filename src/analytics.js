@@ -57,6 +57,11 @@ export function trackExit() {
     })
     send({ type: 'exit', totalSeconds: Math.round((Date.now() - pageStart) / 1000) })
   })
+
+  // Heartbeat every 5s — works on mobile where beforeunload doesn't fire
+  setInterval(() => {
+    send({ type: 'heartbeat', secondsOnPage: Math.round((Date.now() - pageStart) / 1000) })
+  }, 1000)
 }
 
 export function initAnalytics() {
