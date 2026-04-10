@@ -35,7 +35,7 @@ export default function Delphi() {
         <div className="delphi-nav-links">
           <a href="#features" className="delphi-nav-link">Features</a>
           <a href="#how-it-works" className="delphi-nav-link">How It Works</a>
-          <button onClick={() => { trackClick('nav-request-access'); setShowForm(true) }} className="delphi-nav-cta">Request Access</button>
+          <button onClick={() => { trackClick('nav-sign-up'); setShowForm(true) }} className="delphi-nav-cta">Sign Up</button>
         </div>
       </nav>
 
@@ -57,7 +57,7 @@ export default function Delphi() {
             curriculum increases critical thinking and quantitative skills
             by ~80% across the board.
           </p>
-          <button onClick={() => { trackClick('hero-request-access'); setShowForm(true) }} className="delphi-hero-cta">Request Access</button>
+          <button onClick={() => { trackClick('hero-sign-up'); setShowForm(true) }} className="delphi-hero-cta">Sign Up</button>
         </div>
       </section>
 
@@ -202,9 +202,9 @@ export default function Delphi() {
           <h2>The best investment in how they think</h2>
           <p>
             Critical thinking develops best between ages 8 and 13.
-            Request access to learn how Delphi can work for your child.
+            Sign up to learn how Delphi can work for your child.
           </p>
-          <button onClick={() => { trackClick('cta-request-access'); setShowForm(true) }} className="delphi-cta-btn">Request Access</button>
+          <button onClick={() => { trackClick('cta-sign-up'); setShowForm(true) }} className="delphi-cta-btn">Sign Up</button>
         </div>
       </section>
 
@@ -226,7 +226,7 @@ export default function Delphi() {
             </div>
             <div className="delphi-modal-right">
               <button className="delphi-modal-close" onClick={() => setShowForm(false)}>CLOSE</button>
-              <div className="delphi-modal-eyebrow">( REQUEST ACCESS )</div>
+              <div className="delphi-modal-eyebrow">( SIGN UP )</div>
               {submitted ? (
                 <div className="delphi-modal-success">
                   Thank you! We'll be in touch soon.
